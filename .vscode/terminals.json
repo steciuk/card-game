@@ -1,0 +1,20 @@
+{
+	"autorun": true,
+	"autokill": true,
+	"terminals": [
+		{
+			"name": "Nodemon",
+			"cwd": "./server",
+			"command": "npm run w:n"
+		},
+		{
+			"name": "Typescript",
+			"cwd": "./server",
+			"command": "npm run w:t"
+		},
+		{
+			"name": "Angular",
+			"cwd": "./client"
+		}
+	]
+}
