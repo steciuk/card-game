@@ -1,14 +1,18 @@
+import dotenv from 'dotenv';
 import express from 'express';
 import { Request, Response } from 'express';
-const app = express();
-const port = 8080; // default port to listen
+import { Server, Socket } from 'socket.io';
 
-// define a route handler for the default home page
+dotenv.config();
+const app = express();
+app.set('port', process.env.PORT || 8080);
+
 app.get('/', (req: Request, res: Response) => {
 	res.send('Hello world!');
 });
 
-// start the Express server
-app.listen(port, () => {
-	console.log(`server started and listening at http://localhost:${port}`);
+const listener = app.listen(() => {
+	console.log(`server started and listening...`);
 });
+
+const io = new Server(listener);
