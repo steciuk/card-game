@@ -4,14 +4,14 @@ import { Request, Response } from 'express';
 import { Server, Socket } from 'socket.io';
 
 dotenv.config();
+const port = process.env.SERVER_PORT;
 const app = express();
-app.set('port', process.env.PORT || 8080);
 
 app.get('/', (req: Request, res: Response) => {
-	res.send('Hello world!');
+	res.send('Hello World!');
 });
 
-const listener = app.listen(() => {
+const listener = app.listen(port, () => {
 	console.log(`server started and listening...`);
 });
 
