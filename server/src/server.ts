@@ -10,5 +10,4 @@ validateEnv();
 const app = new App([new UserController()]);
 app.listen();
 
-const a = 'dasds';
 // const io = new Server(listener);

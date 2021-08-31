@@ -13,8 +13,13 @@ export class UserController extends AbstractController {
 		this.router.post(this.path, this.saveUser);
 	}
 
-	getUsers = (req: Request, res: Response) => {
-		res.send('Hello World');
+	getUsers = async (req: Request, res: Response) => {
+		try {
+			const users = await UserModel.find().exec();
+			res.json(users);
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	saveUser = async (req: Request, res: Response) => {

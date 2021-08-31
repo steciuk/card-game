@@ -9,7 +9,7 @@
 		"build": "npm-run-all clean tsc",
 		"start": "node .",
 		"prod": "npm-run-all build start",
-		"w:n": "nodemon --watch dist",
+		"w:n": "nodemon --delay 250ms --watch dist",
 		"w:t": "tsc -w"
 	},
 	"keywords": [],
