@@ -1,18 +1,14 @@
 import dotenv from 'dotenv';
-import express from 'express';
-import { Request, Response } from 'express';
-import { Server, Socket } from 'socket.io';
+
+import { App } from './App';
+import { UserController } from './routers/UserController';
+import { validateEnv } from './utils/EnvValidator';
 
 dotenv.config();
-const port = process.env.SERVER_PORT;
-const app = express();
+validateEnv();
 
-app.get('/', (req: Request, res: Response) => {
-	res.send('Hello World!');
-});
+const app = new App([new UserController()]);
+app.listen();
 
-const listener = app.listen(port, () => {
-	console.log(`server started and listening...`);
-});
-
-const io = new Server(listener);
+const a = 'dasds';
+// const io = new Server(listener);
