@@ -1,34 +1,88 @@
-import { AbstractController } from './AbstractController';
-import { Request, Response } from 'express';
+import { Controller } from './Controller';
+import { NextFunction, Request, Response, Router } from 'express';
 import { UserModel } from '../models/UserModel';
+import { UserData } from '../models/UserModel';
+import { HttpError } from '../errors/HttpError';
 
-export class UserController extends AbstractController {
+export class UserController extends Controller {
+	router = Router();
+	path = '/users';
+
 	constructor() {
-		super('/users');
+		super();
 		this.initializeRoutes();
 	}
 
-	initializeRoutes(): void {
-		this.router.get(this.path, this.getUsers);
-		this.router.post(this.path, this.saveUser);
+	private initializeRoutes() {
+		this.router.get(this.path, this.getAllUsers);
+		this.router.get(`${this.path}/:id`, this.getUserById);
+		this.router.patch(`${this.path}/:id`, this.modifyUser);
+		this.router.delete(`${this.path}/:id`, this.deleteUser);
+		this.router.post(this.path, this.createUser);
 	}
 
-	getUsers = async (req: Request, res: Response) => {
-		try {
+	private getAllUsers = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	) => {
+		this.handleRequest(req, res, next, async (req, res, next) => {
 			const users = await UserModel.find().exec();
-			res.json(users);
-		} catch (error) {
-			console.log(error);
-		}
+			users
+				? res.json(users)
+				: next(new HttpError(404, 'No users found'));
+		});
 	};
 
-	saveUser = async (req: Request, res: Response) => {
-		const user = new UserModel(req.body);
-		try {
-			const newUser = await user.save();
-			res.json(newUser);
-		} catch (error) {
-			console.log(error);
-		}
+	private getUserById = (req: Request, res: Response, next: NextFunction) => {
+		this.handleRequest(req, res, next, async (req, res, next) => {
+			const id = req.params.id;
+			const user = await UserModel.findById(id).exec();
+			user ? res.json(user) : next(new HttpError(404, 'User not found'));
+		});
+	};
+
+	private modifyUser = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	) => {
+		this.handleRequest(req, res, next, async (req, res, next) => {
+			const id = req.params.id;
+			const postData: UserData = req.body;
+			const editedUser = await UserModel.findByIdAndUpdate(id, postData, {
+				new: true,
+			}).exec();
+			editedUser
+				? res.json(editedUser)
+				: next(new HttpError(404, 'User not found'));
+		});
+	};
+
+	private createUser = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	) => {
+		this.handleRequest(req, res, next, async (req, res, next) => {
+			const postData: UserData = req.body;
+			const createdUser = new UserModel(postData); //TODO: check if data is correct
+			const savedUser = await createdUser.save();
+			res.json(savedUser);
+		});
+	};
+
+	private deleteUser = async (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	) => {
+		this.handleRequest(req, res, next, async (req, res, next) => {
+			const id = req.params.id;
+			const result = await UserModel.findByIdAndDelete(id).exec();
+			result
+				? res.sendStatus(200)
+				: next(new HttpError(404, 'User not found'));
+		});
 	};
 }
