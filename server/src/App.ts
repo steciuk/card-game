@@ -1,18 +1,20 @@
 import express from 'express';
 import { json } from 'express';
 import mongoose from 'mongoose';
+import { errorMiddleware } from './middlewares/ErrorMiddleware';
 
-import { AbstractController } from './routers/AbstractController';
+import { Controller } from './routers/Controller';
 
 export class App {
 	app: express.Application;
 
-	constructor(controllers: AbstractController[]) {
+	constructor(controllers: Controller[]) {
 		this.app = express();
 
 		this.connectToDatabase();
 		this.initializeMiddlewares();
 		this.initializeControllers(controllers);
+		this.initializeErrorHandlers();
 	}
 
 	private connectToDatabase() {
@@ -31,10 +33,14 @@ export class App {
 		this.app.use(json());
 	}
 
-	private initializeControllers(controllers: AbstractController[]): void {
+	private initializeControllers(controllers: Controller[]): void {
 		controllers.forEach((controller) => {
 			this.app.use('/', controller.router);
 		});
+	}
+
+	private initializeErrorHandlers(): void {
+		this.app.use(errorMiddleware);
 	}
 
 	listen(): void {

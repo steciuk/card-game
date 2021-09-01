@@ -10,7 +10,8 @@
 		"start": "node .",
 		"prod": "npm-run-all build start",
 		"w:n": "nodemon --delay 250ms --watch dist",
-		"w:t": "tsc -w"
+		"w:t": "tsc -w",
+		"dev:server": "nodemon --watch src --exec ts-node ./src/Server.ts"
 	},
 	"keywords": [],
 	"author": "Adam Steciuk",
