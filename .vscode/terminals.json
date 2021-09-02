@@ -5,16 +5,15 @@
 		{
 			"name": "Nodemon",
 			"cwd": "./server",
-			"command": "npm run w:n"
+			"command": "npm run dev:server"
 		},
 		{
-			"name": "Typescript",
-			"cwd": "./server",
-			"command": "npm run w:t"
-		},
-		{
-			"name": "Angular",
+			"name": "Client",
 			"cwd": "./client"
+		},
+		{
+			"name": "Server",
+			"cwd": "./server"
 		}
 	]
 }

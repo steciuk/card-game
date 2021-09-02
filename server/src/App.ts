@@ -3,7 +3,8 @@ import { json } from 'express';
 import mongoose from 'mongoose';
 import { errorMiddleware } from './middlewares/ErrorMiddleware';
 
-import { Controller } from './routers/Controller';
+import { Controller } from './controllers/Controller';
+import { elog } from './utils/Logger';
 
 export class App {
 	app: express.Application;
@@ -26,7 +27,7 @@ export class App {
 		mongoose
 			.connect(mongoURI)
 			.then(() => console.log('MongoDB Connected...'))
-			.catch((err) => console.log(err));
+			.catch((error) => elog(error));
 	}
 
 	private initializeMiddlewares(): void {

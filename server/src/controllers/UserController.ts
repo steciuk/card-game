@@ -3,6 +3,9 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { UserModel } from '../models/UserModel';
 import { UserData } from '../models/UserModel';
 import { HttpError } from '../errors/HttpError';
+import { UserNotFoundError } from '../errors/user/UserNotFoundError';
+import { UserDTO } from '../objects/user/UserDTO';
+import { validationMiddleware } from '../middlewares/ValidationMiddleware';
 
 export class UserController extends Controller {
 	router = Router();
@@ -18,7 +21,11 @@ export class UserController extends Controller {
 		this.router.get(`${this.path}/:id`, this.getUserById);
 		this.router.patch(`${this.path}/:id`, this.modifyUser);
 		this.router.delete(`${this.path}/:id`, this.deleteUser);
-		this.router.post(this.path, this.createUser);
+		this.router.post(
+			this.path,
+			validationMiddleware(UserDTO),
+			this.createUser
+		);
 	}
 
 	private getAllUsers = async (
@@ -28,9 +35,7 @@ export class UserController extends Controller {
 	) => {
 		this.handleRequest(req, res, next, async (req, res, next) => {
 			const users = await UserModel.find().exec();
-			users
-				? res.json(users)
-				: next(new HttpError(404, 'No users found'));
+			users ? res.json(users) : res.json([]);
 		});
 	};
 
@@ -38,7 +43,7 @@ export class UserController extends Controller {
 		this.handleRequest(req, res, next, async (req, res, next) => {
 			const id = req.params.id;
 			const user = await UserModel.findById(id).exec();
-			user ? res.json(user) : next(new HttpError(404, 'User not found'));
+			user ? res.json(user) : next(new UserNotFoundError(id));
 		});
 	};
 
@@ -53,9 +58,7 @@ export class UserController extends Controller {
 			const editedUser = await UserModel.findByIdAndUpdate(id, postData, {
 				new: true,
 			}).exec();
-			editedUser
-				? res.json(editedUser)
-				: next(new HttpError(404, 'User not found'));
+			editedUser ? res.json(editedUser) : next(new UserNotFoundError(id));
 		});
 	};
 
@@ -80,9 +83,7 @@ export class UserController extends Controller {
 		this.handleRequest(req, res, next, async (req, res, next) => {
 			const id = req.params.id;
 			const result = await UserModel.findByIdAndDelete(id).exec();
-			result
-				? res.sendStatus(200)
-				: next(new HttpError(404, 'User not found'));
+			result ? res.sendStatus(200) : next(new UserNotFoundError(id));
 		});
 	};
 }

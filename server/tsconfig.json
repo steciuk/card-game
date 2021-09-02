@@ -8,6 +8,8 @@
 		"sourceMap": true,
 		"outDir": "dist",
 		"strict": true,
+		"strictPropertyInitialization": false,
+		"experimentalDecorators": true,
 		"removeComments": true,
 		"preserveConstEnums": true
 	},
