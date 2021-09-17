@@ -2,8 +2,8 @@ import { Controller } from './Controller';
 import { NextFunction, Request, Response, Router } from 'express';
 import { UserModel } from '../models/UserModel';
 import { UserData } from '../models/UserModel';
-import { HttpError } from '../errors/HttpError';
-import { UserNotFoundError } from '../errors/user/UserNotFoundError';
+import { HttpError } from '../errors/httpErrors/HttpError';
+import { UserNotFoundError } from '../errors/httpErrors/user/UserNotFoundError';
 import { UserDTO } from '../objects/user/UserDTO';
 import { validationMiddleware } from '../middlewares/ValidationMiddleware';
 
@@ -69,7 +69,7 @@ export class UserController extends Controller {
 	) => {
 		this.handleRequest(req, res, next, async (req, res, next) => {
 			const postData: UserData = req.body;
-			const createdUser = new UserModel(postData); //TODO: check if data is correct
+			const createdUser = new UserModel(postData);
 			const savedUser = await createdUser.save();
 			res.json(savedUser);
 		});

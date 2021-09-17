@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { HttpError } from '../errors/HttpError';
+import { HttpError } from '../errors/httpErrors/HttpError';
 import { NextFunction, Request, Response } from 'express';
 import { elog } from '../utils/Logger';
 
@@ -16,7 +16,7 @@ export abstract class Controller {
 	) {
 		try {
 			await logic(req, res, next);
-		} catch (error) {
+		} catch (error: any) {
 			elog(error);
 			next(new HttpError());
 		}
