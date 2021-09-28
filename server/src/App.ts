@@ -1,9 +1,8 @@
-import express from 'express';
-import { json } from 'express';
+import express, { json } from 'express';
 import mongoose from 'mongoose';
-import { errorMiddleware } from './middlewares/ErrorMiddleware';
 
 import { Controller } from './controllers/Controller';
+import { errorMiddleware } from './middlewares/ErrorMiddleware';
 import { elog } from './utils/Logger';
 
 export class App {

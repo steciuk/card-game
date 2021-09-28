@@ -1,6 +1,6 @@
-import { Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
+
 import { HttpError } from '../errors/httpErrors/HttpError';
-import { NextFunction, Request, Response } from 'express';
 import { elog } from '../utils/Logger';
 
 export abstract class Controller {

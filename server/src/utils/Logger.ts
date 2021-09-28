@@ -1,5 +1,6 @@
 import fs from 'fs';
 import util from 'util';
+
 import { dateToString } from './DateFormatter';
 
 const logFile = fs.createWriteStream('./server.log', {

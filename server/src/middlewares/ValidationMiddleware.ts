@@ -1,6 +1,7 @@
-import { plainToClass, ClassConstructor } from 'class-transformer';
+import { ClassConstructor, plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
-import { RequestHandler, Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
+
 import { HttpError } from '../errors/httpErrors/HttpError';
 import { elog } from '../utils/Logger';
 

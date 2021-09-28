@@ -1,11 +1,10 @@
-import { Controller } from './Controller';
 import { NextFunction, Request, Response, Router } from 'express';
-import { UserModel } from '../models/UserModel';
-import { UserData } from '../models/UserModel';
-import { HttpError } from '../errors/httpErrors/HttpError';
+
 import { UserNotFoundError } from '../errors/httpErrors/user/UserNotFoundError';
-import { UserDTO } from '../objects/user/UserDTO';
 import { validationMiddleware } from '../middlewares/ValidationMiddleware';
+import { UserData, UserModel } from '../models/UserModel';
+import { UserDTO } from '../objects/user/UserDTO';
+import { Controller } from './Controller';
 
 export class UserController extends Controller {
 	router = Router();
