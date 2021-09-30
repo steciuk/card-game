@@ -1,5 +1,6 @@
 import express, { json } from 'express';
 import mongoose from 'mongoose';
+import passport from 'passport';
 
 import { Controller } from './controllers/Controller';
 import { errorMiddleware } from './middlewares/ErrorMiddleware';
@@ -26,11 +27,12 @@ export class App {
 		mongoose
 			.connect(mongoURI)
 			.then(() => console.log('MongoDB Connected...'))
-			.catch((error) => elog(error));
+			.catch((error: Error) => elog(error));
 	}
 
 	private initializeMiddlewares(): void {
 		this.app.use(json());
+		this.app.use(passport.initialize());
 	}
 
 	private initializeControllers(controllers: Controller[]): void {

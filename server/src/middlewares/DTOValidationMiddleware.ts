@@ -5,7 +5,7 @@ import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { HttpError } from '../errors/httpErrors/HttpError';
 import { elog } from '../utils/Logger';
 
-export function validationMiddleware(
+export function dtoValidationMiddleware(
 	type: ClassConstructor<object>
 ): RequestHandler {
 	return (req: Request, res: Response, next: NextFunction) => {

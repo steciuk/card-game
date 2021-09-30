@@ -1,16 +1,34 @@
-import mongoose from 'mongoose';
+import { IsString } from 'class-validator';
+import { model, ObjectId, Schema } from 'mongoose';
 
-export type UserData = {
+export class UserDTO {
+	@IsString()
 	username: string;
+	@IsString()
 	password: string;
-};
+}
 
-const userSchema = new mongoose.Schema({
-	username: String,
-	password: String,
+export interface User extends Document {
+	username: string;
+	hash: string;
+	salt: string;
+	id?: ObjectId;
+}
+
+const userSchema = new Schema<User>({
+	username: {
+		type: String,
+		required: true,
+		unique: true,
+	},
+	hash: {
+		type: String,
+		required: true,
+	},
+	salt: {
+		type: String,
+		required: true,
+	},
 });
 
-export const UserModel = mongoose.model<UserData & mongoose.Document>(
-	'User',
-	userSchema
-);
+export const UserModel = model<User>('User', userSchema);

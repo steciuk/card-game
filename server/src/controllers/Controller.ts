@@ -16,7 +16,7 @@ export abstract class Controller {
 	) {
 		try {
 			await logic(req, res, next);
-		} catch (error: any) {
+		} catch (error: unknown) {
 			elog(error);
 			next(new HttpError());
 		}
