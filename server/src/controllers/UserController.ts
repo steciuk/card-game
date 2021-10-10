@@ -30,7 +30,7 @@ export class UserController extends Controller {
 		this.router.post(
 			`${this.path}/login`,
 			dtoValidationMiddleware(UserDTO),
-			passport.authenticate('local'),
+			passport.authenticate('basic', { session: false }),
 			this.loginUser
 		);
 	}
@@ -99,7 +99,6 @@ export class UserController extends Controller {
 		next: NextFunction
 	) => {
 		this.handleRequest(req, res, next, async (req, res, next) => {
-			console.log(req.user);
 			res.status(200).send('Elo');
 		});
 	};
