@@ -1,18 +1,17 @@
-import { NextFunction, Request, Response, Router } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import passport from 'passport';
 
 import { UserExistsError } from '../errors/httpErrors/user/UserExistsError';
-import { UserNotFoundError } from '../errors/httpErrors/user/UserNotFoundError';
 import {
 	generateNewSaltAndHash,
 	issueJWT
 } from '../lib/passport/PassportUtils';
 import { dtoValidationMiddleware } from '../middlewares/DTOValidationMiddleware';
 import { UserDTO, UserModel } from '../models/UserModel';
+import { AccessDatabaseFromMiddleware } from '../utils/decorators/DatabaseOperationsHandler';
 import { Controller } from './Controller';
 
 export class UserController extends Controller {
-	router = Router();
 	path = '/users';
 
 	constructor() {
@@ -39,88 +38,83 @@ export class UserController extends Controller {
 		this.router.get(`${this.path}/protected`, this.protected);
 	}
 
-	private protected = (req: Request, res: Response, next: NextFunction) => {
-		this.handleRequest(req, res, next, async (req, res, next) => {});
-	};
+	private async protected(req: Request, res: Response, next: NextFunction) {}
 
-	private registerUser = (
+	@AccessDatabaseFromMiddleware()
+	private async registerUser(
 		req: Request,
 		res: Response,
 		next: NextFunction
-	) => {
-		this.handleRequest(req, res, next, async (req, res, next) => {
-			const postData: UserDTO = req.body;
-			const user = await UserModel.findOne({
-				username: postData.username,
-			});
-			if (user) next(new UserExistsError(postData.username));
-
-			const { salt, hash } = generateNewSaltAndHash(postData.password);
-			const createdUser = new UserModel({
-				username: postData.username,
-				hash: hash,
-				salt: salt,
-			});
-
-			const savedUser = await createdUser.save();
-			const { token, expiresIn } = issueJWT(savedUser);
-			res.json({
-				user: { id: savedUser.id, username: savedUser.username },
-				token: token,
-				expiresIn: expiresIn,
-			});
+	) {
+		const postData: UserDTO = req.body;
+		const user = await UserModel.findOne({
+			username: postData.username,
 		});
-	};
+		if (user) next(new UserExistsError(postData.username));
+
+		const { salt, hash } = generateNewSaltAndHash(postData.password);
+		const createdUser = new UserModel({
+			username: postData.username,
+			hash: hash,
+			salt: salt,
+		});
+
+		const savedUser = await createdUser.save();
+		const { token, expiresIn } = issueJWT(savedUser);
+		res.json({
+			user: { id: savedUser.id, username: savedUser.username },
+			token: token,
+			expiresIn: expiresIn,
+		});
+	}
 
 	private loginUser = (req: Request, res: Response, next: NextFunction) => {
-		this.handleRequest(req, res, next, async (req, res, next) => {
-			res.status(200).send('Elo');
-		});
+		res.status(200).send('Elo');
 	};
 
-	private getAllUsers = async (
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) => {
-		this.handleRequest(req, res, next, async (req, res, next) => {
-			const users = await UserModel.find();
-			users ? res.json(users) : res.json([]);
-		});
-	};
+	// private getAllUsers = async (
+	// 	req: Request,
+	// 	res: Response,
+	// 	next: NextFunction
+	// ) => {
+	// 	this.handleRequest(req, res, next, async (req, res, next) => {
+	// 		const users = await UserModel.find();
+	// 		users ? res.json(users) : res.json([]);
+	// 	});
+	// };
 
-	private getUserById = (req: Request, res: Response, next: NextFunction) => {
-		this.handleRequest(req, res, next, async (req, res, next) => {
-			const id = req.params.id;
-			const user = await UserModel.findById(id);
-			user ? res.json(user) : next(new UserNotFoundError(id));
-		});
-	};
+	// private getUserById = (req: Request, res: Response, next: NextFunction) => {
+	// 	this.handleRequest(req, res, next, async (req, res, next) => {
+	// 		const id = req.params.id;
+	// 		const user = await UserModel.findById(id);
+	// 		user ? res.json(user) : next(new UserNotFoundError(id));
+	// 	});
+	// };
 
-	private modifyUser = async (
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) => {
-		this.handleRequest(req, res, next, async (req, res, next) => {
-			const id = req.params.id;
-			const postData: UserDTO = req.body;
-			const editedUser = await UserModel.findByIdAndUpdate(id, postData, {
-				new: true,
-			});
-			editedUser ? res.json(editedUser) : next(new UserNotFoundError(id));
-		});
-	};
+	// private modifyUser = async (
+	// 	req: Request,
+	// 	res: Response,
+	// 	next: NextFunction
+	// ) => {
+	// 	this.handleRequest(req, res, next, async (req, res, next) => {
+	// 		const id = req.params.id;
+	// 		const postData: UserDTO = req.body;
+	// 		const editedUser = await UserModel.findByIdAndUpdate(id, postData, {
+	// 			new: true,
+	// 		});
+	// 		editedUser ? res.json(editedUser) : next(new UserNotFoundError(id));
+	// 	});
+	// };
 
-	private deleteUser = async (
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) => {
-		this.handleRequest(req, res, next, async (req, res, next) => {
-			const id = req.params.id;
-			const result = await UserModel.findByIdAndDelete(id);
-			result ? res.sendStatus(200) : next(new UserNotFoundError(id));
-		});
-	};
+	// private deleteUser = async (
+	// 	req: Request,
+	// 	res: Response,
+	// 	next: NextFunction
+	// ) => {
+	// 	this.handleRequest(req, res, next, async (req, res, next) => {
+	// 		const id = req.params.id;
+	// 		const result = await UserModel.findByIdAndDelete(id);
+	// 		result ? res.sendStatus(200) : next(new UserNotFoundError(id));
+	// 	});
+	// };
 }

@@ -3,6 +3,8 @@ import { createWriteStream } from 'fs';
 import { DEBUG_PATH } from '../Const';
 import { dateToString } from './DateFormatter';
 
+//TODO: log error message
+
 const logFile = createWriteStream(DEBUG_PATH, {
 	flags: 'a',
 });
