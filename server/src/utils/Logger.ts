@@ -1,9 +1,9 @@
-import fs from 'fs';
-import util from 'util';
+import { createWriteStream } from 'fs';
 
+import { DEBUG_PATH } from '../Const';
 import { dateToString } from './DateFormatter';
 
-const logFile = fs.createWriteStream('./server.log', {
+const logFile = createWriteStream(DEBUG_PATH, {
 	flags: 'a',
 });
 
@@ -48,28 +48,22 @@ function logMessageAndObject(
 	obj: object
 ): void {
 	logFile.write(
-		util.format(
-			`${dateToString(new Date())} ${logType}: ${message} ${objToString(
-				obj
-			)}\n`
-		)
+		`${dateToString(new Date())} ${logType}: ${message} ${objToString(
+			obj
+		)}\n`
 	);
 	console.log(message);
 	console.log(obj);
 }
 
 function logMessage(logType: string, message: string): void {
-	logFile.write(
-		util.format(`${dateToString(new Date())} ${logType}: ${message}\n`)
-	);
+	logFile.write(`${dateToString(new Date())} ${logType}: ${message}\n`);
 	console.log(message);
 }
 
 function logObject(logType: string, obj: any): void {
 	logFile.write(
-		util.format(
-			`${dateToString(new Date())} ${logType}: ${objToString(obj)}\n`
-		)
+		`${dateToString(new Date())} ${logType}: ${objToString(obj)}\n`
 	);
 	console.log(obj);
 }

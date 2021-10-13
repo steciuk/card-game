@@ -3,7 +3,10 @@ import passport from 'passport';
 
 import { UserExistsError } from '../errors/httpErrors/user/UserExistsError';
 import { UserNotFoundError } from '../errors/httpErrors/user/UserNotFoundError';
-import { generateNewSaltAndHash } from '../lib/PassportUtils';
+import {
+	generateNewSaltAndHash,
+	issueJWT
+} from '../lib/passport/PassportUtils';
 import { dtoValidationMiddleware } from '../middlewares/DTOValidationMiddleware';
 import { UserDTO, UserModel } from '../models/UserModel';
 import { Controller } from './Controller';
@@ -33,7 +36,47 @@ export class UserController extends Controller {
 			passport.authenticate('basic', { session: false }),
 			this.loginUser
 		);
+		this.router.get(`${this.path}/protected`, this.protected);
 	}
+
+	private protected = (req: Request, res: Response, next: NextFunction) => {
+		this.handleRequest(req, res, next, async (req, res, next) => {});
+	};
+
+	private registerUser = (
+		req: Request,
+		res: Response,
+		next: NextFunction
+	) => {
+		this.handleRequest(req, res, next, async (req, res, next) => {
+			const postData: UserDTO = req.body;
+			const user = await UserModel.findOne({
+				username: postData.username,
+			});
+			if (user) next(new UserExistsError(postData.username));
+
+			const { salt, hash } = generateNewSaltAndHash(postData.password);
+			const createdUser = new UserModel({
+				username: postData.username,
+				hash: hash,
+				salt: salt,
+			});
+
+			const savedUser = await createdUser.save();
+			const { token, expiresIn } = issueJWT(savedUser);
+			res.json({
+				user: { id: savedUser.id, username: savedUser.username },
+				token: token,
+				expiresIn: expiresIn,
+			});
+		});
+	};
+
+	private loginUser = (req: Request, res: Response, next: NextFunction) => {
+		this.handleRequest(req, res, next, async (req, res, next) => {
+			res.status(200).send('Elo');
+		});
+	};
 
 	private getAllUsers = async (
 		req: Request,
@@ -66,40 +109,6 @@ export class UserController extends Controller {
 				new: true,
 			});
 			editedUser ? res.json(editedUser) : next(new UserNotFoundError(id));
-		});
-	};
-
-	private registerUser = async (
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) => {
-		this.handleRequest(req, res, next, async (req, res, next) => {
-			const postData: UserDTO = req.body;
-			const user = await UserModel.findOne({
-				username: postData.username,
-			});
-			if (user) next(new UserExistsError(postData.username));
-
-			const { salt, hash } = generateNewSaltAndHash(postData.password);
-			const createdUser = new UserModel({
-				username: postData.username,
-				hash: hash,
-				salt: salt,
-			});
-
-			const savedUser = await createdUser.save();
-			res.json(savedUser.id);
-		});
-	};
-
-	private loginUser = async (
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) => {
-		this.handleRequest(req, res, next, async (req, res, next) => {
-			res.status(200).send('Elo');
 		});
 	};
 

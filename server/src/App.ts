@@ -1,8 +1,9 @@
 import express, { json } from 'express';
-import mongoose from 'mongoose';
+import { connect } from 'mongoose';
 import passport from 'passport';
 
 import { Controller } from './controllers/Controller';
+import { configurePassport } from './lib/passport/PassportConfig';
 import { errorMiddleware } from './middlewares/ErrorMiddleware';
 import { elog } from './utils/Logger';
 
@@ -24,15 +25,16 @@ export class App {
 		const MONGO_PATH = process.env.MONGO_PATH;
 
 		const mongoURI = `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}${MONGO_PATH}`;
-		mongoose
-			.connect(mongoURI)
+		connect(mongoURI)
 			.then(() => console.log('MongoDB Connected...'))
 			.catch((error: Error) => elog(error));
 	}
 
 	private initializeMiddlewares(): void {
 		this.app.use(json());
+		configurePassport(passport);
 		this.app.use(passport.initialize());
+		// this.app.use(cors());
 	}
 
 	private initializeControllers(controllers: Controller[]): void {
