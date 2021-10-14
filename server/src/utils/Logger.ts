@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createWriteStream } from 'fs';
 
 import { DEBUG_PATH } from '../Const';
 import { dateToString } from './DateFormatter';
 
-//TODO: log error message
+//TODO: log message from error file
 
 const logFile = createWriteStream(DEBUG_PATH, {
 	flags: 'a',
@@ -44,16 +45,8 @@ export function elog(arg1: unknown, arg2?: any): void {
 	return logObject(logType, arg1);
 }
 
-function logMessageAndObject(
-	logType: string,
-	message: string,
-	obj: object
-): void {
-	logFile.write(
-		`${dateToString(new Date())} ${logType}: ${message} ${objToString(
-			obj
-		)}\n`
-	);
+function logMessageAndObject(logType: string, message: string, obj: object): void {
+	logFile.write(`${dateToString(new Date())} ${logType}: ${message} ${objToString(obj)}\n`);
 	console.log(message);
 	console.log(obj);
 }
@@ -64,9 +57,7 @@ function logMessage(logType: string, message: string): void {
 }
 
 function logObject(logType: string, obj: any): void {
-	logFile.write(
-		`${dateToString(new Date())} ${logType}: ${objToString(obj)}\n`
-	);
+	logFile.write(`${dateToString(new Date())} ${logType}: ${objToString(obj)}\n`);
 	console.log(obj);
 }
 

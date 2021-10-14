@@ -14,7 +14,7 @@ try {
 	process.exit(1);
 }
 
-export function configurePassport(passport: PassportStatic) {
+export function configurePassport(passport: PassportStatic): void {
 	const strategy = new JwtStrategy(
 		{
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

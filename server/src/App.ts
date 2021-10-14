@@ -19,7 +19,7 @@ export class App {
 		this.initializeErrorHandlers();
 	}
 
-	private connectToDatabase() {
+	private connectToDatabase(): void {
 		const MONGO_USER = process.env.MONGO_USER;
 		const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
 		const MONGO_PATH = process.env.MONGO_PATH;

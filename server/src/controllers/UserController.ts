@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import passport from 'passport';
 
 import { InvalidCredentialsError } from '../errors/httpErrors/user/InvalidCredentialsError';
 import { UserExistsError } from '../errors/httpErrors/user/UserExistsError';
@@ -21,7 +20,7 @@ export class UserController extends Controller {
 		this.initializeRoutes();
 	}
 
-	private initializeRoutes() {
+	private initializeRoutes(): void {
 		// this.router.get(this.path, this.getAllUsers);
 		// this.router.get(`${this.path}/:id`, this.getUserById);
 		// this.router.patch(`${this.path}/:id`, this.modifyUser);
@@ -31,7 +30,9 @@ export class UserController extends Controller {
 		this.router.get(`${this.path}/protected`, this.protected);
 	}
 
-	private async protected(req: Request, res: Response, next: NextFunction) {}
+	private async protected(_req: Request, _res: Response, _next: NextFunction): Promise<void> {
+		console.log();
+	}
 
 	@AccessDatabaseFromMiddleware()
 	private async registerUser(req: Request, res: Response, next: NextFunction): Promise<void> {

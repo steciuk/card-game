@@ -27,7 +27,7 @@ export function validatePassword(password: string, hash: string, salt: string): 
 	return hash === hashFunction(password, salt);
 }
 
-export function issueJWT(user: User) {
+export function issueJWT(user: User): { token: string; expiresIn: string } {
 	const payload = {
 		sub: user.id,
 		iat: Date.now(),

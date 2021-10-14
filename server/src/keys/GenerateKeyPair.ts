@@ -5,7 +5,7 @@ import { PRIVATE_KEY_PATH, PUBLIC_KEY_PATH } from '../Const';
 
 generateKeyPair();
 
-function generateKeyPair() {
+function generateKeyPair(): void {
 	const keyPair = generateKeyPairSync('rsa', {
 		modulusLength: 4096,
 		publicKeyEncoding: {
