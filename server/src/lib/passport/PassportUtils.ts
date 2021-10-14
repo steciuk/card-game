@@ -23,11 +23,7 @@ export function generateNewSaltAndHash(password: string): {
 	return { salt, hash };
 }
 
-export function validatePassword(
-	password: string,
-	hash: string,
-	salt: string
-): boolean {
+export function validatePassword(password: string, hash: string, salt: string): boolean {
 	return hash === hashFunction(password, salt);
 }
 

@@ -1,10 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import passport from 'passport';
 
+import { InvalidCredentialsError } from '../errors/httpErrors/user/InvalidCredentialsError';
 import { UserExistsError } from '../errors/httpErrors/user/UserExistsError';
 import {
 	generateNewSaltAndHash,
-	issueJWT
+	issueJWT,
+	validatePassword
 } from '../lib/passport/PassportUtils';
 import { dtoValidationMiddleware } from '../middlewares/DTOValidationMiddleware';
 import { UserDTO, UserModel } from '../models/UserModel';
@@ -12,7 +14,7 @@ import { AccessDatabaseFromMiddleware } from '../utils/decorators/DatabaseOperat
 import { Controller } from './Controller';
 
 export class UserController extends Controller {
-	path = '/users';
+	protected path = '/users';
 
 	constructor() {
 		super();
@@ -24,33 +26,20 @@ export class UserController extends Controller {
 		// this.router.get(`${this.path}/:id`, this.getUserById);
 		// this.router.patch(`${this.path}/:id`, this.modifyUser);
 		// this.router.delete(`${this.path}/:id`, this.deleteUser);
-		this.router.post(
-			`${this.path}/register`,
-			dtoValidationMiddleware(UserDTO),
-			this.registerUser
-		);
-		this.router.post(
-			`${this.path}/login`,
-			dtoValidationMiddleware(UserDTO),
-			passport.authenticate('basic', { session: false }),
-			this.loginUser
-		);
+		this.router.post(`${this.path}/register`, dtoValidationMiddleware(UserDTO), this.registerUser);
+		this.router.post(`${this.path}/login`, dtoValidationMiddleware(UserDTO), this.loginUser);
 		this.router.get(`${this.path}/protected`, this.protected);
 	}
 
 	private async protected(req: Request, res: Response, next: NextFunction) {}
 
 	@AccessDatabaseFromMiddleware()
-	private async registerUser(
-		req: Request,
-		res: Response,
-		next: NextFunction
-	) {
+	private async registerUser(req: Request, res: Response, next: NextFunction): Promise<void> {
 		const postData: UserDTO = req.body;
 		const user = await UserModel.findOne({
 			username: postData.username,
 		});
-		if (user) next(new UserExistsError(postData.username));
+		if (user) return next(new UserExistsError(postData.username));
 
 		const { salt, hash } = generateNewSaltAndHash(postData.password);
 		const createdUser = new UserModel({
@@ -68,9 +57,23 @@ export class UserController extends Controller {
 		});
 	}
 
-	private loginUser = (req: Request, res: Response, next: NextFunction) => {
-		res.status(200).send('Elo');
-	};
+	@AccessDatabaseFromMiddleware()
+	private async loginUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+		const postData: UserDTO = req.body;
+		const user = await UserModel.findOne({
+			username: postData.username,
+		});
+		if (!user) return next(new InvalidCredentialsError());
+		if (!validatePassword(postData.password, user.hash, user.salt))
+			return next(new InvalidCredentialsError());
+
+		const { token, expiresIn } = issueJWT(user);
+		res.json({
+			user: { id: user.id, username: user.username },
+			token: token,
+			expiresIn: expiresIn,
+		});
+	}
 
 	// private getAllUsers = async (
 	// 	req: Request,
