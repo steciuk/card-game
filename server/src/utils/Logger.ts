@@ -1,14 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createWriteStream } from 'fs';
+import { writeFileSync } from 'fs';
 
 import { DEBUG_PATH } from '../Const';
-import { dateToString } from './DateFormatter';
 
 //TODO: log message from error file
-
-const logFile = createWriteStream(DEBUG_PATH, {
-	flags: 'a',
-});
+//TODO: write sync to file
 
 export function llog(message: string, obj: any): void;
 export function llog(message: string): void;
@@ -46,21 +42,25 @@ export function elog(arg1: unknown, arg2?: any): void {
 }
 
 function logMessageAndObject(logType: string, message: string, obj: object): void {
-	logFile.write(`${dateToString(new Date())} ${logType}: ${message} ${objToString(obj)}\n`);
+	// writeToFile(`${dateToString(new Date())} ${logType}: ${message} ${objToString(obj)}\n`);
 	console.log(message);
 	console.log(obj);
 }
 
 function logMessage(logType: string, message: string): void {
-	logFile.write(`${dateToString(new Date())} ${logType}: ${message}\n`);
+	// writeToFile(`${dateToString(new Date())} ${logType}: ${message}\n`);
 	console.log(message);
 }
 
 function logObject(logType: string, obj: any): void {
-	logFile.write(`${dateToString(new Date())} ${logType}: ${objToString(obj)}\n`);
+	// writeToFile(`${dateToString(new Date())} ${logType}: ${objToString(obj)}\n`);
 	console.log(obj);
 }
 
 function objToString(obj: any): string {
 	return JSON.stringify(obj, null, 0);
+}
+
+function writeToFile(log: string): void {
+	writeFileSync(DEBUG_PATH, log, { flag: 'a+' });
 }

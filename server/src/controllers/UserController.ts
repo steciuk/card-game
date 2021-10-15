@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import passport from 'passport';
 
 import { InvalidCredentialsError } from '../errors/httpErrors/user/InvalidCredentialsError';
 import { UserExistsError } from '../errors/httpErrors/user/UserExistsError';
@@ -27,11 +28,18 @@ export class UserController extends Controller {
 		// this.router.delete(`${this.path}/:id`, this.deleteUser);
 		this.router.post(`${this.path}/register`, dtoValidationMiddleware(UserDTO), this.registerUser);
 		this.router.post(`${this.path}/login`, dtoValidationMiddleware(UserDTO), this.loginUser);
-		this.router.get(`${this.path}/protected`, this.protected);
+		this.router.get(
+			`${this.path}/protected`,
+			passport.authenticate('jwt', { session: false }),
+			this.protected
+		);
+		this.router.get(`${this.path}/test`, (req: Request, res: Response, next: NextFunction) => {
+			res.send('Elo');
+		});
 	}
 
-	private async protected(_req: Request, _res: Response, _next: NextFunction): Promise<void> {
-		console.log();
+	private async protected(_req: Request, res: Response, _next: NextFunction): Promise<void> {
+		res.send('Authorized');
 	}
 
 	@AccessDatabaseFromMiddleware()
