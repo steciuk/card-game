@@ -3,18 +3,18 @@ import passport from 'passport';
 
 import { InvalidCredentialsError } from '../errors/httpErrors/user/InvalidCredentialsError';
 import { UserExistsError } from '../errors/httpErrors/user/UserExistsError';
+import { issueJWT } from '../lib/passport/PassportJwtUtils';
 import {
 	generateNewSaltAndHash,
-	issueJWT,
 	validatePassword
-} from '../lib/passport/PassportUtils';
-import { dtoValidationMiddleware } from '../middlewares/DTOValidationMiddleware';
+} from '../lib/passport/PassportPasswordUtils';
+import { dtoValidationMiddleware } from '../middlewares/DtoValidationMiddleware';
 import { UserDTO, UserModel } from '../models/UserModel';
 import { AccessDatabaseFromMiddleware } from '../utils/decorators/DatabaseOperationsHandler';
 import { Controller } from './Controller';
 
 export class UserController extends Controller {
-	protected path = '/users';
+	path = '/users';
 
 	constructor() {
 		super();
@@ -26,14 +26,10 @@ export class UserController extends Controller {
 		// this.router.get(`${this.path}/:id`, this.getUserById);
 		// this.router.patch(`${this.path}/:id`, this.modifyUser);
 		// this.router.delete(`${this.path}/:id`, this.deleteUser);
-		this.router.post(`${this.path}/register`, dtoValidationMiddleware(UserDTO), this.registerUser);
-		this.router.post(`${this.path}/login`, dtoValidationMiddleware(UserDTO), this.loginUser);
-		this.router.get(
-			`${this.path}/protected`,
-			passport.authenticate('jwt', { session: false }),
-			this.protected
-		);
-		this.router.get(`${this.path}/test`, (req: Request, res: Response, next: NextFunction) => {
+		this.router.post('/register', dtoValidationMiddleware(UserDTO), this.registerUser);
+		this.router.post('/login', dtoValidationMiddleware(UserDTO), this.loginUser);
+		this.router.get('/protected', passport.authenticate('jwt', { session: false }), this.protected);
+		this.router.get('/test', (req: Request, res: Response, _next: NextFunction) => {
 			res.send('Elo');
 		});
 	}

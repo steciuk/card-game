@@ -1,4 +1,3 @@
-import { pbkdf2Sync, randomBytes } from 'crypto';
 import { readFileSync } from 'fs';
 import { sign } from 'jsonwebtoken';
 
@@ -12,19 +11,6 @@ try {
 } catch (error) {
 	elog(error);
 	process.exit(1);
-}
-
-export function generateNewSaltAndHash(password: string): {
-	salt: string;
-	hash: string;
-} {
-	const salt = randomBytes(64).toString('hex');
-	const hash = hashFunction(password, salt);
-	return { salt, hash };
-}
-
-export function validatePassword(password: string, hash: string, salt: string): boolean {
-	return hash === hashFunction(password, salt);
 }
 
 export function issueJWT(user: User): { token: string; expiresIn: string } {
@@ -44,8 +30,4 @@ export function issueJWT(user: User): { token: string; expiresIn: string } {
 		token: 'Bearer ' + signedToken,
 		expiresIn: expiresIn,
 	};
-}
-
-function hashFunction(password: string, salt: string): string {
-	return pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
 }
