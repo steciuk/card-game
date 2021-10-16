@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import passport from 'passport';
 
 import { InvalidCredentialsError } from '../errors/httpErrors/user/InvalidCredentialsError';
 import { UserExistsError } from '../errors/httpErrors/user/UserExistsError';
-import { issueJWT } from '../lib/passport/PassportJwtUtils';
+import { issueJWT, jwtGuard } from '../lib/passport/PassportJwtUtils';
 import {
 	generateNewSaltAndHash,
 	validatePassword
@@ -28,10 +27,7 @@ export class UserController extends Controller {
 		// this.router.delete(`${this.path}/:id`, this.deleteUser);
 		this.router.post('/register', dtoValidationMiddleware(UserDTO), this.registerUser);
 		this.router.post('/login', dtoValidationMiddleware(UserDTO), this.loginUser);
-		this.router.get('/protected', passport.authenticate('jwt', { session: false }), this.protected);
-		this.router.get('/test', (req: Request, res: Response, _next: NextFunction) => {
-			res.send('Elo');
-		});
+		this.router.get('/protected', jwtGuard(), this.protected);
 	}
 
 	private async protected(_req: Request, res: Response, _next: NextFunction): Promise<void> {
