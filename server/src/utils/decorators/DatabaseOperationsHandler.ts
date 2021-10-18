@@ -5,18 +5,14 @@ import { elog } from '../Logger';
 
 export function AccessDatabaseFromMiddleware() {
 	return (
-		target: Object,
+		target: unknown,
 		key: string,
 		descriptor: TypedPropertyDescriptor<
 			(req: Request, res: Response, next: NextFunction) => Promise<void>
 		>
 	): void => {
 		const originalMethod = descriptor.value;
-		descriptor.value = async function (
-			req: Request,
-			res: Response,
-			next: NextFunction
-		) {
+		descriptor.value = async function (req: Request, res: Response, next: NextFunction): Promise<void> {
 			try {
 				if (originalMethod) {
 					await originalMethod(req, res, next);
