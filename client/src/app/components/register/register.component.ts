@@ -5,9 +5,9 @@ import { Component, OnInit } from '@angular/core';
 	styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent implements OnInit {
+	submitUrl = '/users/register';
+
 	constructor() {}
 
 	ngOnInit(): void {}
-
-	onRegisterSubmit(): void {}
 }

@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express, { json } from 'express';
 import { connect } from 'mongoose';
 import passport from 'passport';
@@ -34,7 +35,7 @@ export class App {
 		this.app.use(json());
 		configurePassport(passport);
 		this.app.use(passport.initialize());
-		// this.app.use(cors());
+		this.app.use(cors());
 	}
 
 	private initializeControllers(controllers: Controller[]): void {
