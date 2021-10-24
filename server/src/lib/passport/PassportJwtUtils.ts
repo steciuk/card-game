@@ -33,6 +33,6 @@ export function issueJWT(user: User): { token: string; expiresIn: string } {
 	};
 }
 
-export function jwtGuard() {
+export function jwtGuard(): () => void {
 	return (): void => passport.authenticate('jwt', { session: false });
 }

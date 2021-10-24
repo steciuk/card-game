@@ -31,7 +31,7 @@ export class UserController extends Controller {
 	}
 
 	private async protected(_req: Request, res: Response, _next: NextFunction): Promise<void> {
-		res.send('Authorized');
+		res.json({ message: 'You are in!' });
 	}
 
 	@AccessDatabaseFromMiddleware()

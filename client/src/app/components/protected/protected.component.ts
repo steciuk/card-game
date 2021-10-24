@@ -1,4 +1,5 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpService } from 'src/app/services/http.service';
+
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -6,9 +7,24 @@ import { Component, OnInit } from '@angular/core';
 	styleUrls: ['./protected.component.scss'],
 })
 export class ProtectedComponent implements OnInit {
-	constructor(private http: HttpClient) {}
+	private getUrl = '/users/protected';
+	message = 'dupa';
+
+	constructor(private http: HttpService) {}
 
 	ngOnInit(): void {
-		// this.http.get('/users/protected').subscribe;
+		console.log('oninit');
+		this.http.get(this.getUrl).subscribe(
+			(response: any) => {
+				this.message = response.message;
+			},
+			(error: any) => {
+				if (error.status === 401) this.message = 'You are not authorized!';
+				else console.log(error);
+			},
+			() => {
+				console.log('Done');
+			}
+		);
 	}
 }

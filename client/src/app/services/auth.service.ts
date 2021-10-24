@@ -8,11 +8,11 @@ import { Injectable } from '@angular/core';
 export class AuthService {
 	constructor() {}
 
-	//TODO: validate response from server: { token: string; [key: string]: any }
-	setLocalStorage(res: any): void {
-		const expiresIn = moment().add(res.expiresIn).valueOf().toString();
+	//TODO: validate response from server: ResponseWithJWT
+	setLocalStorage(response: any): void {
+		const expiresIn = moment().add(response.expiresIn).valueOf().toString();
 
-		localStorage.setItem('token', res.token);
+		localStorage.setItem('token', response.token);
 		localStorage.setItem('expiresIn', expiresIn);
 	}
 
@@ -27,3 +27,5 @@ export class AuthService {
 		localStorage.removeItem('expiresIn');
 	}
 }
+
+// type ResponseWithJWT = { token: string; expiresIn: string; [key: string]: unknown };
