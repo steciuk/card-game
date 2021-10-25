@@ -2,13 +2,14 @@ import { NextFunction, Request, Response } from 'express';
 
 import { InvalidCredentialsError } from '../errors/httpErrors/user/InvalidCredentialsError';
 import { UserExistsError } from '../errors/httpErrors/user/UserExistsError';
-import { issueJWT, jwtGuard } from '../lib/passport/PassportJwtUtils';
+import { dtoValidationMiddleware } from '../middlewares/DtoValidationMiddleware';
+import { jwtAuthMiddleware } from '../middlewares/JwtAuthMiddleware';
+import { UserDTO, UserModel } from '../models/UserModel';
+import { issueJWT } from '../utils/authorization/Jwt';
 import {
 	generateNewSaltAndHash,
 	validatePassword
-} from '../lib/passport/PassportPasswordUtils';
-import { dtoValidationMiddleware } from '../middlewares/DtoValidationMiddleware';
-import { UserDTO, UserModel } from '../models/UserModel';
+} from '../utils/authorization/Password';
 import { AccessDatabaseFromMiddleware } from '../utils/decorators/DatabaseOperationsHandler';
 import { Controller } from './Controller';
 
@@ -27,7 +28,7 @@ export class UserController extends Controller {
 		// this.router.delete(`${this.path}/:id`, this.deleteUser);
 		this.router.post('/register', dtoValidationMiddleware(UserDTO), this.registerUser);
 		this.router.post('/login', dtoValidationMiddleware(UserDTO), this.loginUser);
-		this.router.get('/protected', jwtGuard(), this.protected);
+		this.router.get('/protected', jwtAuthMiddleware, this.protected);
 	}
 
 	private async protected(_req: Request, res: Response, _next: NextFunction): Promise<void> {

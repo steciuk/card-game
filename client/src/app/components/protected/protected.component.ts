@@ -8,12 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProtectedComponent implements OnInit {
 	private getUrl = '/users/protected';
-	message = 'dupa';
+	message?: string;
 
 	constructor(private http: HttpService) {}
 
 	ngOnInit(): void {
-		console.log('oninit');
 		this.http.get(this.getUrl).subscribe(
 			(response: any) => {
 				this.message = response.message;
@@ -22,9 +21,7 @@ export class ProtectedComponent implements OnInit {
 				if (error.status === 401) this.message = 'You are not authorized!';
 				else console.log(error);
 			},
-			() => {
-				console.log('Done');
-			}
+			() => {}
 		);
 	}
 }

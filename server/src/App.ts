@@ -1,10 +1,8 @@
 import cors from 'cors';
 import express, { json } from 'express';
 import { connect } from 'mongoose';
-import passport from 'passport';
 
 import { Controller } from './controllers/Controller';
-import { configurePassport } from './lib/passport/PassportConfig';
 import { errorMiddleware } from './middlewares/ErrorMiddleware';
 import { elog } from './utils/Logger';
 
@@ -33,8 +31,6 @@ export class App {
 
 	private initializeMiddlewares(): void {
 		this.app.use(json());
-		configurePassport(passport);
-		this.app.use(passport.initialize());
 		this.app.use(cors());
 	}
 
