@@ -1,3 +1,5 @@
+import { AuthService } from 'src/app/services/auth.service';
+
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -5,7 +7,17 @@ import { Component, OnInit } from '@angular/core';
 	templateUrl: './logout.component.html',
 })
 export class LogoutComponent implements OnInit {
-	constructor() {}
+	username?: string;
 
-	ngOnInit(): void {}
+	constructor(private authService: AuthService) {}
+
+	ngOnInit(): void {
+		const username = localStorage.getItem('username');
+		console.log(username);
+		if (username) this.username = username;
+	}
+
+	onClick(): void {
+		this.authService.logout();
+	}
 }
