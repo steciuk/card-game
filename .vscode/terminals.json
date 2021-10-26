@@ -3,17 +3,14 @@
 	"autokill": true,
 	"terminals": [
 		{
-			"name": "Nodemon",
+			"name": "sv watch",
 			"cwd": "./server",
 			"command": "npm run dev"
 		},
 		{
-			"name": "Client",
-			"cwd": "./client"
-		},
-		{
-			"name": "Server",
-			"cwd": "./server"
+			"name": "cl watch",
+			"cwd": "./client",
+			"command": "npm run dev"
 		}
 	]
 }

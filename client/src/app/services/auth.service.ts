@@ -2,6 +2,8 @@ import moment from 'moment';
 
 import { Injectable } from '@angular/core';
 
+import { AuthFormResponse } from '../components/auth-form/authFormResponse';
+
 @Injectable({
 	providedIn: 'root',
 })
@@ -9,7 +11,7 @@ export class AuthService {
 	constructor() {}
 
 	//TODO: validate response from server: ResponseWithJWT
-	setLocalStorage(response: any): void {
+	setLocalStorage(response: AuthFormResponse): void {
 		const expiresIn = moment().add(response.expiresIn).valueOf().toString();
 
 		localStorage.setItem('token', response.token);
@@ -27,5 +29,3 @@ export class AuthService {
 		localStorage.removeItem('expiresIn');
 	}
 }
-
-// type ResponseWithJWT = { token: string; expiresIn: string; [key: string]: unknown };

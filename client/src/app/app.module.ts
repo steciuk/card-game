@@ -11,9 +11,10 @@ import { ProtectedComponent } from './components/protected/protected.component';
 import { RegisterComponent } from './components/register/register.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { AuthService } from './services/auth.service';
+import { LogoutComponent } from './components/logout/logout.component';
 
 @NgModule({
-	declarations: [AppComponent, LoginComponent, RegisterComponent, ProtectedComponent, AuthFormComponent],
+	declarations: [AppComponent, LoginComponent, RegisterComponent, ProtectedComponent, AuthFormComponent, LogoutComponent],
 	imports: [BrowserModule, AppRoutingModule, FormsModule, HttpClientModule],
 	providers: [AuthService, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
 	bootstrap: [AppComponent],

@@ -1,9 +1,3 @@
-:host {
-	.login-form {
-		margin: 30px;
-	}
-
-	.form-control.ng-touched.ng-invalid {
-		border: 2px solid red;
-	}
+.form-control.ng-touched.ng-invalid {
+	border: 2px solid red;
 }
