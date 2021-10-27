@@ -2,3 +2,4 @@ node_modules
 dist
 src/temp/*
 *.js
+phaser.d.ts

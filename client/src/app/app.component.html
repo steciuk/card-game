@@ -5,7 +5,10 @@
 			<li class="nav-item p-2"><a routerLink="/login">Login</a></li>
 			<li class="nav-item p-2"><a routerLink="/register">Register</a></li>
 			<li class="nav-item p-2"><a routerLink="/protected">Protected</a></li>
-			<li class="nav-item pl-5"><app-logout></app-logout></li>
+			<li class="nav-item p-2"><a routerLink="/makao">Makao</a></li>
+			<li class="nav-item pl-5">
+				<app-logout [username]="username" (logoutEvent)="logout()"></app-logout>
+			</li>
 		</ul>
 	</nav>
 	<hr />

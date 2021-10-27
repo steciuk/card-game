@@ -1,23 +1,18 @@
-import { AuthService } from 'src/app/services/auth.service';
-
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
 	selector: 'app-logout',
 	templateUrl: './logout.component.html',
 })
 export class LogoutComponent implements OnInit {
-	username?: string;
+	@Input() username!: string;
+	@Output() logoutEvent = new EventEmitter<void>();
 
-	constructor(private authService: AuthService) {}
+	constructor() {}
 
-	ngOnInit(): void {
-		const username = localStorage.getItem('username');
-		console.log(username);
-		if (username) this.username = username;
-	}
+	ngOnInit(): void {}
 
-	onClick(): void {
-		this.authService.logout();
+	onLogout(): void {
+		this.logoutEvent.emit();
 	}
 }
