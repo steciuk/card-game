@@ -22,7 +22,6 @@ export class AuthFormComponent implements OnInit {
 		this.http.post<AuthFormResponse>(this.submitUrl, form.value).subscribe(
 			(response) => {
 				this.authService.setLocalStorage(response);
-				console.log('response', response);
 			},
 			(error) => {
 				console.log(error);
