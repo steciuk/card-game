@@ -2,7 +2,7 @@ import { HttpService } from 'src/app/services/http.service';
 
 import { Component, OnInit } from '@angular/core';
 
-import { Game } from './gameResponse';
+import { Game } from '../gameResponse';
 
 @Component({
 	selector: 'app-games',

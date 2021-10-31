@@ -1,6 +1,1 @@
-<div *ngFor="let game of currentGames">
-	<p>{{ game.ownerName }}</p>
-	<p>{{ game.gameType }}</p>
-	<p>{{ game.maxPlayers }}</p>
-	<p>{{ game.name }}</p>
-</div>
+<app-game class="btn btn-default" *ngFor="let game of currentGames" [game]="game"> </app-game>

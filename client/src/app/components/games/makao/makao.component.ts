@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 
 @Component({
 	selector: 'app-makao',
@@ -8,8 +9,12 @@ import { Component, OnInit } from '@angular/core';
 	styleUrls: ['./makao.component.scss'],
 })
 export class MakaoComponent implements OnInit {
+	private gameId?: string | null;
+
+	constructor(private route: ActivatedRoute) {} //public sceneService: SceneService
+
 	ngOnInit(): void {
-		Phaser.Scene;
+		this.route.paramMap.subscribe((params: ParamMap) => (this.gameId = params.get('id')));
 	}
 
 	public readonly config = {
@@ -21,12 +26,9 @@ export class MakaoComponent implements OnInit {
 
 	public phaser = Phaser;
 
-	constructor() //public sceneService: SceneService
-	{}
-
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public onGameReady(_game: any): void {
 		// game.scene.add('Scene', this.sceneService, true);
-		console.log('onGameReady');
+		console.log(this.gameId);
 	}
 }

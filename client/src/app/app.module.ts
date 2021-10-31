@@ -8,25 +8,25 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthFormComponent } from './components/auth-form/auth-form.component';
+import { GameComponent } from './components/games/game/game.component';
+import { GamesComponent } from './components/games/games/games.component';
 import { MakaoComponent } from './components/games/makao/makao.component';
 import { LoginComponent } from './components/login/login.component';
 import { LogoutComponent } from './components/logout/logout.component';
-import { ProtectedComponent } from './components/protected/protected.component';
 import { RegisterComponent } from './components/register/register.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { AuthService } from './services/auth.service';
-import { GamesComponent } from './components/games/games/games.component';
 
 @NgModule({
 	declarations: [
 		AppComponent,
 		LoginComponent,
 		RegisterComponent,
-		ProtectedComponent,
 		AuthFormComponent,
 		LogoutComponent,
 		MakaoComponent,
-  GamesComponent,
+		GamesComponent,
+		GameComponent,
 	],
 	imports: [BrowserModule, AppRoutingModule, PhaserModule, FormsModule, HttpClientModule],
 	providers: [AuthService, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
