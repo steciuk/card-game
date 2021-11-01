@@ -8,15 +8,15 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthFormComponent } from './components/auth-form/auth-form.component';
-import { GameComponent } from './components/games/game/game.component';
+import { GameCardComponent } from './components/games/game-card/game-card.component';
 import { GamesComponent } from './components/games/games/games.component';
 import { MakaoComponent } from './components/games/makao/makao.component';
+import { NewGameFormComponent } from './components/games/new-game-form/new-game-form.component';
 import { LoginComponent } from './components/login/login.component';
 import { LogoutComponent } from './components/logout/logout.component';
 import { RegisterComponent } from './components/register/register.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { AuthService } from './services/auth.service';
-import { NewGameFormComponent } from './components/games/new-game-form/new-game-form.component';
 
 @NgModule({
 	declarations: [
@@ -27,8 +27,8 @@ import { NewGameFormComponent } from './components/games/new-game-form/new-game-
 		LogoutComponent,
 		MakaoComponent,
 		GamesComponent,
-		GameComponent,
-  NewGameFormComponent,
+		GameCardComponent,
+		NewGameFormComponent,
 	],
 	imports: [BrowserModule, AppRoutingModule, PhaserModule, FormsModule, HttpClientModule],
 	providers: [AuthService, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],

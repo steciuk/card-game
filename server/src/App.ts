@@ -1,8 +1,10 @@
 import cors from 'cors';
 import express, { json } from 'express';
 import { connect } from 'mongoose';
+import { Server } from 'socket.io';
 
 import { Controller } from './controllers/Controller';
+import { socketHandler } from './game/SocketHandler';
 import { errorMiddleware } from './middlewares/ErrorMiddleware';
 import { elog } from './utils/Logger';
 
@@ -45,8 +47,16 @@ export class App {
 	}
 
 	listen(): void {
-		this.app.listen(process.env.PORT, () => {
+		const listener = this.app.listen(process.env.PORT, () => {
 			console.log(`App running!`);
 		});
+
+		const io = new Server(listener, {
+			cors: {
+				origin: [`http://localhost:${process.env.CLIENT_PORT}`], //TODO: for dev
+			},
+		});
+
+		socketHandler(io);
 	}
 }

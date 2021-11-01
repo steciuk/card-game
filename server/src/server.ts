@@ -10,5 +10,3 @@ validateEnv();
 
 const app = new App([new UserController(), new GameController()]);
 app.listen();
-
-// const io = new Server(listener);

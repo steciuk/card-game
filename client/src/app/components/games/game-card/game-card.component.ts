@@ -4,12 +4,10 @@ import { Game } from '../gameResponse';
 
 @Component({
 	selector: 'app-game',
-	templateUrl: './game.component.html',
-	styleUrls: ['./game.component.scss'],
+	templateUrl: './game-card.component.html',
 })
-export class GameComponent implements OnInit {
+export class GameCardComponent implements OnInit {
 	@Input() game!: Game;
-	//TODO: implement password gate
 	constructor() {}
 
 	ngOnInit(): void {}

@@ -7,11 +7,10 @@ import { Game } from '../gameResponse';
 @Component({
 	selector: 'app-games',
 	templateUrl: './games.component.html',
-	styleUrls: ['./games.component.scss'],
 })
 export class GamesComponent implements OnInit {
 	getUrl = '/games';
-	currentGames?: Game[];
+	currentGames: Game[] = [];
 
 	constructor(private http: HttpService) {}
 
@@ -25,5 +24,9 @@ export class GamesComponent implements OnInit {
 			},
 			() => {}
 		);
+	}
+
+	addNewGame(game: Game): void {
+		this.currentGames.push(game);
 	}
 }

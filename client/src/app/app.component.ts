@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { AuthService } from './services/auth.service';
 
@@ -11,7 +12,7 @@ export class AppComponent implements OnInit {
 	//TODO: Change to observable
 	username = '';
 
-	constructor(private authService: AuthService) {}
+	constructor(private authService: AuthService, private router: Router) {}
 
 	ngOnInit(): void {
 		this.checkIfLoggedIn();
@@ -24,5 +25,6 @@ export class AppComponent implements OnInit {
 	logout(): void {
 		this.authService.logout();
 		this.username = '';
+		this.router.navigateByUrl('/login');
 	}
 }
