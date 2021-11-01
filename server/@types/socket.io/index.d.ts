@@ -2,6 +2,10 @@ import { JwtPayload } from 'jsonwebtoken';
 
 declare module 'socket.io' {
 	interface Socket {
-		jwt?: string | JwtPayload;
+		middlewareData: {
+			jwt?: string | JwtPayload;
+			username?: string;
+			roomName?: string;
+		};
 	}
 }

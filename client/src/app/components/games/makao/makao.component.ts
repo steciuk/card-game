@@ -12,9 +12,9 @@ import { injectSocketController } from './makaoScene';
 	templateUrl: './makao.component.html',
 })
 export class MakaoComponent implements OnInit, OnDestroy {
-	private gameId?: string | null;
+	private gameId!: string | null;
 	private socketController!: SocketController;
-	phaserConfig: any;
+	phaserConfig!: Phaser.Types.Core.GameConfig;
 	phaser = Phaser;
 
 	constructor(private route: ActivatedRoute, private http: HttpService, private router: Router) {} //public sceneService: SceneService
@@ -22,9 +22,15 @@ export class MakaoComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		this.route.paramMap.subscribe((params: ParamMap) => {
 			this.gameId = params.get('id');
+			if (!this.gameId) {
+				this.router.navigateByUrl('/404');
+				return;
+			}
+
+			this.socketController = new SocketController();
+			this.socketController.connect(this.gameId);
 		});
 
-		this.socketController = new SocketController();
 		this.phaserConfig = {
 			type: Phaser.AUTO,
 			width: window.innerWidth,
@@ -41,6 +47,5 @@ export class MakaoComponent implements OnInit, OnDestroy {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	onGameReady(_game: any): void {
 		// game.scene.add('Scene', this.sceneService, true);
-		console.log(this.gameId);
 	}
 }

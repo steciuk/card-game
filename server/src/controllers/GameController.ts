@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { HttpError } from '../errors/httpErrors/HttpError';
+import { BadRequestError } from '../errors/httpErrors/BadRequestError';
 import { UserNotFoundError } from '../errors/httpErrors/user/UserNotFoundError';
 import { dtoValidationMiddleware } from '../middlewares/DtoValidationMiddleware';
 import { jwtAuthMiddleware } from '../middlewares/JwtAuthMiddleware';
@@ -32,7 +32,7 @@ export class GameController extends Controller {
 	private async addGame(req: Request, res: Response, next: NextFunction): Promise<void> {
 		const postData: GameDTO = req.body;
 
-		if (!req.jwt) return next(new HttpError());
+		if (!req.jwt) return next(new BadRequestError());
 		const userId = req.jwt.sub as string;
 		const owner = await UserModel.findById(userId);
 		if (!owner) return next(new UserNotFoundError(userId));

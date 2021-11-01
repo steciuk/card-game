@@ -4,20 +4,17 @@ import { RouterModule, Routes } from '@angular/router';
 import { GamesComponent } from './components/games/games/games.component';
 import { MakaoComponent } from './components/games/makao/makao.component';
 import { LoginComponent } from './components/login/login.component';
+import { NotFoundComponent } from './components/not-found/not-found.component';
 import { RegisterComponent } from './components/register/register.component';
 
 const routes: Routes = [
 	{ path: 'login', component: LoginComponent },
 	{ path: 'register', component: RegisterComponent },
 	// TODO: implement as child routes
-	{
-		path: 'games',
-		component: GamesComponent,
-	},
-	{
-		path: 'games/makao/:id',
-		component: MakaoComponent,
-	},
+	{ path: 'games', component: GamesComponent },
+	{ path: 'games/makao/:id', component: MakaoComponent },
+	{ path: '404', component: NotFoundComponent },
+	{ path: '**', redirectTo: '/404' },
 ];
 
 @NgModule({

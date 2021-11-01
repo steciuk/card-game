@@ -14,11 +14,11 @@ class MakaoScene extends Scene {
 	private socketController!: SocketController;
 
 	constructor() {
-		super({
-			key: 'Game',
-		});
+		super({ key: 'Game' });
 		this.socketController = socketController;
 	}
+
+	init(): void {}
 
 	preload(): void {
 		// let shapes = [
@@ -44,7 +44,5 @@ class MakaoScene extends Scene {
 		// this.load.image('RB', './assets/backs/red_back.png');
 	}
 
-	create(): void {
-		this.socketController.connect();
-	}
+	create(): void {}
 }
