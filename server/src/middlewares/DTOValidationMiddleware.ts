@@ -2,7 +2,7 @@ import { ClassConstructor, plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 
-import { HttpError } from '../errors/httpErrors/HttpError';
+import { BadRequestError } from '../errors/httpErrors/BadRequestError';
 import { elog } from '../utils/Logger';
 
 export function dtoValidationMiddleware(type: ClassConstructor<object>): RequestHandler {
@@ -10,7 +10,7 @@ export function dtoValidationMiddleware(type: ClassConstructor<object>): Request
 		validate(plainToClass(type, req.body)).then((errors: ValidationError[]) => {
 			if (errors.length > 0) {
 				elog(`Validation error on ${type.name}`, errors);
-				next(new HttpError(400, 'Bad request'));
+				next(new BadRequestError());
 			} else {
 				next();
 			}

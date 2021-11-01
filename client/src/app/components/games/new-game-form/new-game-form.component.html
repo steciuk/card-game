@@ -1,0 +1,97 @@
+<form #form="ngForm" (ngSubmit)="onSubmit(form)">
+	<div class="form-group">
+		<div>
+			<label for="roomName">Room name</label>
+			<input
+				id="roomName"
+				class="form-control"
+				type="text"
+				required
+				minlength="3"
+				maxlength="20"
+				pattern="[a-zA-Z0-9_]+"
+				ngModel
+				name="name"
+				#roomName="ngModel"
+			/>
+			<div class="alert alert-danger" *ngIf="roomName.touched && !roomName.valid">
+				<div *ngIf="roomName.errors?.required">Room name required</div>
+				<div *ngIf="roomName.errors?.minlength">
+					Min {{ roomName.errors?.minlength.requiredLength }} characters
+				</div>
+				<div *ngIf="roomName.errors?.maxlength">
+					Max {{ roomName.errors?.maxlength.requiredLength }} characters
+				</div>
+				<div *ngIf="roomName.errors?.pattern">Only alphanumeric and underscore allowed</div>
+			</div>
+		</div>
+		<div>
+			<label for="gameType">Game type</label>
+			<select
+				class="form-select form-control"
+				id="gameType"
+				required
+				[(ngModel)]="gameTypeModel"
+				name="gameType"
+			>
+				<option *ngFor="let gameTypeValue of gameTypes" [ngValue]="gameTypeValue">
+					{{ gameTypeValue }}
+				</option>
+			</select>
+		</div>
+		<div>
+			<label for="maxPlayers">Max players</label>
+			<input
+				id="maxPlayers"
+				class="form-control"
+				type="number"
+				required
+				min="2"
+				max="8"
+				ngModel
+				name="maxPlayers"
+				#maxPlayers="ngModel"
+			/>
+			<div class="alert alert-danger" *ngIf="maxPlayers.touched && !maxPlayers.valid">
+				<div *ngIf="maxPlayers.errors?.required">Max players required</div>
+				<div *ngIf="maxPlayers.errors?.min">Min {{ maxPlayers.errors?.min.min }} players</div>
+				<div *ngIf="maxPlayers.errors?.max">Max {{ maxPlayers.errors?.max.max }} players</div>
+			</div>
+		</div>
+		<!-- TODO: implement toggle instead checkbox-->
+		<div class="form-check form-switch">
+			<input
+				class="form-check-input"
+				type="checkbox"
+				id="isPasswordProtected"
+				[(ngModel)]="isPasswordProtectedModel"
+				name="isPasswordProtected"
+			/>
+			<label class="form-check-label" for="isPasswordProtected">Protect game room with password</label>
+		</div>
+		<div *ngIf="isPasswordProtectedModel">
+			<label for="password">Password</label>
+			<input
+				id="password"
+				class="form-control"
+				type="password"
+				minlength="3"
+				maxlength="20"
+				pattern="[a-zA-Z0-9!@#$%^&*]+"
+				ngModel
+				name="password"
+				#password="ngModel"
+			/>
+			<div class="alert alert-danger" *ngIf="password.touched && !password.valid">
+				<div *ngIf="password.errors?.minlength">
+					Min {{ password.errors?.minlength.requiredLength }} characters
+				</div>
+				<div *ngIf="password.errors?.maxlength">
+					Max {{ password.errors?.maxlength.requiredLength }} characters
+				</div>
+				<div *ngIf="password.errors?.pattern">Only alphanumeric and !@#$%^&* allowed</div>
+			</div>
+		</div>
+	</div>
+	<button class="btn btn-primary" type="submit" [disabled]="form.invalid">Create new game room</button>
+</form>

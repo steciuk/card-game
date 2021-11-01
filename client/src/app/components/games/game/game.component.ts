@@ -9,7 +9,7 @@ import { Game } from '../gameResponse';
 })
 export class GameComponent implements OnInit {
 	@Input() game!: Game;
-
+	//TODO: implement password gate
 	constructor() {}
 
 	ngOnInit(): void {}

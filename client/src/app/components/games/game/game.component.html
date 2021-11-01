@@ -1,5 +1,8 @@
 <button class="btn btn-default" [routerLink]="['makao', game.id]">
-	<p>{{ game.name }}</p>
+	<div>
+		{{ game.name }}
+		<i *ngIf="game.isPasswordProtected" class="bi bi-lock-fill"></i>
+	</div>
 	<p>Created by: {{ game.ownerName }}</p>
 	<p>{{ game.gameType }}</p>
 	<p>Max players: {{ game.maxPlayers }}</p>

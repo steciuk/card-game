@@ -16,6 +16,7 @@ import { LogoutComponent } from './components/logout/logout.component';
 import { RegisterComponent } from './components/register/register.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { AuthService } from './services/auth.service';
+import { NewGameFormComponent } from './components/games/new-game-form/new-game-form.component';
 
 @NgModule({
 	declarations: [
@@ -27,6 +28,7 @@ import { AuthService } from './services/auth.service';
 		MakaoComponent,
 		GamesComponent,
 		GameComponent,
+  NewGameFormComponent,
 	],
 	imports: [BrowserModule, AppRoutingModule, PhaserModule, FormsModule, HttpClientModule],
 	providers: [AuthService, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],

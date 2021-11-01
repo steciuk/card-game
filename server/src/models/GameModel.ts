@@ -60,11 +60,15 @@ const gameSchema = new Schema<Game>({
 		required: true,
 	},
 	name: {
-		type: String,
+		type: String, // TODO: validate with regex
+		minlength: 3,
+		maxlength: 20,
 		required: true,
 	},
 	password: {
 		type: String, // TODO: do not store in plaintext
+		minlength: 3,
+		maxlength: 20,
 		required: false,
 	},
 	created: {
@@ -76,13 +80,18 @@ const gameSchema = new Schema<Game>({
 export const GameModel = model<Game>('Game', gameSchema);
 
 export class GameResponseDTO {
+	private isPasswordProtected = false;
+
 	constructor(
 		private ownerName: string,
 		private gameType: GameType,
 		private maxPlayers: number,
 		private name: string,
-		private id: string
-	) {}
+		private id: string,
+		password: string | undefined
+	) {
+		if (password) this.isPasswordProtected = true;
+	}
 }
 
 export function gameToResponseDTO(
@@ -94,6 +103,7 @@ export function gameToResponseDTO(
 		game.gameType as unknown as GameType,
 		game.maxPlayers,
 		game.name,
-		game.id
+		game.id,
+		game.password
 	);
 }
