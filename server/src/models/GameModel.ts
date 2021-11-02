@@ -37,7 +37,7 @@ export interface Game extends Document {
 	name: string;
 	password?: string;
 	created: number;
-	id: ObjectId;
+	id: string;
 }
 
 const gameSchema = new Schema<Game>({

@@ -1,5 +1,5 @@
 import { IsString } from 'class-validator';
-import { model, ObjectId, Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
 //TODO: restrict length of inputs on backend
 export class UserDTO {
@@ -13,7 +13,7 @@ export interface User extends Document {
 	username: string;
 	hash: string;
 	salt: string;
-	id: ObjectId;
+	id: string;
 }
 
 const userSchema = new Schema<User>({

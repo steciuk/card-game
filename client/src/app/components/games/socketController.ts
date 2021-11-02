@@ -15,8 +15,8 @@ export class SocketController {
 			console.log('Connected!');
 		});
 
-		this.socket.on('playerConnected', (playerName: string) => {
-			console.log(playerName);
+		this.socket.on('playerConnected', (players: string[]) => {
+			console.log(players);
 		});
 	}
 
