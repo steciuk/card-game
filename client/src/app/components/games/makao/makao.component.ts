@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { HttpService } from 'src/app/services/http.service';
+import { SubSink } from 'subsink';
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
@@ -12,6 +13,7 @@ import { injectSocketController } from './makaoScene';
 	templateUrl: './makao.component.html',
 })
 export class MakaoComponent implements OnInit, OnDestroy {
+	private subs = new SubSink();
 	private gameId!: string | null;
 	private socketController!: SocketController;
 	phaserConfig!: Phaser.Types.Core.GameConfig;
@@ -41,6 +43,7 @@ export class MakaoComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy(): void {
+		this.subs.unsubscribe();
 		this.socketController.disconnect();
 	}
 

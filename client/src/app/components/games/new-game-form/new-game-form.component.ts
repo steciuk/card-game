@@ -1,7 +1,14 @@
 import { HttpService } from 'src/app/services/http.service';
 import { enumToArray } from 'src/app/utils';
+import { SubSink } from 'subsink';
 
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import {
+	Component,
+	EventEmitter,
+	OnDestroy,
+	OnInit,
+	Output
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
 
 import { Game, GameTypes } from '../gameResponse';
@@ -11,7 +18,8 @@ import { Game, GameTypes } from '../gameResponse';
 	templateUrl: './new-game-form.component.html',
 	styleUrls: ['./new-game-form.component.scss'],
 })
-export class NewGameFormComponent implements OnInit {
+export class NewGameFormComponent implements OnInit, OnDestroy {
+	private subs = new SubSink();
 	private submitUrl = '/games';
 	gameTypes!: string[];
 	gameTypeModel!: string;
@@ -40,5 +48,9 @@ export class NewGameFormComponent implements OnInit {
 			},
 			() => {}
 		);
+	}
+
+	ngOnDestroy(): void {
+		this.subs.unsubscribe();
 	}
 }

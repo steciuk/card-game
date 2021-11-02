@@ -1,7 +1,8 @@
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpService } from 'src/app/services/http.service';
+import { SubSink } from 'subsink';
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 
@@ -12,7 +13,8 @@ import { AuthFormResponse } from './authFormResponse';
 	templateUrl: './auth-form.component.html',
 	styleUrls: ['./auth-form.component.scss'],
 })
-export class AuthFormComponent implements OnInit {
+export class AuthFormComponent implements OnInit, OnDestroy {
+	private subs = new SubSink();
 	@Input() submitUrl!: string;
 
 	constructor(private http: HttpService, private authService: AuthService, private router: Router) {}
@@ -20,7 +22,7 @@ export class AuthFormComponent implements OnInit {
 	ngOnInit(): void {}
 
 	onSubmit(form: NgForm): void {
-		this.http.post<AuthFormResponse>(this.submitUrl, form.value).subscribe(
+		this.subs.sink = this.http.post<AuthFormResponse>(this.submitUrl, form.value).subscribe(
 			(response) => {
 				this.authService.setLocalStorage(response);
 				this.router.navigateByUrl('/games');
@@ -30,5 +32,9 @@ export class AuthFormComponent implements OnInit {
 			},
 			() => {}
 		);
+	}
+
+	ngOnDestroy(): void {
+		this.subs.unsubscribe();
 	}
 }

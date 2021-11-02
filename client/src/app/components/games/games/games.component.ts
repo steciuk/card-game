@@ -1,6 +1,7 @@
 import { HttpService } from 'src/app/services/http.service';
+import { SubSink } from 'subsink';
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Game } from '../gameResponse';
 
@@ -8,7 +9,8 @@ import { Game } from '../gameResponse';
 	selector: 'app-games',
 	templateUrl: './games.component.html',
 })
-export class GamesComponent implements OnInit {
+export class GamesComponent implements OnInit, OnDestroy {
+	private subs = new SubSink();
 	getUrl = '/games';
 	currentGames: Game[] = [];
 
@@ -28,5 +30,9 @@ export class GamesComponent implements OnInit {
 
 	addNewGame(game: Game): void {
 		this.currentGames.push(game);
+	}
+
+	ngOnDestroy(): void {
+		this.subs.unsubscribe();
 	}
 }

@@ -14,10 +14,10 @@ import { MakaoComponent } from './components/games/makao/makao.component';
 import { NewGameFormComponent } from './components/games/new-game-form/new-game-form.component';
 import { LoginComponent } from './components/login/login.component';
 import { LogoutComponent } from './components/logout/logout.component';
+import { NotFoundComponent } from './components/not-found/not-found.component';
 import { RegisterComponent } from './components/register/register.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { AuthService } from './services/auth.service';
-import { NotFoundComponent } from './components/not-found/not-found.component';
 
 @NgModule({
 	declarations: [
@@ -30,7 +30,7 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 		GamesComponent,
 		GameCardComponent,
 		NewGameFormComponent,
-  NotFoundComponent,
+		NotFoundComponent,
 	],
 	imports: [BrowserModule, AppRoutingModule, PhaserModule, FormsModule, HttpClientModule],
 	providers: [AuthService, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
