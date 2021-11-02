@@ -5,6 +5,10 @@ export class GameInstance {
 		this.usersInGame.add(username);
 	}
 
+	deleteUser(username: string): void {
+		this.usersInGame.delete(username);
+	}
+
 	get allUsersAsArray(): string[] {
 		return Array.from(this.usersInGame);
 	}

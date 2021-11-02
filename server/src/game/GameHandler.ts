@@ -4,11 +4,12 @@ import { Server, Socket } from 'socket.io';
 import { ExtendedError } from 'socket.io/dist/namespace';
 
 import { PUBLIC_KEY_PATH } from '../Const';
-import { BadRequestError } from '../errors/httpErrors/BadRequestError';
 import { HttpError } from '../errors/httpErrors/HttpError';
-import { UnauthorizedError } from '../errors/httpErrors/user/UnauthorizedError';
-import { UserAlreadyConnected } from '../errors/httpErrors/user/UserAlreadyConnected';
-import { UserNotFoundError } from '../errors/httpErrors/user/UserNotFoundError';
+import { DB_RESOURCES, ResourceNotFoundError } from '../errors/httpErrors/ResourceNotFoundError';
+import { SocketBadConnectionError } from '../errors/socketErrors/SocketBadConnectionError';
+import { SocketPropertyNotSetError } from '../errors/socketErrors/SocketPropertyNotSetError';
+import { SocketUnauthorizedError } from '../errors/socketErrors/SocketUnauthorizedError';
+import { SocketUserAlreadyConnectedError } from '../errors/socketErrors/SocketUserAlreadyConnectedError';
 import { GameModel } from '../models/GameModel';
 import { UserModel } from '../models/UserModel';
 import { elog, llog } from '../utils/Logger';
@@ -35,21 +36,30 @@ export class GameHandler {
 			.use(this.verifyJwt)
 			.use(this.connectToGameRoom)
 			.on('connection', (socket: Socket) => {
-				console.log(socket.middlewareData.jwt);
-				// TODO: cleanup custom Socket types
-				this.connectedUsers.add(socket?.middlewareData?.jwt?.sub as string);
+				if (
+					!socket?.middlewareData.gameId ||
+					!socket?.middlewareData.username ||
+					!socket?.middlewareData?.jwt?.sub
+				) {
+					const error = new SocketPropertyNotSetError();
+					elog(error);
+					socket.disconnect();
+					return;
+				}
 				llog(`User ${socket.id} connected`);
-
-				const gameId = socket?.middlewareData?.gameId as string;
-				const username = socket?.middlewareData?.username as string;
-				const usersInGame = this.addPlayerToTheGameAndGetOthers(gameId, username);
-				socket.to(gameId).emit('playerConnected', usersInGame);
-				socket.emit('playerConnected', usersInGame);
+				const gameId = socket.middlewareData.gameId;
+				const username = socket.middlewareData.username;
+				const userId = socket.middlewareData.jwt.sub as string;
+				this.addUserToGameAndEmitUpdate(socket, userId, gameId, username);
 
 				socket.on('disconnect', (reason) => {
-					// TODO: cleanup custom Socket types
-					this.connectedUsers.delete(socket?.middlewareData?.jwt?.sub as string);
+					this.removeUserFromGameAndEmitUpdate(socket, userId, gameId, username);
 					llog(`User ${socket.id} disconnected - ${reason}`);
+				});
+
+				socket.on('error', (error) => {
+					elog(error);
+					socket.disconnect();
 				});
 			});
 	}
@@ -61,7 +71,7 @@ export class GameHandler {
 
 	private verifyJwt = (socket: Socket, next: NextFunction): void => {
 		if (!socket.handshake.query.token) {
-			const error = new UnauthorizedError();
+			const error = new SocketUnauthorizedError();
 			elog(error);
 			return next(error);
 		}
@@ -73,13 +83,13 @@ export class GameHandler {
 			next();
 		} catch (error) {
 			elog(error);
-			return next(new UnauthorizedError());
+			return next(new SocketUnauthorizedError());
 		}
 	};
 
 	private connectToGameRoom = async (socket: Socket, next: NextFunction): Promise<void> => {
 		if (!socket.handshake.query.gameId || !socket.middlewareData.jwt) {
-			const error = new BadRequestError();
+			const error = new SocketBadConnectionError();
 			elog(error);
 			return next(error);
 		}
@@ -88,18 +98,18 @@ export class GameHandler {
 		const userId = socket.middlewareData.jwt.sub as string;
 
 		if (this.connectedUsers.has(userId)) {
-			const error = new UserAlreadyConnected(userId);
+			const error = new SocketUserAlreadyConnectedError(userId);
 			elog(error);
 			return next(error);
 		}
 
 		try {
 			const user = await UserModel.findById(userId);
-			if (!user) return next(new UserNotFoundError(userId));
+			if (!user) return next(new ResourceNotFoundError(DB_RESOURCES.USER, userId));
 			socket.middlewareData.username = user.username;
 
 			const game = await GameModel.findById(gameId);
-			if (!game) return next(new BadRequestError());
+			if (!game) return next(new ResourceNotFoundError(DB_RESOURCES.GAME, userId));
 
 			socket.middlewareData.gameId = gameId;
 			socket.join(gameId);
@@ -120,6 +130,43 @@ export class GameHandler {
 
 		game.addUser(username);
 		return game.allUsersAsArray;
+	}
+
+	private removePlayerFromGameAndGetOthers(gameId: string, username: string): string[] {
+		const game = this.activeGames.get(gameId);
+		if (!game) {
+			throw new Error('Game should exist'); //TODO: custom error?
+		}
+
+		game.deleteUser(username);
+
+		const users = game.allUsersAsArray;
+		if (users.length === 0) this.activeGames.delete(gameId);
+
+		return game.allUsersAsArray;
+	}
+
+	private removeUserFromGameAndEmitUpdate(
+		socket: Socket,
+		userId: string,
+		gameId: string,
+		username: string
+	): void {
+		this.connectedUsers.delete(userId);
+		const usersInGame = this.removePlayerFromGameAndGetOthers(gameId, username);
+		socket.to(gameId).emit('playerConnected', usersInGame);
+	}
+
+	private addUserToGameAndEmitUpdate(
+		socket: Socket,
+		userId: string,
+		gameId: string,
+		username: string
+	): void {
+		this.connectedUsers.add(userId);
+		const usersInGame = this.addPlayerToTheGameAndGetOthers(gameId, username);
+		socket.to(gameId).emit('playerConnected', usersInGame);
+		socket.emit('playerConnected', usersInGame);
 	}
 }
 

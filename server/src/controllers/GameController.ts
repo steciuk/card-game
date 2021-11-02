@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { BadRequestError } from '../errors/httpErrors/BadRequestError';
-import { UserNotFoundError } from '../errors/httpErrors/user/UserNotFoundError';
+import { DB_RESOURCES, ResourceNotFoundError } from '../errors/httpErrors/ResourceNotFoundError';
 import { dtoValidationMiddleware } from '../middlewares/DtoValidationMiddleware';
 import { jwtAuthMiddleware } from '../middlewares/JwtAuthMiddleware';
 import { GameDTO, GameModel, gameToResponseDTO } from '../models/GameModel';
@@ -35,7 +35,7 @@ export class GameController extends Controller {
 		if (!req.jwt) return next(new BadRequestError());
 		const userId = req.jwt.sub as string;
 		const owner = await UserModel.findById(userId);
-		if (!owner) return next(new UserNotFoundError(userId));
+		if (!owner) return next(new ResourceNotFoundError(DB_RESOURCES.USER, userId));
 
 		const createdGame = new GameModel({
 			gameType: postData.gameType,

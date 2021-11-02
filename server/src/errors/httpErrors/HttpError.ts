@@ -2,7 +2,7 @@ export class HttpError extends Error {
 	status: number;
 
 	constructor(status?: number, message?: string) {
-		super(message || 'Something gone wrong');
+		super(message ? `Http - ${message}` : 'Http - Something went wrong');
 		this.status = status || 500;
 	}
 }
