@@ -5,6 +5,7 @@ import { SubSink } from 'subsink';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
+import { GameTypes } from '../gameResponse';
 import { SocketController } from '../socketController';
 import { injectSocketController } from './makaoScene';
 
@@ -29,7 +30,7 @@ export class MakaoComponent implements OnInit, OnDestroy {
 				return;
 			}
 
-			this.socketController = new SocketController();
+			this.socketController = new SocketController(GameTypes.MAKAO);
 			this.socketController.connect(this.gameId);
 		});
 

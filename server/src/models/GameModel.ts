@@ -9,7 +9,7 @@ import {
 import { Document, model, ObjectId, Schema } from 'mongoose';
 
 export enum GameType {
-	'MAKAO',
+	MAKAO = 'MAKAO',
 }
 
 export class GameDTO {

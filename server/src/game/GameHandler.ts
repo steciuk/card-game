@@ -1,75 +1,102 @@
 import { readFileSync } from 'fs';
 import jsonwebtoken from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
-import { ExtendedError } from 'socket.io/dist/namespace';
+import { ExtendedError, Namespace } from 'socket.io/dist/namespace';
 
 import { PUBLIC_KEY_PATH } from '../Const';
 import { HttpError } from '../errors/httpErrors/HttpError';
-import { DB_RESOURCES, ResourceNotFoundError } from '../errors/httpErrors/ResourceNotFoundError';
+import {
+	DB_RESOURCES,
+	ResourceNotFoundError
+} from '../errors/httpErrors/ResourceNotFoundError';
 import { SocketBadConnectionError } from '../errors/socketErrors/SocketBadConnectionError';
 import { SocketPropertyNotSetError } from '../errors/socketErrors/SocketPropertyNotSetError';
 import { SocketUnauthorizedError } from '../errors/socketErrors/SocketUnauthorizedError';
 import { SocketUserAlreadyConnectedError } from '../errors/socketErrors/SocketUserAlreadyConnectedError';
-import { GameModel } from '../models/GameModel';
+import { GameModel, GameType } from '../models/GameModel';
 import { UserModel } from '../models/UserModel';
 import { elog, llog } from '../utils/Logger';
 import { GameInstance } from './GameInstance';
 
-export class GameHandler {
-	private PUBLIC_KEY!: string;
-	private activeGames = new Map<string, GameInstance>();
-	private connectedSockets = new Set<string>();
-	private connectedUsers = new Set<string>();
-
-	constructor(private io: Server) {
+export abstract class GameHandler {
+	protected static PUBLIC_KEY = ((): string => {
 		try {
-			this.PUBLIC_KEY = readFileSync(PUBLIC_KEY_PATH, 'utf8');
+			return readFileSync(PUBLIC_KEY_PATH, 'utf8');
 		} catch (error) {
 			elog(error);
 			process.exit(1);
 		}
+	})();
+	protected static connectedUsers = new Set<string>();
+	protected static io: Server;
+	private static isIoSet = false;
+
+	protected activeGames = new Map<string, GameInstance>();
+	protected namespace: Namespace;
+	protected abstract onConnection(socket: Socket, gameId: string, username: string, userId: string): void;
+
+	constructor(io: Server, namespaceName: GameType) {
+		if (!GameHandler.isIoSet) {
+			GameHandler.io = io;
+			GameHandler.isIoSet = true;
+		}
+
+		const namespace = '/' + namespaceName;
+		GameHandler.initializeIo(namespace);
+		this.namespace = GameHandler.io.of(namespace);
 	}
 
-	startSocketListener(): void {
-		this.io
+	protected registerListeners(): void {
+		this.namespace.on('connection', (socket: Socket) => {
+			const { gameId, username, userId } = this.registerBaseListeners(socket);
+			this.onConnection(socket, gameId, username, userId);
+		});
+	}
+
+	private registerBaseListeners(socket: Socket): { gameId: string; username: string; userId: string } {
+		if (
+			!socket?.middlewareData?.gameId ||
+			!socket?.middlewareData?.username ||
+			!socket?.middlewareData?.jwt?.sub
+		) {
+			const error = new SocketPropertyNotSetError();
+			elog(error);
+			socket.disconnect();
+			throw error; //TODO: return
+		}
+		llog(`User ${socket.id} connected`);
+		const gameId = socket.middlewareData.gameId;
+		const username = socket.middlewareData.username;
+		const userId = socket.middlewareData.jwt.sub as string;
+		this.addUserToGameAndEmitUpdate(socket, userId, gameId, username);
+
+		socket.on('disconnect', (reason) => {
+			this.removeUserFromGameAndEmitUpdate(socket, userId, gameId, username);
+			llog(`User ${socket.id} disconnected - ${reason}`);
+		});
+
+		socket.on('error', (error) => {
+			elog(error);
+			socket.disconnect();
+		});
+
+		return { gameId, username, userId };
+	}
+
+	private static initializeIo(namespace: string): void {
+		GameHandler.io
+			.of(namespace)
 			.use(this.addMiddlewareDataProperty)
 			.use(this.verifyJwt)
-			.use(this.connectToGameRoom)
-			.on('connection', (socket: Socket) => {
-				if (
-					!socket?.middlewareData.gameId ||
-					!socket?.middlewareData.username ||
-					!socket?.middlewareData?.jwt?.sub
-				) {
-					const error = new SocketPropertyNotSetError();
-					elog(error);
-					socket.disconnect();
-					return;
-				}
-				llog(`User ${socket.id} connected`);
-				const gameId = socket.middlewareData.gameId;
-				const username = socket.middlewareData.username;
-				const userId = socket.middlewareData.jwt.sub as string;
-				this.addUserToGameAndEmitUpdate(socket, userId, gameId, username);
-
-				socket.on('disconnect', (reason) => {
-					this.removeUserFromGameAndEmitUpdate(socket, userId, gameId, username);
-					llog(`User ${socket.id} disconnected - ${reason}`);
-				});
-
-				socket.on('error', (error) => {
-					elog(error);
-					socket.disconnect();
-				});
-			});
+			.use(this.connectToGameRoom);
 	}
 
-	private addMiddlewareDataProperty(socket: Socket, next: NextFunction): void {
+	private static addMiddlewareDataProperty(socket: Socket, next: SocketNextFunction): void {
 		socket.middlewareData = {};
 		next();
 	}
 
-	private verifyJwt = (socket: Socket, next: NextFunction): void => {
+	private static verifyJwt = (socket: Socket, next: SocketNextFunction): void => {
 		if (!socket.handshake.query.token) {
 			const error = new SocketUnauthorizedError();
 			elog(error);
@@ -78,7 +105,7 @@ export class GameHandler {
 
 		try {
 			const token = (socket.handshake.query.token as string).split(' ')[1];
-			const jwt = jsonwebtoken.verify(token, this.PUBLIC_KEY, { algorithms: ['RS256'] });
+			const jwt = jsonwebtoken.verify(token, GameHandler.PUBLIC_KEY, { algorithms: ['RS256'] });
 			socket.middlewareData.jwt = jwt;
 			next();
 		} catch (error) {
@@ -87,7 +114,7 @@ export class GameHandler {
 		}
 	};
 
-	private connectToGameRoom = async (socket: Socket, next: NextFunction): Promise<void> => {
+	private static connectToGameRoom = async (socket: Socket, next: SocketNextFunction): Promise<void> => {
 		if (!socket.handshake.query.gameId || !socket.middlewareData.jwt) {
 			const error = new SocketBadConnectionError();
 			elog(error);
@@ -97,7 +124,7 @@ export class GameHandler {
 		const gameId = socket.handshake.query.gameId as string;
 		const userId = socket.middlewareData.jwt.sub as string;
 
-		if (this.connectedUsers.has(userId)) {
+		if (GameHandler.connectedUsers.has(userId)) {
 			const error = new SocketUserAlreadyConnectedError(userId);
 			elog(error);
 			return next(error);
@@ -152,7 +179,7 @@ export class GameHandler {
 		gameId: string,
 		username: string
 	): void {
-		this.connectedUsers.delete(userId);
+		GameHandler.connectedUsers.delete(userId);
 		const usersInGame = this.removePlayerFromGameAndGetOthers(gameId, username);
 		socket.to(gameId).emit('playerConnected', usersInGame);
 	}
@@ -163,11 +190,11 @@ export class GameHandler {
 		gameId: string,
 		username: string
 	): void {
-		this.connectedUsers.add(userId);
+		GameHandler.connectedUsers.add(userId);
 		const usersInGame = this.addPlayerToTheGameAndGetOthers(gameId, username);
 		socket.to(gameId).emit('playerConnected', usersInGame);
 		socket.emit('playerConnected', usersInGame);
 	}
 }
 
-type NextFunction = (err?: ExtendedError | undefined) => void;
+export type SocketNextFunction = (err?: ExtendedError | undefined) => void;

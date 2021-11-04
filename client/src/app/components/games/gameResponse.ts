@@ -1,5 +1,5 @@
 export enum GameTypes {
-	'MAKAO',
+	MAKAO = 'MAKAO',
 }
 
 export type Game = {

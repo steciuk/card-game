@@ -4,7 +4,7 @@ import { connect } from 'mongoose';
 import { Server } from 'socket.io';
 
 import { Controller } from './controllers/Controller';
-import { GameHandler } from './game/GameHandler';
+import { MakaoHandler } from './game/MakaoHandler';
 import { errorMiddleware } from './middlewares/ErrorMiddleware';
 import { elog } from './utils/Logger';
 
@@ -57,7 +57,6 @@ export class App {
 			},
 		});
 
-		const gameHandler = new GameHandler(io);
-		gameHandler.startSocketListener();
+		new MakaoHandler(io);
 	}
 }
