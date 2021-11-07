@@ -1,3 +1,4 @@
+import { Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { NotLoggedInError } from 'src/app/errors/notLoggedInError';
 
@@ -6,11 +7,12 @@ import { GameTypes } from './gameResponse';
 export class SocketController {
 	private static url = 'http://localhost:8080';
 	private socket?: Socket;
+	private playersInGame$ = new Subject<string[]>();
 
 	constructor(private gameType: GameTypes) {}
 
 	connect(gameId: string): void {
-		if (isConnected(this.socket)) return;
+		if (this.isConnected(this.socket)) return;
 		const token = localStorage.getItem('token');
 		if (!token) throw new NotLoggedInError('no token found');
 		this.socket = io(`${SocketController.url}/${this.gameType}`, {
@@ -22,16 +24,25 @@ export class SocketController {
 		});
 
 		this.socket.on('playerConnected', (players: string[]) => {
-			console.log(players);
+			this.emitPlayers(players);
 		});
 	}
 
 	disconnect(): void {
-		if (!isConnected(this.socket)) return;
+		if (!this.isConnected(this.socket)) return;
 		this.socket.disconnect();
 	}
-}
 
-function isConnected(socket?: Socket): socket is Socket {
-	return socket ? socket.connected : false;
+	public getPlayersInGame$(): Subject<string[]> {
+		return this.playersInGame$;
+	}
+	private emitPlayers = (players: string[]): void => this.playersInGame$.next(players);
+
+	private isConnected(socket?: Socket): socket is Socket {
+		return socket ? socket.connected : false;
+	}
+
+	public isSocketConnected(): boolean {
+		return this.isConnected(this.socket);
+	}
 }

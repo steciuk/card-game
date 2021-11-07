@@ -1,4 +1,4 @@
-<button class="btn btn-default" [routerLink]="['makao', game.id]">
+<button class="btn btn-default" (click)="connect()">
 	<div>
 		{{ game.name }}
 		<i *ngIf="game.isPasswordProtected" class="bi bi-lock-fill"></i>
