@@ -1,10 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { BadRequestError } from '../errors/httpErrors/BadRequestError';
-import {
-	DB_RESOURCES,
-	ResourceNotFoundError
-} from '../errors/httpErrors/ResourceNotFoundError';
+import { DB_RESOURCES, ResourceNotFoundError } from '../errors/httpErrors/ResourceNotFoundError';
 import { dtoValidationMiddleware } from '../middlewares/DtoValidationMiddleware';
 import { jwtAuthMiddleware } from '../middlewares/JwtAuthMiddleware';
 import { GameDTO, GameModel, gameToResponseDTO } from '../models/GameModel';

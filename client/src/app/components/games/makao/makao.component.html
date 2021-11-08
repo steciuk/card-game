@@ -1,8 +1,4 @@
-<h2>Players in game:</h2>
-<ul>
-	<li *ngFor="let player of playersInGame">{{ player }}</li>
-</ul>
-<div *ngIf="game.isPasswordProtected && !renderGame">
+<div *ngIf="isPasswordProtected && !isRenderGame">
 	<form #form="ngForm" (ngSubmit)="onSubmit(form)">
 		<label for="password">Password</label>
 		<input
@@ -10,7 +6,7 @@
 			class="form-control"
 			type="password"
 			required
-			minlength="6"
+			minlength="3"
 			maxlength="20"
 			pattern="[a-zA-Z0-9!@#$%^&*]+"
 			ngModel
@@ -26,13 +22,21 @@
 			</div>
 			<div *ngIf="password.errors?.pattern">Only alphanumeric and !@#$%^&* allowed</div>
 		</div>
+		<div class="alert alert-danger" *ngIf="isWrongPassword">Incorrect password</div>
 		<button class="btn btn-primary" type="submit" [disabled]="form.invalid">Submit</button>
 	</form>
 </div>
-<phaser-component
-	*ngIf="renderGame"
-	(gameReady)="onGameReady($event)"
-	[gameConfig]="phaserConfig"
-	[Phaser]="phaser"
->
-</phaser-component>
+<div>
+	<h2>Players in game:</h2>
+	<ul>
+		<li *ngFor="let player of playersInGame">{{ player }}</li>
+	</ul>
+
+	<phaser-component
+		*ngIf="isRenderGame"
+		(gameReady)="onGameReady($event)"
+		[gameConfig]="phaserConfig"
+		[Phaser]="phaser"
+	>
+	</phaser-component>
+</div>

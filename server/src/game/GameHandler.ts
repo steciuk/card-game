@@ -5,14 +5,12 @@ import { ExtendedError, Namespace } from 'socket.io/dist/namespace';
 
 import { PUBLIC_KEY_PATH } from '../Const';
 import { HttpError } from '../errors/httpErrors/HttpError';
-import {
-	DB_RESOURCES,
-	ResourceNotFoundError
-} from '../errors/httpErrors/ResourceNotFoundError';
+import { DB_RESOURCES, ResourceNotFoundError } from '../errors/httpErrors/ResourceNotFoundError';
 import { SocketBadConnectionError } from '../errors/socketErrors/SocketBadConnectionError';
 import { SocketPropertyNotSetError } from '../errors/socketErrors/SocketPropertyNotSetError';
 import { SocketUnauthorizedError } from '../errors/socketErrors/SocketUnauthorizedError';
 import { SocketUserAlreadyConnectedError } from '../errors/socketErrors/SocketUserAlreadyConnectedError';
+import { SocketWrongRoomPasswordError } from '../errors/socketErrors/SocketWrongRoomPasswordError';
 import { GameModel, GameType } from '../models/GameModel';
 import { UserModel } from '../models/UserModel';
 import { elog, llog } from '../utils/Logger';
@@ -60,7 +58,6 @@ export abstract class GameHandler {
 			!socket?.middlewareData?.jwt?.sub
 		) {
 			const error = new SocketPropertyNotSetError();
-			elog(error);
 			socket.disconnect();
 			throw error; //TODO: return
 		}
@@ -76,7 +73,8 @@ export abstract class GameHandler {
 		});
 
 		socket.on('error', (error) => {
-			elog(error);
+			this.removeUserFromGameAndEmitUpdate(socket, userId, gameId, username);
+			elog('ONERROR', error);
 			socket.disconnect();
 		});
 
@@ -97,11 +95,7 @@ export abstract class GameHandler {
 	}
 
 	private static verifyJwt = (socket: Socket, next: SocketNextFunction): void => {
-		if (!socket.handshake.query.token) {
-			const error = new SocketUnauthorizedError();
-			elog(error);
-			return next(error);
-		}
+		if (!socket.handshake.query.token) return next(new SocketUnauthorizedError());
 
 		try {
 			const token = (socket.handshake.query.token as string).split(' ')[1];
@@ -115,20 +109,13 @@ export abstract class GameHandler {
 	};
 
 	private static connectToGameRoom = async (socket: Socket, next: SocketNextFunction): Promise<void> => {
-		if (!socket.handshake.query.gameId || !socket.middlewareData.jwt) {
-			const error = new SocketBadConnectionError();
-			elog(error);
-			return next(error);
-		}
+		if (!socket.handshake.query.gameId || !socket.middlewareData.jwt)
+			return next(new SocketBadConnectionError());
 
 		const gameId = socket.handshake.query.gameId as string;
 		const userId = socket.middlewareData.jwt.sub as string;
 
-		if (GameHandler.connectedUsers.has(userId)) {
-			const error = new SocketUserAlreadyConnectedError(userId);
-			elog(error);
-			return next(error);
-		}
+		if (GameHandler.connectedUsers.has(userId)) return next(new SocketUserAlreadyConnectedError(userId));
 
 		try {
 			const user = await UserModel.findById(userId);
@@ -137,6 +124,12 @@ export abstract class GameHandler {
 
 			const game = await GameModel.findById(gameId);
 			if (!game) return next(new ResourceNotFoundError(DB_RESOURCES.GAME, userId));
+
+			if (game.password) {
+				const password = socket.handshake.query.password;
+				if (!password) return next(new SocketWrongRoomPasswordError());
+				if (game.password != password) return next(new SocketWrongRoomPasswordError());
+			}
 
 			socket.middlewareData.gameId = gameId;
 			socket.join(gameId);

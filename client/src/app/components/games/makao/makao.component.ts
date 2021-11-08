@@ -7,7 +7,7 @@ import { NgForm } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 import { Game } from '../gameResponse';
-import { SocketController } from '../socketController';
+import { CONNECTION_STATUS, SocketController } from '../socketController';
 import { injectSocketController } from './makaoScene';
 
 @Component({
@@ -23,7 +23,9 @@ export class MakaoComponent implements OnInit, OnDestroy {
 
 	public game!: Game;
 	playersInGame: string[] = [];
-	renderGame = false;
+	isPasswordProtected = true;
+	isRenderGame = false;
+	isWrongPassword = false;
 
 	constructor(private route: ActivatedRoute, private http: HttpService, private router: Router) {} //public sceneService: SceneService
 
@@ -39,9 +41,10 @@ export class MakaoComponent implements OnInit, OnDestroy {
 				this.game = game;
 				this.socketController = new SocketController(game.gameType);
 				this.observeForPlayers();
+				this.observeForConnection();
 				if (!this.game.isPasswordProtected) {
+					this.isPasswordProtected = false;
 					this.connectToSocket();
-					this.renderGame = true;
 				}
 			});
 		});
@@ -57,18 +60,27 @@ export class MakaoComponent implements OnInit, OnDestroy {
 
 	private observeForPlayers(): void {
 		this.subs.sink = this.socketController.getPlayersInGame$().subscribe({
-			next: (players) => (this.playersInGame = players),
+			next: (players) => {
+				this.playersInGame = players;
+			},
 		});
 	}
 
-	private connectToSocket(): void {
-		this.socketController.connect(this.gameId);
+	private observeForConnection(): void {
+		this.subs.sink = this.socketController.getConnection$().subscribe({
+			next: (connection) => {
+				if (connection === CONNECTION_STATUS.CONNECTED) this.isRenderGame = true;
+				else if (connection === CONNECTION_STATUS.WRONG_PASSWORD) this.isWrongPassword = true;
+			},
+		});
+	}
+
+	private connectToSocket(password?: string): void {
+		this.socketController.connect(this.gameId, password);
 	}
 
 	onSubmit(form: NgForm): void {
-		// TODO: check if password is correct
-		this.connectToSocket();
-		this.renderGame = true;
+		this.connectToSocket(form.value.password);
 	}
 
 	ngOnDestroy(): void {
