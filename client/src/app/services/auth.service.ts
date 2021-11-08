@@ -2,7 +2,7 @@ import moment, { DurationInputArg2 } from 'moment';
 
 import { Injectable } from '@angular/core';
 
-import { AuthFormResponse } from '../components/auth-form/authFormResponse';
+import { AuthFormResponse } from '../logic/auth-form/authFormResponse';
 
 @Injectable({
 	providedIn: 'root',

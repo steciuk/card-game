@@ -1,6 +1,5 @@
 import { Scene } from 'phaser';
-
-import { SocketController } from '../socketController';
+import { SocketController } from 'src/app/logic/games/socketController';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let socketController: SocketController;

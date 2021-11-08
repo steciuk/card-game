@@ -3,7 +3,7 @@ import { SubSink } from 'subsink';
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Game } from '../gameResponse';
+import { Game } from '../../../logic/games/gameResponse';
 
 @Component({
 	selector: 'app-games',

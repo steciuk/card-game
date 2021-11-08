@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Game } from '../gameResponse';
+import { Game } from '../../../logic/games/gameResponse';
 
 @Component({
 	selector: 'app-game-card',

@@ -9,8 +9,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthFormComponent } from './components/auth-form/auth-form.component';
 import { GameCardComponent } from './components/games/game-card/game-card.component';
+import { GameScreenComponent } from './components/games/game-screen/game-screen.component';
 import { GamesComponent } from './components/games/games/games.component';
-import { MakaoComponent } from './components/games/makao/makao.component';
 import { NewGameFormComponent } from './components/games/new-game-form/new-game-form.component';
 import { LoginComponent } from './components/login/login.component';
 import { LogoutComponent } from './components/logout/logout.component';
@@ -26,7 +26,7 @@ import { AuthService } from './services/auth.service';
 		RegisterComponent,
 		AuthFormComponent,
 		LogoutComponent,
-		MakaoComponent,
+		GameScreenComponent,
 		GamesComponent,
 		GameCardComponent,
 		NewGameFormComponent,

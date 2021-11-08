@@ -2,16 +2,10 @@ import { HttpService } from 'src/app/services/http.service';
 import { enumToArray } from 'src/app/utils';
 import { SubSink } from 'subsink';
 
-import {
-	Component,
-	EventEmitter,
-	OnDestroy,
-	OnInit,
-	Output
-} from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
-import { Game, GameTypes } from '../gameResponse';
+import { Game, GameTypes } from '../../../logic/games/gameResponse';
 
 @Component({
 	selector: 'app-new-game-form',

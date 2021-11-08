@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { CONNECTION_STATUS, SocketController } from 'src/app/logic/games/socketController';
 import { HttpService } from 'src/app/services/http.service';
 import { SubSink } from 'subsink';
 
@@ -6,15 +7,14 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
-import { Game } from '../gameResponse';
-import { CONNECTION_STATUS, SocketController } from '../socketController';
-import { injectSocketController } from './makaoScene';
+import { Game } from '../../../logic/games/gameResponse';
+import { injectSocketController } from '../../../logic/games/makao/makaoScene';
 
 @Component({
 	selector: 'app-makao',
-	templateUrl: './makao.component.html',
+	templateUrl: './game-screen.component.html',
 })
-export class MakaoComponent implements OnInit, OnDestroy {
+export class GameScreenComponent implements OnInit, OnDestroy {
 	phaserConfig!: Phaser.Types.Core.GameConfig;
 	phaser = Phaser;
 	private subs = new SubSink();

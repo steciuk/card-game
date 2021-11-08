@@ -6,7 +6,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { AuthFormResponse } from './authFormResponse';
+import { AuthFormResponse } from '../../logic/auth-form/authFormResponse';
 
 @Component({
 	selector: 'app-auth-form',
