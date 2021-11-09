@@ -5,7 +5,10 @@ import { ExtendedError, Namespace } from 'socket.io/dist/namespace';
 
 import { PUBLIC_KEY_PATH } from '../Const';
 import { HttpError } from '../errors/httpErrors/HttpError';
-import { DB_RESOURCES, ResourceNotFoundError } from '../errors/httpErrors/ResourceNotFoundError';
+import {
+	DB_RESOURCES,
+	ResourceNotFoundError
+} from '../errors/httpErrors/ResourceNotFoundError';
 import { SocketBadConnectionError } from '../errors/socketErrors/SocketBadConnectionError';
 import { SocketPropertyNotSetError } from '../errors/socketErrors/SocketPropertyNotSetError';
 import { SocketUnauthorizedError } from '../errors/socketErrors/SocketUnauthorizedError';
@@ -15,6 +18,8 @@ import { GameModel, GameType } from '../models/GameModel';
 import { UserModel } from '../models/UserModel';
 import { elog, llog } from '../utils/Logger';
 import { GameInstance } from './GameInstance';
+import { BUILD_IN_SOCKET_GAME_EVENTS } from './socketEvents/buildInSocketGameEvents';
+import { SOCKET_GAME_EVENTS } from './socketEvents/socketGameEvents';
 
 export abstract class GameHandler {
 	protected static PUBLIC_KEY = ((): string => {
@@ -45,7 +50,7 @@ export abstract class GameHandler {
 	}
 
 	protected registerListeners(): void {
-		this.namespace.on('connection', (socket: Socket) => {
+		this.namespace.on(BUILD_IN_SOCKET_GAME_EVENTS.CONNECTION, (socket: Socket) => {
 			const { gameId, username, userId } = this.registerBaseListeners(socket);
 			this.onConnection(socket, gameId, username, userId);
 		});
@@ -67,12 +72,12 @@ export abstract class GameHandler {
 		const userId = socket.middlewareData.jwt.sub as string;
 		this.addUserToGameAndEmitUpdate(socket, userId, gameId, username);
 
-		socket.on('disconnect', (reason) => {
+		socket.on(BUILD_IN_SOCKET_GAME_EVENTS.DISCONNECT, (reason) => {
 			this.removeUserFromGameAndEmitUpdate(socket, userId, gameId, username);
 			llog(`User ${socket.id} disconnected - ${reason}`);
 		});
 
-		socket.on('error', (error) => {
+		socket.on(BUILD_IN_SOCKET_GAME_EVENTS.ERROR, (error) => {
 			this.removeUserFromGameAndEmitUpdate(socket, userId, gameId, username);
 			elog('ONERROR', error);
 			socket.disconnect();
@@ -174,7 +179,7 @@ export abstract class GameHandler {
 	): void {
 		GameHandler.connectedUsers.delete(userId);
 		const usersInGame = this.removePlayerFromGameAndGetOthers(gameId, username);
-		socket.to(gameId).emit('playerConnected', usersInGame);
+		socket.to(gameId).emit(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, usersInGame);
 	}
 
 	private addUserToGameAndEmitUpdate(
@@ -185,8 +190,8 @@ export abstract class GameHandler {
 	): void {
 		GameHandler.connectedUsers.add(userId);
 		const usersInGame = this.addPlayerToTheGameAndGetOthers(gameId, username);
-		socket.to(gameId).emit('playerConnected', usersInGame);
-		socket.emit('playerConnected', usersInGame);
+		socket.to(gameId).emit(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, usersInGame);
+		socket.emit(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, usersInGame);
 	}
 }
 

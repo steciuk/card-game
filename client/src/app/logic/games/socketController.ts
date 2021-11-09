@@ -2,6 +2,7 @@ import { Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { NotLoggedInError } from 'src/app/errors/notLoggedInError';
 
+import { BUILD_IN_SOCKET_GAME_EVENTS } from './BuildInSocketGameEvents';
 import { GameTypes } from './gameResponse';
 
 export class SocketController {
@@ -24,12 +25,12 @@ export class SocketController {
 			query: query,
 		});
 
-		this.socket.on('connect', () => {
+		this.socket.on(BUILD_IN_SOCKET_GAME_EVENTS.CONNECT, () => {
 			console.log('connected');
 			this.emitConnection(CONNECTION_STATUS.CONNECTED);
 		});
 
-		this.socket.on('connect_error', (error) => {
+		this.socket.on(BUILD_IN_SOCKET_GAME_EVENTS.CONNECT_ERROR, (error) => {
 			this.disconnect();
 			if (error.message === 'Socket - Wrong room password') {
 				//TODO: Some custom error types
