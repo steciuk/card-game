@@ -2,8 +2,8 @@ import { Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { NotLoggedInError } from 'src/app/errors/notLoggedInError';
 
-import { BUILD_IN_SOCKET_GAME_EVENTS } from './BuildInSocketGameEvents';
 import { GameTypes } from './gameResponse';
+import { BUILD_IN_SOCKET_GAME_EVENTS } from './socketEvents/buildInSocketGameEvents';
 
 export class SocketController {
 	private static url = 'http://localhost:8080';

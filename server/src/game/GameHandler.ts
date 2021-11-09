@@ -18,8 +18,8 @@ import { GameModel, GameType } from '../models/GameModel';
 import { UserModel } from '../models/UserModel';
 import { elog, llog } from '../utils/Logger';
 import { GameInstance } from './GameInstance';
-import { BUILD_IN_SOCKET_GAME_EVENTS } from './socketEvents/buildInSocketGameEvents';
-import { SOCKET_GAME_EVENTS } from './socketEvents/socketGameEvents';
+import { BUILD_IN_SOCKET_GAME_EVENTS } from './socketEvents/BuildInSocketGameEvents';
+import { SOCKET_GAME_EVENTS } from './socketEvents/SocketGameEvents';
 
 export abstract class GameHandler {
 	protected static PUBLIC_KEY = ((): string => {
