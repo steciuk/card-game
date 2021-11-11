@@ -4,7 +4,7 @@ import { connect } from 'mongoose';
 import { Server } from 'socket.io';
 
 import { Controller } from './controllers/Controller';
-import { MakaoHandler } from './game/MakaoHandler';
+import { MakaoHandler } from './game/handlers/MakaoHandler';
 import { errorMiddleware } from './middlewares/ErrorMiddleware';
 import { elog } from './utils/Logger';
 

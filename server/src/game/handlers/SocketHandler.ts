@@ -3,24 +3,24 @@ import jsonwebtoken from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
 import { ExtendedError, Namespace } from 'socket.io/dist/namespace';
 
-import { PUBLIC_KEY_PATH } from '../Const';
-import { HttpError } from '../errors/httpErrors/HttpError';
+import { PUBLIC_KEY_PATH } from '../../Const';
+import { HttpError } from '../../errors/httpErrors/HttpError';
 import {
 	DB_RESOURCES,
 	ResourceNotFoundError
-} from '../errors/httpErrors/ResourceNotFoundError';
-import { SocketBadConnectionError } from '../errors/socketErrors/SocketBadConnectionError';
-import { SocketPropertyNotSetError } from '../errors/socketErrors/SocketPropertyNotSetError';
-import { SocketUnauthorizedError } from '../errors/socketErrors/SocketUnauthorizedError';
-import { SocketUserAlreadyConnectedError } from '../errors/socketErrors/SocketUserAlreadyConnectedError';
-import { SocketWrongRoomPasswordError } from '../errors/socketErrors/SocketWrongRoomPasswordError';
-import { GameModel } from '../models/GameModel';
-import { UserModel } from '../models/UserModel';
-import { elog, llog } from '../utils/Logger';
-import { GameInstance } from './GameInstance';
-import { GameTypes } from './GameTypes';
-import { BUILD_IN_SOCKET_GAME_EVENTS } from './socketEvents/BuildInSocketGameEvents';
-import { SOCKET_GAME_EVENTS } from './socketEvents/SocketGameEvents';
+} from '../../errors/httpErrors/ResourceNotFoundError';
+import { SocketBadConnectionError } from '../../errors/socketErrors/SocketBadConnectionError';
+import { SocketPropertyNotSetError } from '../../errors/socketErrors/SocketPropertyNotSetError';
+import { SocketUnauthorizedError } from '../../errors/socketErrors/SocketUnauthorizedError';
+import { SocketUserAlreadyConnectedError } from '../../errors/socketErrors/SocketUserAlreadyConnectedError';
+import { SocketWrongRoomPasswordError } from '../../errors/socketErrors/SocketWrongRoomPasswordError';
+import { GameModel } from '../../models/GameModel';
+import { UserModel } from '../../models/UserModel';
+import { elog, llog } from '../../utils/Logger';
+import { GameInstance } from '../GameInstance';
+import { GameTypes } from '../GameTypes';
+import { BUILD_IN_SOCKET_GAME_EVENTS } from '../socketEvents/BuildInSocketGameEvents';
+import { SOCKET_GAME_EVENTS } from '../socketEvents/SocketGameEvents';
 
 export abstract class GameHandler {
 	protected static PUBLIC_KEY = ((): string => {

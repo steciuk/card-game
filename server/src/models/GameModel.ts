@@ -3,15 +3,15 @@ import { Document, model, ObjectId, Schema } from 'mongoose';
 import { GameTypes } from '../game/GameTypes';
 
 export interface GameDocument extends Document {
-	gameType: string; // Mongoose does not support typescript enums
+	gameType: GameTypes;
 	ownerId: ObjectId;
-	ownerName: string;
+	ownerName: string; // delete
 	maxPlayers: number;
 	name: string;
-	password?: string;
+	password?: string; // delete
 	created: number;
 	id: string;
-}
+} // add isPasswordProtected
 
 const gameSchema = new Schema<GameDocument>({
 	gameType: {
