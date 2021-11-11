@@ -1,11 +1,16 @@
+import { GameDTO, GameTypes } from 'src/app/logic/DTO/gameDTO';
 import { HttpService } from 'src/app/services/http.service';
 import { enumToArray } from 'src/app/utils';
 import { SubSink } from 'subsink';
 
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+	Component,
+	EventEmitter,
+	OnDestroy,
+	OnInit,
+	Output
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
-
-import { Game, GameTypes } from '../../../logic/games/gameResponse';
 
 @Component({
 	selector: 'app-new-game-form',
@@ -19,7 +24,7 @@ export class NewGameFormComponent implements OnInit, OnDestroy {
 	gameTypeModel!: string;
 	isPasswordProtectedModel!: boolean;
 
-	@Output() addNewGame = new EventEmitter<Game>();
+	@Output() addNewGame = new EventEmitter<GameDTO>();
 
 	constructor(private http: HttpService) {}
 
@@ -35,7 +40,7 @@ export class NewGameFormComponent implements OnInit, OnDestroy {
 
 		this.http.post(this.submitUrl, formValue).subscribe(
 			(response) => {
-				this.addNewGame.emit(response as Game);
+				this.addNewGame.emit(response as GameDTO);
 			},
 			(error) => {
 				console.log(error);

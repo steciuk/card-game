@@ -2,14 +2,15 @@ import { Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { NotLoggedInError } from 'src/app/errors/notLoggedInError';
 
-import { GameTypes } from './gameResponse';
+import { GameTypes } from '../DTO/gameDTO';
+import { UserDTO } from '../DTO/userDTO';
 import { BUILD_IN_SOCKET_GAME_EVENTS } from './socketEvents/buildInSocketGameEvents';
 import { SOCKET_GAME_EVENTS } from './socketEvents/socketGameEvents';
 
 export class SocketController {
 	private static url = 'http://localhost:8080';
 	private socket?: Socket;
-	private playersInGame$ = new Subject<string[]>();
+	private playersInGame$ = new Subject<UserDTO[]>();
 	private connection$ = new Subject<CONNECTION_STATUS>();
 
 	constructor(private gameType: GameTypes) {}
@@ -40,7 +41,7 @@ export class SocketController {
 			console.log('err', error);
 		});
 
-		this.socket.on(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, (players: string[]) => {
+		this.socket.on(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, (players: UserDTO[]) => {
 			this.emitPlayers(players);
 		});
 	}
@@ -51,7 +52,7 @@ export class SocketController {
 		this.socket.disconnect();
 	}
 
-	public getPlayersInGame$(): Subject<string[]> {
+	public getPlayersInGame$(): Subject<UserDTO[]> {
 		return this.playersInGame$;
 	}
 
@@ -60,7 +61,7 @@ export class SocketController {
 	}
 
 	private emitConnection = (connection: CONNECTION_STATUS): void => this.connection$.next(connection);
-	private emitPlayers = (players: string[]): void => this.playersInGame$.next(players);
+	private emitPlayers = (players: UserDTO[]): void => this.playersInGame$.next(players);
 
 	private isConnected(socket?: Socket): socket is Socket {
 		return socket ? socket.connected : false;

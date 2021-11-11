@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import { GameDTO } from 'src/app/logic/DTO/gameDTO';
+import { UserDTO } from 'src/app/logic/DTO/userDTO';
 import {
 	CONNECTION_STATUS,
 	SocketController
@@ -10,7 +12,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
-import { Game } from '../../../logic/games/gameResponse';
 import { injectSocketController } from '../../../logic/games/scenes/makao/makaoScene';
 
 @Component({
@@ -24,8 +25,8 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 	private gameId!: string;
 	private socketController!: SocketController;
 
-	public game!: Game;
-	playersInGame: string[] = [];
+	public game!: GameDTO;
+	playersInGame: UserDTO[] = [];
 	isPasswordProtected = true;
 	isRenderGame = false;
 	isWrongPassword = false;
@@ -40,7 +41,7 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 				return;
 			}
 
-			this.subs.sink = this.http.get<Game>(`/games/${this.gameId}`).subscribe((game: Game) => {
+			this.subs.sink = this.http.get<GameDTO>(`/games/${this.gameId}`).subscribe((game: GameDTO) => {
 				this.game = game;
 				this.socketController = new SocketController(game.gameType);
 				this.observeForPlayers();

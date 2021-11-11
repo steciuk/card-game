@@ -1,9 +1,9 @@
 <button class="btn btn-default" (click)="connect()">
 	<div>
-		{{ game.name }}
+		{{ game.roomName }}
 		<i *ngIf="game.isPasswordProtected" class="bi bi-lock-fill"></i>
 	</div>
-	<p>Created by: {{ game.ownerName }}</p>
+	<p>Created by: {{ game.owner.username }}</p>
 	<p>{{ game.gameType }}</p>
 	<p>Max players: {{ game.maxPlayers }}</p>
 	<!-- TODO: display how many players in game -->

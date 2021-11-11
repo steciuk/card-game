@@ -1,33 +1,27 @@
-import { Document, ObjectId } from 'mongoose';
-
+import { Game } from '../game/GamesStore';
 import { GameTypes } from '../game/GameTypes';
-import { GameDocument } from '../models/GameModel';
+import { UserResponseDTO } from './UserResponseDTO';
 
 export class GameResponseDTO {
-	private isPasswordProtected = false;
-
 	constructor(
-		private ownerName: string,
 		private gameType: GameTypes,
+		private owner: UserResponseDTO,
 		private maxPlayers: number,
-		private name: string,
+		private roomName: string,
+		private isPasswordProtected: boolean,
 		private id: string,
-		password: string | undefined
-	) {
-		if (password) this.isPasswordProtected = true;
-	}
+		private numPlayersInGame: number
+	) {}
 
-	static fromGameDocument(
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		game: Document<any, any, GameDocument> & GameDocument & { _id: ObjectId }
-	): GameResponseDTO {
+	static fromGame(game: Game): GameResponseDTO {
 		return new GameResponseDTO(
-			game.ownerName,
-			game.gameType as unknown as GameTypes,
+			game.gameType,
+			UserResponseDTO.fromPlayer(game.owner),
 			game.maxPlayers,
-			game.name,
+			game.roomName,
+			game.isPasswordProtected,
 			game.id,
-			game.password
+			game.numPlayersInGame
 		);
 	}
 }

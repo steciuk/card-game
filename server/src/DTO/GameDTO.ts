@@ -4,7 +4,9 @@ import {
 	IsOptional,
 	IsString,
 	Max,
-	Min
+	MaxLength,
+	Min,
+	MinLength
 } from 'class-validator';
 
 import { GameTypes } from '../game/GameTypes';
@@ -19,9 +21,13 @@ export class GameDTO {
 	maxPlayers: number;
 
 	@IsString()
-	name: string;
+	@MinLength(3)
+	@MaxLength(20)
+	roomName: string;
 
 	@IsString()
+	@MinLength(3)
+	@MaxLength(20)
 	@IsOptional()
 	password?: string;
 }

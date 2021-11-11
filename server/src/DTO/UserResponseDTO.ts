@@ -1,5 +1,6 @@
 import { Document, ObjectId } from 'mongoose';
 
+import { Player } from '../game/GamesStore';
 import { UserDocument } from '../models/UserModel';
 
 export class UserResponseDTO {
@@ -13,5 +14,9 @@ export class UserResponseDTO {
 			} // TODO: temporary workaround - do nicer type
 	): UserResponseDTO {
 		return new UserResponseDTO(savedUser.id, savedUser.username);
+	}
+
+	static fromPlayer(player: Player): UserResponseDTO {
+		return new UserResponseDTO(player.id, player.username);
 	}
 }

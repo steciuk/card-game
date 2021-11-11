@@ -1,3 +1,4 @@
+import { LoginDTO } from 'src/app/logic/DTO/loginDTO';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpService } from 'src/app/services/http.service';
 import { SubSink } from 'subsink';
@@ -5,8 +6,6 @@ import { SubSink } from 'subsink';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-
-import { AuthFormResponse } from '../../logic/auth-form/authFormResponse';
 
 @Component({
 	selector: 'app-auth-form',
@@ -22,7 +21,7 @@ export class AuthFormComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {}
 
 	onSubmit(form: NgForm): void {
-		this.subs.sink = this.http.post<AuthFormResponse>(this.submitUrl, form.value).subscribe(
+		this.subs.sink = this.http.post<LoginDTO>(this.submitUrl, form.value).subscribe(
 			(response) => {
 				this.authService.setLocalStorage(response);
 				this.router.navigateByUrl('/games');

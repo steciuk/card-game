@@ -5,13 +5,12 @@ import { GameTypes } from '../game/GameTypes';
 export interface GameDocument extends Document {
 	gameType: GameTypes;
 	ownerId: ObjectId;
-	ownerName: string; // delete
 	maxPlayers: number;
-	name: string;
-	password?: string; // delete
+	roomName: string;
 	created: number;
+	isPasswordProtected: boolean;
 	id: string;
-} // add isPasswordProtected
+}
 
 const gameSchema = new Schema<GameDocument>({
 	gameType: {
@@ -24,28 +23,22 @@ const gameSchema = new Schema<GameDocument>({
 		ref: 'User',
 		required: true,
 	},
-	ownerName: {
-		type: String,
-		required: true,
-	},
 	maxPlayers: {
 		type: Number,
 		required: true,
 	},
-	name: {
+	roomName: {
 		type: String, // TODO: validate with regex
 		minlength: 3,
 		maxlength: 20,
 		required: true,
 	},
-	password: {
-		type: String, // TODO: do not store in plaintext
-		minlength: 3,
-		maxlength: 20,
-		required: false,
-	},
 	created: {
 		type: Number,
+		required: true,
+	},
+	isPasswordProtected: {
+		type: Boolean,
 		required: true,
 	},
 });

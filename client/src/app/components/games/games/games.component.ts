@@ -1,9 +1,8 @@
+import { GameDTO } from 'src/app/logic/DTO/gameDTO';
 import { HttpService } from 'src/app/services/http.service';
 import { SubSink } from 'subsink';
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-
-import { Game } from '../../../logic/games/gameResponse';
 
 @Component({
 	selector: 'app-games',
@@ -12,12 +11,12 @@ import { Game } from '../../../logic/games/gameResponse';
 export class GamesComponent implements OnInit, OnDestroy {
 	private subs = new SubSink();
 	getUrl = '/games';
-	currentGames: Game[] = [];
+	currentGames: GameDTO[] = [];
 
 	constructor(private http: HttpService) {}
 
 	ngOnInit(): void {
-		this.http.get<Game[]>(this.getUrl).subscribe(
+		this.http.get<GameDTO[]>(this.getUrl).subscribe(
 			(response) => {
 				this.currentGames = response;
 			},
@@ -28,7 +27,7 @@ export class GamesComponent implements OnInit, OnDestroy {
 		);
 	}
 
-	addNewGame(game: Game): void {
+	addNewGame(game: GameDTO): void {
 		this.currentGames.push(game);
 	}
 

@@ -7,6 +7,7 @@ import {
 	DB_RESOURCES,
 	ResourceNotFoundError
 } from '../errors/httpErrors/ResourceNotFoundError';
+import { Game, GamesStore, Player } from '../game/GamesStore';
 import { dtoValidationMiddleware } from '../middlewares/DtoValidationMiddleware';
 import { jwtAuthMiddleware } from '../middlewares/JwtAuthMiddleware';
 import { GameModel } from '../models/GameModel';
@@ -28,17 +29,15 @@ export class GameController extends Controller {
 		this.router.post('', jwtAuthMiddleware, dtoValidationMiddleware(GameDTO), this.addGame);
 	}
 
-	@AccessDatabaseFromMiddleware()
-	private async getAllGames(req: Request, res: Response, _next: NextFunction): Promise<void> {
-		const games = await GameModel.find();
-		games ? res.json(games.map(GameResponseDTO.fromGameDocument)) : res.json([]);
+	private getAllGames(req: Request, res: Response, _next: NextFunction): void {
+		res.json(GamesStore.Instance.allGamesAsArray.map(GameResponseDTO.fromGame));
 	}
 
 	@AccessDatabaseFromMiddleware()
 	private async addGame(req: Request, res: Response, next: NextFunction): Promise<void> {
 		const postData: GameDTO = req.body;
-
 		if (!req.jwt) return next(new BadRequestError());
+
 		const userId = req.jwt.sub as string;
 		const owner = await UserModel.findById(userId);
 		if (!owner) return next(new ResourceNotFoundError(DB_RESOURCES.USER, userId));
@@ -46,22 +45,33 @@ export class GameController extends Controller {
 		const createdGame = new GameModel({
 			gameType: postData.gameType,
 			ownerId: owner._id,
-			ownerName: owner.username,
 			maxPlayers: postData.maxPlayers,
-			name: postData.name,
+			roomName: postData.roomName,
 			created: Date.now(),
+			isPasswordProtected: !!postData.password,
 		});
-		if (postData.password) createdGame.password = postData.password;
-
 		const savedGame = await createdGame.save();
-		res.json(GameResponseDTO.fromGameDocument(savedGame));
+
+		const game = new Game(
+			savedGame.gameType,
+			new Player(owner.id, owner.username),
+			savedGame.maxPlayers,
+			savedGame.roomName,
+			createdGame.isPasswordProtected,
+			savedGame.created,
+			savedGame.id,
+			postData.password
+		);
+		GamesStore.Instance.addGame(game);
+
+		res.json(GameResponseDTO.fromGame(game));
 	}
 
 	@AccessDatabaseFromMiddleware()
 	private async getGame(req: Request, res: Response, next: NextFunction): Promise<void> {
-		const id = req.params.gameId;
-		const game = await GameModel.findById(id);
-		if (!game) return next(new ResourceNotFoundError(DB_RESOURCES.GAME, id));
-		res.json(GameResponseDTO.fromGameDocument(game));
+		const gameId = req.params.gameId;
+		const game = GamesStore.Instance.getGame(gameId);
+		if (!game) return next(new ResourceNotFoundError(DB_RESOURCES.GAME, gameId));
+		res.json(GameResponseDTO.fromGame(game));
 	}
 }

@@ -2,7 +2,7 @@ import moment, { DurationInputArg2 } from 'moment';
 
 import { Injectable } from '@angular/core';
 
-import { AuthFormResponse } from '../logic/auth-form/authFormResponse';
+import { LoginDTO } from '../logic/DTO/loginDTO';
 
 @Injectable({
 	providedIn: 'root',
@@ -11,7 +11,7 @@ export class AuthService {
 	constructor() {}
 
 	//TODO: validate response from server: ResponseWithJWT
-	setLocalStorage(response: AuthFormResponse): void {
+	setLocalStorage(response: LoginDTO): void {
 		const timeAmount = parseInt(response.expiresIn[0]);
 		const timeUnit = response.expiresIn[1] as DurationInputArg2;
 		const expiresIn = moment().add(timeAmount, timeUnit).toISOString();

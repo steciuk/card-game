@@ -1,14 +1,14 @@
+import { GameDTO } from 'src/app/logic/DTO/gameDTO';
+
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-
-import { Game } from '../../../logic/games/gameResponse';
 
 @Component({
 	selector: 'app-game-card',
 	templateUrl: './game-card.component.html',
 })
 export class GameCardComponent implements OnInit {
-	@Input() game!: Game;
+	@Input() game!: GameDTO;
 
 	constructor(private router: Router) {}
 
