@@ -1,22 +1,13 @@
-import { IsString } from 'class-validator';
 import { model, Schema } from 'mongoose';
 
-//TODO: restrict length of inputs on backend
-export class UserDTO {
-	@IsString()
-	username: string;
-	@IsString()
-	password: string;
-}
-
-export interface User extends Document {
+export interface UserDocument extends Document {
 	username: string;
 	hash: string;
 	salt: string;
 	id: string;
 }
 
-const userSchema = new Schema<User>({
+const userSchema = new Schema<UserDocument>({
 	username: {
 		type: String,
 		minlength: 6,
@@ -34,4 +25,4 @@ const userSchema = new Schema<User>({
 	},
 });
 
-export const UserModel = model<User>('User', userSchema);
+export const UserModel = model<UserDocument>('User', userSchema);

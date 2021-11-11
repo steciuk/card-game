@@ -1,10 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 
+import { LoginResponseDTO } from '../DTO/LoginResponseDTO';
+import { UserDTO } from '../DTO/UserDTO';
+import { UserResponseDTO } from '../DTO/UserResponseDTO';
 import { BadRequestError } from '../errors/httpErrors/BadRequestError';
 import { InvalidCredentialsError } from '../errors/httpErrors/user/InvalidCredentialsError';
 import { UserExistsError } from '../errors/httpErrors/user/UserExistsError';
 import { dtoValidationMiddleware } from '../middlewares/DtoValidationMiddleware';
-import { UserDTO, UserModel } from '../models/UserModel';
+import { UserModel } from '../models/UserModel';
 import { issueJWT } from '../utils/authorization/Jwt';
 import {
 	generateNewSaltAndHash,
@@ -49,11 +52,7 @@ export class UserController extends Controller {
 
 		const savedUser = await createdUser.save();
 		const { token, expiresIn } = issueJWT(savedUser);
-		res.json({
-			user: { id: savedUser.id, username: savedUser.username },
-			token: token,
-			expiresIn: expiresIn,
-		});
+		res.json(new LoginResponseDTO(UserResponseDTO.fromUserDocument(savedUser), token, expiresIn));
 	}
 
 	@AccessDatabaseFromMiddleware()
@@ -67,11 +66,7 @@ export class UserController extends Controller {
 			return next(new InvalidCredentialsError());
 
 		const { token, expiresIn } = issueJWT(user);
-		res.json({
-			user: { id: user.id, username: user.username },
-			token: token,
-			expiresIn: expiresIn,
-		});
+		res.json(new LoginResponseDTO(UserResponseDTO.fromUserDocument(user), token, expiresIn));
 	}
 
 	// private getAllUsers = async (

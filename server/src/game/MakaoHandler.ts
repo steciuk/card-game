@@ -1,11 +1,11 @@
 import { Server, Socket } from 'socket.io';
 
-import { GameType } from '../models/GameModel';
 import { GameHandler } from './GameHandler';
+import { GameTypes } from './GameTypes';
 
 export class MakaoHandler extends GameHandler {
 	constructor(io: Server) {
-		super(io, GameType.MAKAO);
+		super(io, GameTypes.MAKAO);
 		this.registerListeners();
 	}
 

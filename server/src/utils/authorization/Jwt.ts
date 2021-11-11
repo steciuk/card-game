@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { sign } from 'jsonwebtoken';
 
 import { PRIVATE_KEY_PATH } from '../../Const';
-import { User } from '../../models/UserModel';
+import { UserDocument } from '../../models/UserModel';
 import { elog } from '../Logger';
 
 let PRIVATE_KEY: string;
@@ -13,7 +13,7 @@ try {
 	process.exit(1);
 }
 
-export function issueJWT(user: User): { token: string; expiresIn: string } {
+export function issueJWT(user: UserDocument): { token: string; expiresIn: string } {
 	const payload = {
 		sub: user.id,
 		iat: Date.now(),

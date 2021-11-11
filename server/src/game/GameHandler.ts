@@ -14,10 +14,11 @@ import { SocketPropertyNotSetError } from '../errors/socketErrors/SocketProperty
 import { SocketUnauthorizedError } from '../errors/socketErrors/SocketUnauthorizedError';
 import { SocketUserAlreadyConnectedError } from '../errors/socketErrors/SocketUserAlreadyConnectedError';
 import { SocketWrongRoomPasswordError } from '../errors/socketErrors/SocketWrongRoomPasswordError';
-import { GameModel, GameType } from '../models/GameModel';
+import { GameModel } from '../models/GameModel';
 import { UserModel } from '../models/UserModel';
 import { elog, llog } from '../utils/Logger';
 import { GameInstance } from './GameInstance';
+import { GameTypes } from './GameTypes';
 import { BUILD_IN_SOCKET_GAME_EVENTS } from './socketEvents/BuildInSocketGameEvents';
 import { SOCKET_GAME_EVENTS } from './socketEvents/SocketGameEvents';
 
@@ -38,7 +39,7 @@ export abstract class GameHandler {
 	protected namespace: Namespace;
 	protected abstract onConnection(socket: Socket, gameId: string, username: string, userId: string): void;
 
-	constructor(io: Server, namespaceName: GameType) {
+	constructor(io: Server, namespaceName: GameTypes) {
 		if (!GameHandler.isIoSet) {
 			GameHandler.io = io;
 			GameHandler.isIoSet = true;

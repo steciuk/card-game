@@ -4,6 +4,7 @@ import { NotLoggedInError } from 'src/app/errors/notLoggedInError';
 
 import { GameTypes } from './gameResponse';
 import { BUILD_IN_SOCKET_GAME_EVENTS } from './socketEvents/buildInSocketGameEvents';
+import { SOCKET_GAME_EVENTS } from './socketEvents/socketGameEvents';
 
 export class SocketController {
 	private static url = 'http://localhost:8080';
@@ -39,7 +40,7 @@ export class SocketController {
 			console.log('err', error);
 		});
 
-		this.socket.on('playerConnected', (players: string[]) => {
+		this.socket.on(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, (players: string[]) => {
 			this.emitPlayers(players);
 		});
 	}

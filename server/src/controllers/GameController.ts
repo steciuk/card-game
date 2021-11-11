@@ -1,10 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
 
+import { GameDTO } from '../DTO/GameDTO';
+import { GameResponseDTO } from '../DTO/GameResponseDTO';
 import { BadRequestError } from '../errors/httpErrors/BadRequestError';
-import { DB_RESOURCES, ResourceNotFoundError } from '../errors/httpErrors/ResourceNotFoundError';
+import {
+	DB_RESOURCES,
+	ResourceNotFoundError
+} from '../errors/httpErrors/ResourceNotFoundError';
 import { dtoValidationMiddleware } from '../middlewares/DtoValidationMiddleware';
 import { jwtAuthMiddleware } from '../middlewares/JwtAuthMiddleware';
-import { GameDTO, GameModel, gameToResponseDTO } from '../models/GameModel';
+import { GameModel } from '../models/GameModel';
 import { UserModel } from '../models/UserModel';
 import { AccessDatabaseFromMiddleware } from '../utils/decorators/DatabaseOperationsHandler';
 import { Controller } from './Controller';
@@ -26,7 +31,7 @@ export class GameController extends Controller {
 	@AccessDatabaseFromMiddleware()
 	private async getAllGames(req: Request, res: Response, _next: NextFunction): Promise<void> {
 		const games = await GameModel.find();
-		games ? res.json(games.map(gameToResponseDTO)) : res.json([]);
+		games ? res.json(games.map(GameResponseDTO.fromGameDocument)) : res.json([]);
 	}
 
 	@AccessDatabaseFromMiddleware()
@@ -49,8 +54,7 @@ export class GameController extends Controller {
 		if (postData.password) createdGame.password = postData.password;
 
 		const savedGame = await createdGame.save();
-
-		res.json(gameToResponseDTO(savedGame));
+		res.json(GameResponseDTO.fromGameDocument(savedGame));
 	}
 
 	@AccessDatabaseFromMiddleware()
@@ -58,6 +62,6 @@ export class GameController extends Controller {
 		const id = req.params.gameId;
 		const game = await GameModel.findById(id);
 		if (!game) return next(new ResourceNotFoundError(DB_RESOURCES.GAME, id));
-		res.json(gameToResponseDTO(game));
+		res.json(GameResponseDTO.fromGameDocument(game));
 	}
 }

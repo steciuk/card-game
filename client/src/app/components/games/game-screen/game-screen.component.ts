@@ -57,7 +57,7 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 			width: window.innerWidth,
 			height: window.innerHeight,
 			scene: [injectSocketController(this.socketController)],
-			backgroundColor: '#4488aa',
+			backgroundColor: '#102f61n',
 		};
 	}
 

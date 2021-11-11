@@ -1,35 +1,8 @@
-import {
-	IsEnum,
-	IsNumber,
-	IsOptional,
-	IsString,
-	Max,
-	Min
-} from 'class-validator';
 import { Document, model, ObjectId, Schema } from 'mongoose';
 
-export enum GameType {
-	MAKAO = 'MAKAO',
-}
+import { GameTypes } from '../game/GameTypes';
 
-export class GameDTO {
-	@IsEnum(GameType)
-	gameType: GameType;
-
-	@IsNumber()
-	@Min(2)
-	@Max(8)
-	maxPlayers: number;
-
-	@IsString()
-	name: string;
-
-	@IsString()
-	@IsOptional()
-	password?: string;
-}
-
-export interface Game extends Document {
+export interface GameDocument extends Document {
 	gameType: string; // Mongoose does not support typescript enums
 	ownerId: ObjectId;
 	ownerName: string;
@@ -40,10 +13,10 @@ export interface Game extends Document {
 	id: string;
 }
 
-const gameSchema = new Schema<Game>({
+const gameSchema = new Schema<GameDocument>({
 	gameType: {
 		type: String,
-		enum: Object.values(GameType),
+		enum: Object.values(GameTypes),
 		required: true,
 	},
 	ownerId: {
@@ -77,33 +50,4 @@ const gameSchema = new Schema<Game>({
 	},
 });
 
-export const GameModel = model<Game>('Game', gameSchema);
-
-export class GameResponseDTO {
-	private isPasswordProtected = false;
-
-	constructor(
-		private ownerName: string,
-		private gameType: GameType,
-		private maxPlayers: number,
-		private name: string,
-		private id: string,
-		password: string | undefined
-	) {
-		if (password) this.isPasswordProtected = true;
-	}
-}
-
-export function gameToResponseDTO(
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	game: Document<any, any, Game> & Game & { _id: ObjectId } // TODO: temporary workaround
-): GameResponseDTO {
-	return new GameResponseDTO(
-		game.ownerName,
-		game.gameType as unknown as GameType,
-		game.maxPlayers,
-		game.name,
-		game.id,
-		game.password
-	);
-}
+export const GameModel = model<GameDocument>('Game', gameSchema);
