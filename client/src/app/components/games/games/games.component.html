@@ -1,2 +1,16 @@
-<app-new-game-form (addNewGame)="addNewGame($event)"></app-new-game-form>
-<app-game-card class="btn btn-default" *ngFor="let game of currentGames" [game]="game"> </app-game-card>
+<div *ngIf="authService.isLoggedIn()">
+	<app-new-game-form (addNewGame)="addNewGame($event)"></app-new-game-form>
+	<hr />
+	<button type="button" class="btn" (click)="refreshGames()">
+		<i class="bi bi-arrow-clockwise"></i>Refresh
+	</button>
+	<div>
+		<app-game-card class="btn btn-default" *ngFor="let game of currentGames" [game]="game">
+		</app-game-card>
+	</div>
+</div>
+
+<!-- TODO: use variable in component so method is not called twice -->
+<div *ngIf="!authService.isLoggedIn()">
+	<h3>You are not logged in</h3>
+</div>

@@ -1,6 +1,8 @@
 import moment, { DurationInputArg2 } from 'moment';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { LoginDTO } from '../logic/DTO/loginDTO';
 
@@ -8,7 +10,9 @@ import { LoginDTO } from '../logic/DTO/loginDTO';
 	providedIn: 'root',
 })
 export class AuthService {
-	constructor() {}
+	constructor(private router: Router) {}
+	username = this.getUsernameFromLocalStorage();
+	private username$ = new BehaviorSubject<string>(this.username);
 
 	//TODO: validate response from server: ResponseWithJWT
 	setLocalStorage(response: LoginDTO): void {
@@ -19,6 +23,8 @@ export class AuthService {
 		localStorage.setItem('username', response.user.username);
 		localStorage.setItem('token', response.token);
 		localStorage.setItem('expiresIn', expiresIn);
+		this.username = response.user.username;
+		this.emitUsername(this.username);
 	}
 
 	isLoggedIn(): boolean {
@@ -41,5 +47,13 @@ export class AuthService {
 		localStorage.removeItem('username');
 		localStorage.removeItem('token');
 		localStorage.removeItem('expiresIn');
+		this.emitUsername('');
+		this.router.navigateByUrl('/login');
 	}
+
+	getUsername$(): Subject<string> {
+		return this.username$;
+	}
+
+	private emitUsername = (username: string): void => this.username$.next(username);
 }

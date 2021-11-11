@@ -14,17 +14,10 @@ export class AppComponent implements OnInit {
 
 	constructor(private authService: AuthService, private router: Router) {}
 
-	ngOnInit(): void {
-		this.checkIfLoggedIn();
-	}
-
-	checkIfLoggedIn(): void {
-		if (this.authService.isLoggedIn()) this.username = this.authService.getUsernameFromLocalStorage();
-	}
+	ngOnInit(): void {}
 
 	logout(): void {
 		this.authService.logout();
 		this.username = '';
-		this.router.navigateByUrl('/login');
 	}
 }
