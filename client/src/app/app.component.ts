@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 
-import { AuthService } from './services/auth.service';
+
 
 @Component({
 	selector: 'app-root',
@@ -9,15 +8,7 @@ import { AuthService } from './services/auth.service';
 	styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-	//TODO: Change to observable
-	username = '';
-
-	constructor(private authService: AuthService, private router: Router) {}
+	constructor() {}
 
 	ngOnInit(): void {}
-
-	logout(): void {
-		this.authService.logout();
-		this.username = '';
-	}
 }
