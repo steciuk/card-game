@@ -14,5 +14,5 @@ export function validatePassword(password: string, hash: string, salt: string): 
 }
 
 function hashFunction(password: string, salt: string): string {
-	return pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
+	return pbkdf2Sync(password, salt, 310000, 64, 'sha512').toString('hex');
 }

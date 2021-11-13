@@ -3,7 +3,6 @@ import { NextFunction, Request, Response } from 'express';
 import { LoginResponseDTO } from '../DTO/LoginResponseDTO';
 import { UserDTO } from '../DTO/UserDTO';
 import { UserResponseDTO } from '../DTO/UserResponseDTO';
-import { BadRequestError } from '../errors/httpErrors/BadRequestError';
 import { InvalidCredentialsError } from '../errors/httpErrors/user/InvalidCredentialsError';
 import { UserExistsError } from '../errors/httpErrors/user/UserExistsError';
 import { dtoValidationMiddleware } from '../middlewares/DtoValidationMiddleware';
@@ -41,8 +40,6 @@ export class UserController extends Controller {
 		});
 		if (user) return next(new UserExistsError(postData.username));
 
-		if (postData.password.length < 6 && postData.password.length > 20) next(new BadRequestError());
-
 		const { salt, hash } = generateNewSaltAndHash(postData.password);
 		const createdUser = new UserModel({
 			username: postData.username,
@@ -57,6 +54,7 @@ export class UserController extends Controller {
 
 	@AccessDatabaseFromMiddleware()
 	private async loginUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+		console.log('here');
 		const postData: UserDTO = req.body;
 		const user = await UserModel.findOne({
 			username: postData.username,

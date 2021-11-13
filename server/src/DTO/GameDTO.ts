@@ -3,12 +3,17 @@ import {
 	IsNumber,
 	IsOptional,
 	IsString,
+	Matches,
 	Max,
 	MaxLength,
 	Min,
 	MinLength
 } from 'class-validator';
 
+import {
+	ALPHANUMERIC_SPECIAL_REGEX,
+	ALPHANUMERIC_UNDERSCORE_REGEX
+} from '../Const';
 import { GameTypes } from '../game/GameTypes';
 
 export class GameDTO {
@@ -23,11 +28,13 @@ export class GameDTO {
 	@IsString()
 	@MinLength(3)
 	@MaxLength(20)
+	@Matches(ALPHANUMERIC_UNDERSCORE_REGEX)
 	roomName: string;
 
 	@IsString()
 	@MinLength(3)
 	@MaxLength(20)
 	@IsOptional()
+	@Matches(ALPHANUMERIC_SPECIAL_REGEX)
 	password?: string;
 }
