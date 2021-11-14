@@ -1,10 +1,9 @@
-import moment, { DurationInputArg2 } from 'moment';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { LoginDTO } from '../logic/DTO/loginDTO';
+import { LoginDTO, ParsedJwtPayload } from '../logic/DTO/loginDTO';
 
 @Injectable({
 	providedIn: 'root',
@@ -16,20 +15,19 @@ export class AuthService {
 
 	//TODO: validate response from server: ResponseWithJWT
 	setLocalStorage(response: LoginDTO): void {
-		const timeAmount = parseInt(response.expiresIn[0]);
-		const timeUnit = response.expiresIn[1] as DurationInputArg2;
-		const expiresIn = moment().add(timeAmount, timeUnit).toISOString();
+		const jwtPayload = this.getDecodedJwtPayload(response.token);
 
 		localStorage.setItem('username', response.user.username);
 		localStorage.setItem('token', response.token);
-		localStorage.setItem('expiresIn', expiresIn);
+		localStorage.setItem('expiresIn', jwtPayload.exp.toString());
 		this.username = response.user.username;
 		this.emitUsername(this.username);
 	}
 
 	isLoggedIn(): boolean {
+		// TODO: if token expired ask to log in again
 		const expiresIn = localStorage.getItem('expiresIn');
-		const isTokenValid = !!expiresIn && moment().isBefore(expiresIn);
+		const isTokenValid = !!expiresIn && Date.now() <= parseInt(expiresIn);
 		if (!isTokenValid) {
 			this.logout();
 			return false;
@@ -53,6 +51,10 @@ export class AuthService {
 
 	getUsername$(): Subject<string> {
 		return this.username$;
+	}
+
+	private getDecodedJwtPayload(token: string): ParsedJwtPayload {
+		return JSON.parse(atob(token.split(' ')[1].split('.')[1]));
 	}
 
 	private emitUsername = (username: string): void => this.username$.next(username);

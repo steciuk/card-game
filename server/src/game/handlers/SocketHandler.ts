@@ -1,9 +1,6 @@
-import { readFileSync } from 'fs';
-import jsonwebtoken from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
 import { ExtendedError, Namespace } from 'socket.io/dist/namespace';
 
-import { PUBLIC_KEY_PATH } from '../../Const';
 import { HttpError } from '../../errors/httpErrors/HttpError';
 import {
 	DB_RESOURCES,
@@ -14,6 +11,7 @@ import { SocketUnauthorizedError } from '../../errors/socketErrors/SocketUnautho
 import { SocketUserAlreadyConnectedError } from '../../errors/socketErrors/SocketUserAlreadyConnectedError';
 import { SocketWrongRoomPasswordError } from '../../errors/socketErrors/SocketWrongRoomPasswordError';
 import { UserModel } from '../../models/UserModel';
+import { validateJWT } from '../../utils/authorization/Jwt';
 import { elog, llog } from '../../utils/Logger';
 import { Game, GamesStore, Player } from '../GamesStore';
 import { GameTypes } from '../GameTypes';
@@ -21,14 +19,6 @@ import { BUILD_IN_SOCKET_GAME_EVENTS } from '../socketEvents/BuildInSocketGameEv
 import { SOCKET_GAME_EVENTS } from '../socketEvents/SocketGameEvents';
 
 export abstract class GameHandler {
-	protected static PUBLIC_KEY = ((): string => {
-		try {
-			return readFileSync(PUBLIC_KEY_PATH, 'utf8');
-		} catch (error) {
-			elog(error);
-			process.exit(1);
-		}
-	})();
 	protected static connectedUsers = new Set<string>();
 	protected static io: Server;
 	private static isIoSet = false;
@@ -102,8 +92,7 @@ export abstract class GameHandler {
 		if (!socket.handshake.query.token) return next(new SocketUnauthorizedError());
 
 		try {
-			const token = (socket.handshake.query.token as string).split(' ')[1];
-			const jwt = jsonwebtoken.verify(token, GameHandler.PUBLIC_KEY, { algorithms: ['RS256'] });
+			const jwt = validateJWT(socket.handshake.query.token as string);
 			socket.middlewareData.jwt = jwt;
 			next();
 		} catch (error) {

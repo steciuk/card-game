@@ -48,13 +48,12 @@ export class UserController extends Controller {
 		});
 
 		const savedUser = await createdUser.save();
-		const { token, expiresIn } = issueJWT(savedUser);
-		res.json(new LoginResponseDTO(UserResponseDTO.fromUserDocument(savedUser), token, expiresIn));
+		const token = issueJWT(savedUser);
+		res.json(new LoginResponseDTO(UserResponseDTO.fromUserDocument(savedUser), token));
 	}
 
 	@AccessDatabaseFromMiddleware()
 	private async loginUser(req: Request, res: Response, next: NextFunction): Promise<void> {
-		console.log('here');
 		const postData: UserDTO = req.body;
 		const user = await UserModel.findOne({
 			username: postData.username,
@@ -63,8 +62,8 @@ export class UserController extends Controller {
 		if (!validatePassword(postData.password, user.hash, user.salt))
 			return next(new InvalidCredentialsError());
 
-		const { token, expiresIn } = issueJWT(user);
-		res.json(new LoginResponseDTO(UserResponseDTO.fromUserDocument(user), token, expiresIn));
+		const token = issueJWT(user);
+		res.json(new LoginResponseDTO(UserResponseDTO.fromUserDocument(user), token));
 	}
 
 	// private getAllUsers = async (
