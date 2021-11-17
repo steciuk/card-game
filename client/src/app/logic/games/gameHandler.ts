@@ -4,14 +4,16 @@ import { NotLoggedInError } from 'src/app/errors/notLoggedInError';
 
 import { GameTypes } from '../DTO/gameDTO';
 import { UserDTO } from '../DTO/userDTO';
+import { GameState } from './gameState';
 import { BUILD_IN_SOCKET_GAME_EVENTS } from './socketEvents/buildInSocketGameEvents';
 import { SOCKET_GAME_EVENTS } from './socketEvents/socketGameEvents';
 
-export class SocketController {
+// TODO: as a service?
+export class GameHandler {
 	private static url = 'http://localhost:8080';
 	private socket?: Socket;
-	private playersInGame$ = new Subject<UserDTO[]>();
 	private connection$ = new Subject<CONNECTION_STATUS>();
+	gameState = new GameState();
 
 	constructor(private gameType: GameTypes) {}
 
@@ -23,7 +25,7 @@ export class SocketController {
 		let query = {};
 		if (password) query = { token: token, gameId: gameId, password: password };
 		else query = { token: token, gameId: gameId };
-		this.socket = io(`${SocketController.url}/${this.gameType}`, {
+		this.socket = io(`${GameHandler.url}/${this.gameType}`, {
 			query: query,
 		});
 
@@ -42,7 +44,7 @@ export class SocketController {
 		});
 
 		this.socket.on(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, (players: UserDTO[]) => {
-			this.emitPlayers(players);
+			this.gameState.setPlayersInGame(players);
 		});
 	}
 
@@ -52,16 +54,11 @@ export class SocketController {
 		this.socket.disconnect();
 	}
 
-	public getPlayersInGame$(): Subject<UserDTO[]> {
-		return this.playersInGame$;
-	}
-
 	public getConnection$(): Subject<CONNECTION_STATUS> {
 		return this.connection$;
 	}
 
 	private emitConnection = (connection: CONNECTION_STATUS): void => this.connection$.next(connection);
-	private emitPlayers = (players: UserDTO[]): void => this.playersInGame$.next(players);
 
 	private isConnected(socket?: Socket): socket is Socket {
 		return socket ? socket.connected : false;

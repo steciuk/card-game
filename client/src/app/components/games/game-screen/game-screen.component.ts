@@ -1,18 +1,18 @@
 import Phaser from 'phaser';
 import { GameDTO } from 'src/app/logic/DTO/gameDTO';
-import { UserDTO } from 'src/app/logic/DTO/userDTO';
 import {
 	CONNECTION_STATUS,
-	SocketController
-} from 'src/app/logic/games/socketController';
+	GameHandler
+} from 'src/app/logic/games/gameHandler';
+import { BaseScene } from 'src/app/logic/games/scenes/baseScene';
+import { MakaoScene } from 'src/app/logic/games/scenes/makao/makaoScene';
+import { LobbyScene } from 'src/app/logic/games/scenes/menu/lobbyScene';
 import { HttpService } from 'src/app/services/http.service';
 import { SubSink } from 'subsink';
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-
-import { injectSocketController } from '../../../logic/games/scenes/makao/makaoScene';
 
 @Component({
 	selector: 'app-makao',
@@ -23,10 +23,9 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 	phaser = Phaser;
 	private subs = new SubSink();
 	private gameId!: string;
-	private socketController!: SocketController;
+	private gameHandler!: GameHandler;
 
 	public game!: GameDTO;
-	playersInGame: UserDTO[] = [];
 	isPasswordProtected = true;
 	isRenderGame = false;
 	isWrongPassword = false;
@@ -41,37 +40,32 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 				return;
 			}
 
-			this.subs.sink = this.http.get<GameDTO>(`/games/${this.gameId}`).subscribe((game: GameDTO) => {
-				this.game = game;
-				this.socketController = new SocketController(game.gameType);
-				this.observeForPlayers();
-				this.observeForConnection();
-				if (!this.game.isPasswordProtected) {
-					this.isPasswordProtected = false;
-					this.connectToSocket();
-				}
-			});
+			this.subs.sink = this.http.get<GameDTO>(`/games/${this.gameId}`).subscribe(
+				(game: GameDTO) => {
+					this.game = game;
+					this.gameHandler = new GameHandler(game.gameType);
+					BaseScene.injectGameHandler(this.gameHandler);
+					this.observeForConnection();
+					if (!this.game.isPasswordProtected) {
+						this.isPasswordProtected = false;
+						this.connectToSocket();
+					}
+				},
+				(error) => console.log(error)
+			);
 		});
 
 		this.phaserConfig = {
 			type: Phaser.AUTO,
-			width: window.innerWidth,
-			height: window.innerHeight,
-			scene: [injectSocketController(this.socketController)],
-			backgroundColor: '#102f61n',
+			width: 800, //window.innerWidth,
+			height: 800, //window.innerHeight,
+			scene: [LobbyScene, MakaoScene],
+			backgroundColor: '#8a78ff',
 		};
 	}
 
-	private observeForPlayers(): void {
-		this.subs.sink = this.socketController.getPlayersInGame$().subscribe({
-			next: (players) => {
-				this.playersInGame = players;
-			},
-		});
-	}
-
 	private observeForConnection(): void {
-		this.subs.sink = this.socketController.getConnection$().subscribe({
+		this.subs.sink = this.gameHandler.getConnection$().subscribe({
 			next: (connection) => {
 				if (connection === CONNECTION_STATUS.CONNECTED) this.isRenderGame = true;
 				else if (connection === CONNECTION_STATUS.WRONG_PASSWORD) this.isWrongPassword = true;
@@ -80,7 +74,7 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 	}
 
 	private connectToSocket(password?: string): void {
-		this.socketController.connect(this.gameId, password);
+		this.gameHandler.connect(this.gameId, password);
 	}
 
 	onSubmit(form: NgForm): void {
@@ -89,7 +83,7 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 
 	ngOnDestroy(): void {
 		this.subs.unsubscribe();
-		this.socketController.disconnect();
+		this.gameHandler.disconnect();
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

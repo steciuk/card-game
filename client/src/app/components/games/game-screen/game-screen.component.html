@@ -27,11 +27,6 @@
 	</form>
 </div>
 <div>
-	<h2>Players in game:</h2>
-	<ul>
-		<li *ngFor="let player of playersInGame">{{ player.username }}</li>
-	</ul>
-
 	<phaser-component
 		*ngIf="isRenderGame"
 		(gameReady)="onGameReady($event)"

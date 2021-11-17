@@ -5,7 +5,6 @@ import {
 	ALPHANUMERIC_UNDERSCORE_REGEX
 } from '../Const';
 
-//TODO: restrict length of inputs on backend
 export class UserDTO {
 	@IsString()
 	@MinLength(6)
