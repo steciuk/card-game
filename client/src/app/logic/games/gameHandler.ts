@@ -11,7 +11,7 @@ import { SOCKET_GAME_EVENTS } from './socketEvents/socketGameEvents';
 // TODO: as a service?
 export class GameHandler {
 	private static url = 'http://localhost:8080';
-	private socket?: Socket;
+	socket?: Socket;
 	private connection$ = new Subject<CONNECTION_STATUS>();
 	gameState = new GameState();
 
@@ -43,8 +43,20 @@ export class GameHandler {
 			console.log('err', error);
 		});
 
-		this.socket.on(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, (players: UserDTO[]) => {
+		this.socket.on(SOCKET_GAME_EVENTS.PLAYERS_IN_GAME, (players: UserDTO[]) => {
 			this.gameState.setPlayersInGame(players);
+		});
+
+		this.socket.on(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, (player: UserDTO) => {
+			this.gameState.addPlayer(player);
+		});
+
+		this.socket.on(SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED, (playerId: string) => {
+			this.gameState.removePlayer(playerId);
+		});
+
+		this.socket.on(SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY, (dto: { id: string; isReady: boolean }) => {
+			this.gameState.setPlayerReady(dto.id, dto.isReady);
 		});
 	}
 
@@ -54,7 +66,7 @@ export class GameHandler {
 		this.socket.disconnect();
 	}
 
-	public getConnection$(): Subject<CONNECTION_STATUS> {
+	getConnection$(): Subject<CONNECTION_STATUS> {
 		return this.connection$;
 	}
 
@@ -64,7 +76,7 @@ export class GameHandler {
 		return socket ? socket.connected : false;
 	}
 
-	public isSocketConnected(): boolean {
+	isSocketConnected(): boolean {
 		return this.isConnected(this.socket);
 	}
 }

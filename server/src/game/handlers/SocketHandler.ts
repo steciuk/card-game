@@ -58,11 +58,19 @@ export abstract class GameHandler {
 		const game = GamesStore.Instance.getGame(gameId) as Game;
 		const player = game.getPlayer(userId) as Player;
 
+		socket.on(SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY, () => {
+			player.toggleIsReady();
+			socket.emit(SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY, { id: player.id, isReady: player.isReady });
+			socket
+				.to(gameId)
+				.emit(SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY, { id: player.id, isReady: player.isReady });
+		});
+
 		socket.on(BUILD_IN_SOCKET_GAME_EVENTS.DISCONNECT, (reason) => {
 			GameHandler.connectedUsers.delete(userId);
 			game.removePlayer(userId);
-			socket.to(gameId).emit(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, game.getAllPlayers());
-			socket.emit(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, game.getAllPlayers());
+			socket.to(gameId).emit(SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED, userId);
+			socket.emit(SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED, userId);
 
 			llog(`Socket ${socket.id} disconnected - ${reason}`);
 		});
@@ -124,10 +132,12 @@ export abstract class GameHandler {
 			}
 
 			GameHandler.connectedUsers.add(userId);
-			game.addPlayer(new Player(user.id, user.username));
+
+			const newPlayer = new Player(user.id, user.username);
+			game.addPlayer(newPlayer);
 			socket.join(gameId);
-			socket.to(gameId).emit(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, game.getAllPlayers());
-			socket.emit(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, game.getAllPlayers());
+			socket.to(gameId).emit(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, newPlayer);
+			socket.emit(SOCKET_GAME_EVENTS.PLAYERS_IN_GAME, game.getAllPlayers());
 
 			next();
 		} catch (error: unknown) {

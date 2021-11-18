@@ -19,15 +19,16 @@ export class AuthService {
 
 		localStorage.setItem('username', response.user.username);
 		localStorage.setItem('token', response.token);
-		localStorage.setItem('expiresIn', jwtPayload.exp.toString());
+		localStorage.setItem('expiresOn', (jwtPayload.iat + jwtPayload.exp).toString());
 		this.username = response.user.username;
 		this.emitUsername(this.username);
 	}
 
 	isLoggedIn(): boolean {
 		// TODO: if token expired ask to log in again
-		const expiresIn = localStorage.getItem('expiresIn');
-		const isTokenValid = !!expiresIn && Date.now() <= parseInt(expiresIn);
+		const expiresOn = localStorage.getItem('expiresOn');
+		const isTokenValid = !!expiresOn && Date.now() <= parseInt(expiresOn);
+
 		if (!isTokenValid) {
 			this.logout();
 			return false;
@@ -44,7 +45,7 @@ export class AuthService {
 	logout(): void {
 		localStorage.removeItem('username');
 		localStorage.removeItem('token');
-		localStorage.removeItem('expiresIn');
+		localStorage.removeItem('expiresOn');
 		this.emitUsername('');
 		this.router.navigateByUrl('/login');
 	}

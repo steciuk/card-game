@@ -78,5 +78,10 @@ export class Game {
 }
 
 export class Player {
+	isReady = false;
 	constructor(public id: string, public username: string) {}
+
+	toggleIsReady() {
+		this.isReady = !this.isReady;
+	}
 }
