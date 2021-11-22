@@ -1,29 +1,69 @@
 import { Scene } from 'phaser';
-import { Socket } from 'socket.io-client';
+import { GameStateService, Player } from 'src/app/services/game-state.service';
+import { SocketService } from 'src/app/services/socket.service';
 
-import { GameHandler } from '../gameHandler';
-import { GameState } from '../gameState';
+import { SOCKET_GAME_EVENTS } from '../socketEvents/socketEvents';
+import { SCENE_KEYS } from './gamesSetup';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyCallback = (...args: any[]) => void;
+//TODO: restrict so key is mandatory
+type PhaserConfig = Phaser.Types.Scenes.SettingsConfig;
 
 export abstract class BaseScene extends Scene {
-	private static gameHandler: GameHandler;
-	protected gameState: GameState;
-	protected socket: Socket;
+	protected registeredEvents = new Map<SOCKET_GAME_EVENTS, AnyCallback>();
+	key: SCENE_KEYS;
 
-	constructor(config: Phaser.Types.Scenes.SettingsConfig) {
+	constructor(
+		protected socketService: SocketService,
+		protected gameStateService: GameStateService,
+		config: PhaserConfig
+	) {
 		super(config);
-		this.gameState = BaseScene.gameHandler.gameState;
-		this.socket = BaseScene.gameHandler.socket as Socket;
-	}
-
-	static injectGameHandler(gameHandler: GameHandler): typeof BaseScene {
-		BaseScene.gameHandler = gameHandler;
-		return this;
+		this.key = config.key as SCENE_KEYS;
+		this.registerBaseListeners();
 	}
 
 	abstract init(): void;
 	abstract preload(): void;
 	abstract create(): void;
 	abstract update(): void;
+
+	private registerBaseListeners(): void {
+		this.socketService.registerSocketListener(SOCKET_GAME_EVENTS.PLAYERS_IN_GAME, (players: Player[]) => {
+			this.gameStateService.setPlayersInGame(players);
+		});
+
+		this.socketService.registerSocketListener(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, (player: Player) => {
+			this.gameStateService.addPlayer(player);
+		});
+
+		this.socketService.registerSocketListener(
+			SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED,
+			(playerId: string) => {
+				this.gameStateService.removePlayer(playerId);
+			}
+		);
+
+		this.socketService.registerSocketListener(
+			SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY,
+			(dto: { id: string; isReady: boolean }) => {
+				this.gameStateService.setPlayerReady(dto.id, dto.isReady);
+			}
+		);
+	}
+
+	protected registerSocketListenerForScene(event: SOCKET_GAME_EVENTS, callback: AnyCallback): void {
+		this.registeredEvents.set(event, callback);
+		this.socketService.registerSocketListener(event, callback);
+	}
+
+	protected changeScene(sceneKey: SCENE_KEYS): void {
+		this.registeredEvents.forEach((callback: AnyCallback, event: SOCKET_GAME_EVENTS) => {
+			this.socketService.unregisterSocketListener(event, callback);
+		});
+		this.scene.start(sceneKey);
+	}
 
 	protected loadAllPlayingCards(): void {
 		const shapes = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];

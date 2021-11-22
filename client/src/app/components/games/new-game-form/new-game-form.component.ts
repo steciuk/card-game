@@ -1,4 +1,5 @@
-import { GameDTO, GameTypes } from 'src/app/logic/DTO/gameDTO';
+import { GameDTO } from 'src/app/logic/DTO/gameDTO';
+import { GameTypes } from 'src/app/logic/games/scenes/gamesSetup';
 import { HttpService } from 'src/app/services/http.service';
 import { enumToArray } from 'src/app/utils';
 import { SubSink } from 'subsink';

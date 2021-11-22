@@ -1,15 +1,18 @@
+import { GameStateService } from 'src/app/services/game-state.service';
+import { SocketService } from 'src/app/services/socket.service';
+
 import { BaseScene } from '../baseScene';
-import { SCENE_KEYS } from '../sceneKeys';
+import { SCENE_KEYS } from '../gamesSetup';
 
 export class MakaoScene extends BaseScene {
-	constructor() {
-		super({ key: SCENE_KEYS.MAKAO });
+	constructor(socketService: SocketService, gameStateService: GameStateService) {
+		super(socketService, gameStateService, { key: SCENE_KEYS.MAKAO });
 	}
 
 	init(): void {}
 
 	preload(): void {
-		this.loadAllPlayingCards();
+		// this.loadAllPlayingCards();
 	}
 
 	create(): void {

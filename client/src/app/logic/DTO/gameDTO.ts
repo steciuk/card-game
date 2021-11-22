@@ -1,3 +1,4 @@
+import { GameTypes } from '../games/scenes/gamesSetup';
 import { UserDTO } from './userDTO';
 
 export type GameDTO = {
@@ -9,7 +10,3 @@ export type GameDTO = {
 	id: string;
 	numPlayersInGame: number;
 };
-
-export enum GameTypes {
-	MAKAO = 'MAKAO',
-}

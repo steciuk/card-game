@@ -1,13 +1,12 @@
 import Phaser from 'phaser';
 import { GameDTO } from 'src/app/logic/DTO/gameDTO';
-import {
-	CONNECTION_STATUS,
-	GameHandler
-} from 'src/app/logic/games/gameHandler';
-import { BaseScene } from 'src/app/logic/games/scenes/baseScene';
+import { GameSetup } from 'src/app/logic/games/scenes/gamesSetup';
 import { MakaoScene } from 'src/app/logic/games/scenes/makao/makaoScene';
 import { LobbyScene } from 'src/app/logic/games/scenes/menu/lobbyScene';
+import { BUILD_IN_SOCKET_GAME_EVENTS } from 'src/app/logic/games/socketEvents/socketEvents';
+import { GameStateService } from 'src/app/services/game-state.service';
 import { HttpService } from 'src/app/services/http.service';
+import { SocketService } from 'src/app/services/socket.service';
 import { SubSink } from 'subsink';
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
@@ -19,18 +18,30 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 	templateUrl: './game-screen.component.html',
 })
 export class GameScreenComponent implements OnInit, OnDestroy {
-	phaserConfig!: Phaser.Types.Core.GameConfig;
+	phaserConfig = {
+		type: Phaser.AUTO,
+		width: 800, //window.innerWidth,
+		height: 800, //window.innerHeight,
+		backgroundColor: '#8a78ff',
+	};
+
 	phaser = Phaser;
 	private subs = new SubSink();
 	private gameId!: string;
-	private gameHandler!: GameHandler;
+	private gameSetup!: GameSetup;
 
-	public game!: GameDTO;
+	private game!: GameDTO;
 	isPasswordProtected = true;
 	isRenderGame = false;
 	isWrongPassword = false;
 
-	constructor(private route: ActivatedRoute, private http: HttpService, private router: Router) {} //public sceneService: SceneService
+	constructor(
+		private route: ActivatedRoute,
+		private http: HttpService,
+		private router: Router,
+		private socketService: SocketService,
+		private gameStateService: GameStateService
+	) {}
 
 	ngOnInit(): void {
 		this.subs.sink = this.route.paramMap.subscribe((params: ParamMap) => {
@@ -43,9 +54,7 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 			this.subs.sink = this.http.get<GameDTO>(`/games/${this.gameId}`).subscribe(
 				(game: GameDTO) => {
 					this.game = game;
-					this.gameHandler = new GameHandler(game.gameType);
-					BaseScene.injectGameHandler(this.gameHandler);
-					this.observeForConnection();
+
 					if (!this.game.isPasswordProtected) {
 						this.isPasswordProtected = false;
 						this.connectToSocket();
@@ -54,27 +63,27 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 				(error) => console.log(error)
 			);
 		});
-
-		this.phaserConfig = {
-			type: Phaser.AUTO,
-			width: 800, //window.innerWidth,
-			height: 800, //window.innerHeight,
-			scene: [LobbyScene, MakaoScene],
-			backgroundColor: '#8a78ff',
-		};
-	}
-
-	private observeForConnection(): void {
-		this.subs.sink = this.gameHandler.getConnection$().subscribe({
-			next: (connection) => {
-				if (connection === CONNECTION_STATUS.CONNECTED) this.isRenderGame = true;
-				else if (connection === CONNECTION_STATUS.WRONG_PASSWORD) this.isWrongPassword = true;
-			},
-		});
 	}
 
 	private connectToSocket(password?: string): void {
-		this.gameHandler.connect(this.gameId, password);
+		this.socketService.create(this.gameId, this.game.gameType, password);
+		this.socketService.registerSocketListener(BUILD_IN_SOCKET_GAME_EVENTS.CONNECT, () => {
+			console.log('connected');
+			this.isRenderGame = true;
+		});
+
+		this.socketService.registerSocketListener(BUILD_IN_SOCKET_GAME_EVENTS.CONNECT_ERROR, (error) => {
+			this.socketService.disconnect();
+			if (error.message === 'Socket - Wrong room password') {
+				//TODO: Some custom error types
+				this.isWrongPassword = true;
+			}
+			console.log('err', error);
+		});
+
+		this.gameSetup = new GameSetup(this.socketService, this.gameStateService, [LobbyScene, MakaoScene]);
+
+		this.socketService.connect();
 	}
 
 	onSubmit(form: NgForm): void {
@@ -83,11 +92,13 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 
 	ngOnDestroy(): void {
 		this.subs.unsubscribe();
-		this.gameHandler.disconnect();
+		this.socketService.disconnect();
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	onGameReady(_game: any): void {
-		// game.scene.add('Scene', this.sceneService, true);
+	onGameReady(game: any): void {
+		this.gameSetup.getCreatedScenes().forEach((scene, i) => {
+			game.scene.add(scene.key, scene, i === 0);
+		});
 	}
 }
