@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { GameDTO } from 'src/app/logic/DTO/gameDTO';
+import { PHASER_CONFIG } from 'src/app/logic/games/phaserConfig';
 import { GameSetup } from 'src/app/logic/games/scenes/gamesSetup';
 import { MakaoScene } from 'src/app/logic/games/scenes/makao/makaoScene';
 import { LobbyScene } from 'src/app/logic/games/scenes/menu/lobbyScene';
@@ -18,12 +19,7 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 	templateUrl: './game-screen.component.html',
 })
 export class GameScreenComponent implements OnInit, OnDestroy {
-	phaserConfig = {
-		type: Phaser.AUTO,
-		width: 800, //window.innerWidth,
-		height: 800, //window.innerHeight,
-		backgroundColor: '#8a78ff',
-	};
+	phaserConfig = PHASER_CONFIG;
 
 	phaser = Phaser;
 	private subs = new SubSink();

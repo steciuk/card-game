@@ -77,4 +77,12 @@ export abstract class BaseScene extends Scene {
 	protected loadBacks(): void {
 		this.load.image('RB', './assets/cards/backs/red_back.png');
 	}
+
+	protected xRelative(x: number): number {
+		return this.sys.game.canvas.width * x;
+	}
+
+	protected yRelative(y: number): number {
+		return this.sys.game.canvas.width * y;
+	}
 }

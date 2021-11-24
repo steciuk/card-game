@@ -2,6 +2,8 @@ import { GameObjects } from 'phaser';
 import { GameStateService } from 'src/app/services/game-state.service';
 import { SocketService } from 'src/app/services/socket.service';
 
+import { HEX_COLORS } from '../../phaserComponents/HexColors';
+import { PhaserButton } from '../../phaserComponents/phaserButton';
 import { SOCKET_GAME_EVENTS } from '../../socketEvents/socketEvents';
 import { BaseScene } from '../baseScene';
 import { SCENE_KEYS } from '../gamesSetup';
@@ -20,18 +22,18 @@ export class LobbyScene extends BaseScene {
 		this.updateUsernames();
 
 		////
-		const readyBtn = this.add.text(100, 100, 'Ready!');
-		readyBtn.setInteractive();
-		readyBtn.on('pointerup', () => {
+
+		const readyBtn = new PhaserButton(this, this.xRelative(0.5), this.yRelative(0.8), 'Ready', () => {
 			this.socketService.emitSocketEvent(SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY);
 		});
-		this.time.addEvent({
-			delay: 3000,
-			loop: false,
-			callback: () => {
-				this.changeScene(SCENE_KEYS.MAKAO);
-			},
-		});
+
+		// this.time.addEvent({
+		// 	delay: 3000,
+		// 	loop: false,
+		// 	callback: () => {
+		// 		this.changeScene(SCENE_KEYS.MAKAO);
+		// 	},
+		// });
 	}
 
 	update(): void {}
@@ -42,8 +44,8 @@ export class LobbyScene extends BaseScene {
 		});
 		this.gameStateService.getAllUsernamesAsArray().forEach((player, i) => {
 			if (player.isReady)
-				this.usernames.push(this.add.text(10, 10 * i, player.username, { color: '#11ff00' }));
-			else this.usernames.push(this.add.text(10, 10 * i, player.username, { color: '#ffffff' }));
+				this.usernames.push(this.add.text(10, 10 * i, player.username, { color: HEX_COLORS.GREEN }));
+			else this.usernames.push(this.add.text(10, 10 * i, player.username, { color: HEX_COLORS.BLACK }));
 		});
 	}
 
