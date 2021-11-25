@@ -1,3 +1,4 @@
+import { LogMonitorModule } from 'ngx-log-monitor';
 import { PhaserModule } from 'phaser-component-library';
 
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
@@ -32,7 +33,7 @@ import { AuthService } from './services/auth.service';
 		NewGameFormComponent,
 		NotFoundComponent,
 	],
-	imports: [BrowserModule, AppRoutingModule, PhaserModule, FormsModule, HttpClientModule],
+	imports: [BrowserModule, AppRoutingModule, PhaserModule, FormsModule, HttpClientModule, LogMonitorModule],
 	providers: [AuthService, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
 	bootstrap: [AppComponent],
 })

@@ -1,5 +1,5 @@
 import { Scene } from 'phaser';
-import { GameStateService, Player } from 'src/app/services/game-state.service';
+import { Player, RoomStateService } from 'src/app/services/room-state.service';
 import { SocketService } from 'src/app/services/socket.service';
 
 import { SOCKET_GAME_EVENTS } from '../socketEvents/socketEvents';
@@ -13,10 +13,11 @@ type PhaserConfig = Phaser.Types.Scenes.SettingsConfig;
 export abstract class BaseScene extends Scene {
 	protected registeredEvents = new Map<SOCKET_GAME_EVENTS, AnyCallback>();
 	key: SCENE_KEYS;
+	private nextSceneKey?: SCENE_KEYS;
 
 	constructor(
 		protected socketService: SocketService,
-		protected gameStateService: GameStateService,
+		protected roomStateService: RoomStateService,
 		config: PhaserConfig
 	) {
 		super(config);
@@ -29,28 +30,8 @@ export abstract class BaseScene extends Scene {
 	abstract create(): void;
 	abstract update(): void;
 
-	private registerBaseListeners(): void {
-		this.socketService.registerSocketListener(SOCKET_GAME_EVENTS.PLAYERS_IN_GAME, (players: Player[]) => {
-			this.gameStateService.setPlayersInGame(players);
-		});
-
-		this.socketService.registerSocketListener(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, (player: Player) => {
-			this.gameStateService.addPlayer(player);
-		});
-
-		this.socketService.registerSocketListener(
-			SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED,
-			(playerId: string) => {
-				this.gameStateService.removePlayer(playerId);
-			}
-		);
-
-		this.socketService.registerSocketListener(
-			SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY,
-			(dto: { id: string; isReady: boolean }) => {
-				this.gameStateService.setPlayerReady(dto.id, dto.isReady);
-			}
-		);
+	setNextSceneKey(key: SCENE_KEYS): void {
+		this.nextSceneKey = key;
 	}
 
 	protected registerSocketListenerForScene(event: SOCKET_GAME_EVENTS, callback: AnyCallback): void {
@@ -59,10 +40,19 @@ export abstract class BaseScene extends Scene {
 	}
 
 	protected changeScene(sceneKey: SCENE_KEYS): void {
+		this.unregisterSocketListenersForThisScene();
+		this.scene.start(sceneKey);
+	}
+
+	protected nextScene(): void {
+		if (this.nextSceneKey) this.changeScene(this.nextSceneKey);
+		else console.error('Next scene key not set');
+	}
+
+	private unregisterSocketListenersForThisScene(): void {
 		this.registeredEvents.forEach((callback: AnyCallback, event: SOCKET_GAME_EVENTS) => {
 			this.socketService.unregisterSocketListener(event, callback);
 		});
-		this.scene.start(sceneKey);
 	}
 
 	protected loadAllPlayingCards(): void {
@@ -84,5 +74,29 @@ export abstract class BaseScene extends Scene {
 
 	protected yRelative(y: number): number {
 		return this.sys.game.canvas.width * y;
+	}
+
+	private registerBaseListeners(): void {
+		this.socketService.registerSocketListener(SOCKET_GAME_EVENTS.PLAYERS_IN_GAME, (players: Player[]) => {
+			this.roomStateService.setPlayersInGame(players);
+		});
+
+		this.socketService.registerSocketListener(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, (player: Player) => {
+			this.roomStateService.addPlayer(player);
+		});
+
+		this.socketService.registerSocketListener(
+			SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED,
+			(playerId: string) => {
+				this.roomStateService.removePlayer(playerId);
+			}
+		);
+
+		this.socketService.registerSocketListener(
+			SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY,
+			(dto: { id: string; isReady: boolean }) => {
+				this.roomStateService.setPlayerReady(dto.id, dto.isReady);
+			}
+		);
 	}
 }

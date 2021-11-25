@@ -26,12 +26,19 @@
 		<button class="btn btn-primary" type="submit" [disabled]="form.invalid">Submit</button>
 	</form>
 </div>
-<div>
-	<phaser-component
-		*ngIf="isRenderGame"
-		(gameReady)="onGameReady($event)"
-		[gameConfig]="phaserConfig"
-		[Phaser]="phaser"
-	>
-	</phaser-component>
+<div *ngIf="isRenderGame">
+	<!-- TODO: game room logger: https://github.com/avatsaev/ngx-log-monitor -->
+	<!-- <div class="log-monitor-wrapper">
+		<log-monitor
+			[logStream]="(logStream$ | async)!"
+			theme="light"
+			title="Game room log"
+			[animated]="true"
+			[icons]="false"
+		></log-monitor>
+	</div> -->
+	<div>
+		<phaser-component (gameReady)="onGameReady($event)" [gameConfig]="phaserConfig" [Phaser]="phaser">
+		</phaser-component>
+	</div>
 </div>

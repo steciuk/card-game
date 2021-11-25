@@ -5,8 +5,8 @@ import { GameSetup } from 'src/app/logic/games/scenes/gamesSetup';
 import { MakaoScene } from 'src/app/logic/games/scenes/makao/makaoScene';
 import { LobbyScene } from 'src/app/logic/games/scenes/menu/lobbyScene';
 import { BUILD_IN_SOCKET_GAME_EVENTS } from 'src/app/logic/games/socketEvents/socketEvents';
-import { GameStateService } from 'src/app/services/game-state.service';
 import { HttpService } from 'src/app/services/http.service';
+import { RoomStateService } from 'src/app/services/room-state.service';
 import { SocketService } from 'src/app/services/socket.service';
 import { SubSink } from 'subsink';
 
@@ -17,6 +17,7 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 @Component({
 	selector: 'app-makao',
 	templateUrl: './game-screen.component.html',
+	styleUrls: ['./game-screen.component.scss'],
 })
 export class GameScreenComponent implements OnInit, OnDestroy {
 	phaserConfig = PHASER_CONFIG;
@@ -36,7 +37,7 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 		private http: HttpService,
 		private router: Router,
 		private socketService: SocketService,
-		private gameStateService: GameStateService
+		private roomStateService: RoomStateService
 	) {}
 
 	ngOnInit(): void {
@@ -77,7 +78,7 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 			console.log('err', error);
 		});
 
-		this.gameSetup = new GameSetup(this.socketService, this.gameStateService, [LobbyScene, MakaoScene]);
+		this.gameSetup = new GameSetup(this.socketService, this.roomStateService, [LobbyScene, MakaoScene]);
 
 		this.socketService.connect();
 	}

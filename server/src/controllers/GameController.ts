@@ -7,7 +7,8 @@ import {
 	DB_RESOURCES,
 	ResourceNotFoundError
 } from '../errors/httpErrors/ResourceNotFoundError';
-import { Game, GamesStore, Player } from '../game/GamesStore';
+import { GameFactory } from '../game/gameStore/GameFactory';
+import { GamesStore, Player } from '../game/gameStore/GamesStore';
 import { dtoValidationMiddleware } from '../middlewares/DtoValidationMiddleware';
 import { jwtAuthMiddleware } from '../middlewares/JwtAuthMiddleware';
 import { GameModel } from '../models/GameModel';
@@ -52,7 +53,7 @@ export class GameController extends Controller {
 		});
 		const savedGame = await createdGame.save();
 
-		const game = new Game(
+		const game = GameFactory.createGameObject(
 			savedGame.gameType,
 			new Player(owner.id, owner.username),
 			savedGame.maxPlayers,

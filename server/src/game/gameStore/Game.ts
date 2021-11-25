@@ -1,35 +1,7 @@
-import { GameTypes } from './GameTypes';
+import { GameTypes } from '../GameTypes';
+import { Player } from './GamesStore';
 
-export class GamesStore {
-	private static instance: GamesStore;
-
-	private activeGames = new Map<string, Game>();
-
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	private constructor() {}
-
-	static get Instance(): GamesStore {
-		return this.instance || (this.instance = new this());
-	}
-
-	addGame(game: Game): void {
-		this.activeGames.set(game.id, game);
-	}
-
-	deleteGame(id: string): void {
-		this.activeGames.delete(id);
-	}
-
-	getGame(gameId: string): Game | undefined {
-		return this.activeGames.get(gameId);
-	}
-
-	get allGamesAsArray(): Game[] {
-		return Array.from(this.activeGames.values());
-	}
-}
-
-export class Game {
+export abstract class Game {
 	// CONSTANTS
 	constructor(
 		public gameType: GameTypes,
@@ -75,13 +47,8 @@ export class Game {
 	getPlayer(id: string): Player | undefined {
 		return this.playersInGame.get(id);
 	}
-}
 
-export class Player {
-	isReady = false;
-	constructor(public id: string, public username: string) {}
-
-	toggleIsReady(): void {
-		this.isReady = !this.isReady;
+	areAllPlayersReady(): boolean {
+		return Array.from(this.playersInGame.values()).every((player) => player.isReady);
 	}
 }

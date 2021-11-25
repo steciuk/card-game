@@ -1,6 +1,6 @@
 import { Document, ObjectId } from 'mongoose';
 
-import { Player } from '../game/GamesStore';
+import { Player } from '../game/gameStore/GamesStore';
 import { UserDocument } from '../models/UserModel';
 
 export class UserResponseDTO {

@@ -1,4 +1,4 @@
-import { Game } from '../game/GamesStore';
+import { Game } from '../game/gameStore/Game';
 import { GameTypes } from '../game/GameTypes';
 import { UserResponseDTO } from './UserResponseDTO';
 

@@ -1,4 +1,4 @@
-import { GameStateService } from 'src/app/services/game-state.service';
+import { RoomStateService } from 'src/app/services/room-state.service';
 import { SocketService } from 'src/app/services/socket.service';
 
 import { BaseScene } from './baseScene';
@@ -15,11 +15,15 @@ export enum SCENE_KEYS {
 export class GameSetup {
 	private createdScenes: BaseScene[] = [];
 
-	constructor(socketService: SocketService, gameStateService: GameStateService, scenes: SceneInterface[]) {
-		gameStateService.resetGameState();
+	constructor(socketService: SocketService, roomStateService: RoomStateService, scenes: SceneInterface[]) {
+		roomStateService.resetRoomState();
 		scenes.forEach((Constructor) => {
-			this.createdScenes.push(new Constructor(socketService, gameStateService));
+			this.createdScenes.push(new Constructor(socketService, roomStateService));
 		});
+
+		for (let i = 0; i < this.createdScenes.length - 1; i++) {
+			this.createdScenes[i].setNextSceneKey(this.createdScenes[i + 1].key);
+		}
 	}
 
 	getCreatedScenes(): BaseScene[] {
@@ -28,5 +32,5 @@ export class GameSetup {
 }
 
 interface SceneInterface {
-	new (socketService: SocketService, gameState: GameStateService): BaseScene;
+	new (socketService: SocketService, roomState: RoomStateService): BaseScene;
 }

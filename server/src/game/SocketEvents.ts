@@ -1,4 +1,4 @@
-export type SOCKET_EVENTS = SOCKET_GAME_EVENTS | BUILD_IN_SOCKET_GAME_EVENTS;
+export type SOCKET_EVENT = SOCKET_GAME_EVENTS | BUILD_IN_SOCKET_GAME_EVENTS;
 
 export enum SOCKET_GAME_EVENTS {
 	PLAYER_CONNECTED = 'player_connected',
@@ -9,6 +9,7 @@ export enum SOCKET_GAME_EVENTS {
 }
 
 export enum BUILD_IN_SOCKET_GAME_EVENTS {
-	CONNECT = 'connect',
-	CONNECT_ERROR = 'connect_error',
+	CONNECTION = 'connection',
+	DISCONNECT = 'disconnect',
+	ERROR = 'error',
 }

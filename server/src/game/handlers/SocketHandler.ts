@@ -13,10 +13,14 @@ import { SocketWrongRoomPasswordError } from '../../errors/socketErrors/SocketWr
 import { UserModel } from '../../models/UserModel';
 import { validateJWT } from '../../utils/authorization/Jwt';
 import { elog, llog } from '../../utils/Logger';
-import { Game, GamesStore, Player } from '../GamesStore';
+import { Game } from '../gameStore/Game';
+import { GamesStore, Player } from '../gameStore/GamesStore';
 import { GameTypes } from '../GameTypes';
-import { BUILD_IN_SOCKET_GAME_EVENTS } from '../socketEvents/BuildInSocketGameEvents';
-import { SOCKET_GAME_EVENTS } from '../socketEvents/SocketGameEvents';
+import {
+	BUILD_IN_SOCKET_GAME_EVENTS,
+	SOCKET_EVENT,
+	SOCKET_GAME_EVENTS
+} from '../SocketEvents';
 
 export abstract class GameHandler {
 	protected static connectedUsers = new Set<string>();
@@ -60,17 +64,22 @@ export abstract class GameHandler {
 
 		socket.on(SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY, () => {
 			player.toggleIsReady();
-			socket.emit(SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY, { id: player.id, isReady: player.isReady });
-			socket
-				.to(gameId)
-				.emit(SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY, { id: player.id, isReady: player.isReady });
+			this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY, gameId, {
+				id: player.id,
+				isReady: player.isReady,
+			});
+		});
+
+		socket.on(SOCKET_GAME_EVENTS.START_GAME, (callback: (messageToLog: string) => void) => {
+			if (game.areAllPlayersReady()) {
+				this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.START_GAME, gameId);
+			} else callback('Not all players ready'); //TODO: standardize callback responses
 		});
 
 		socket.on(BUILD_IN_SOCKET_GAME_EVENTS.DISCONNECT, (reason) => {
 			GameHandler.connectedUsers.delete(userId);
 			game.removePlayer(userId);
-			socket.to(gameId).emit(SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED, userId);
-			socket.emit(SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED, userId);
+			this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED, userId);
 
 			llog(`Socket ${socket.id} disconnected - ${reason}`);
 		});
@@ -145,6 +154,12 @@ export abstract class GameHandler {
 			next(new HttpError());
 		}
 	};
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	protected emitToRoomAndSender(socket: Socket, event: SOCKET_EVENT, gameId: string, ...args: any[]): void {
+		socket.to(gameId).emit(event, ...args);
+		socket.emit(event, ...args);
+	}
 }
 
 export type SocketNextFunction = (err?: ExtendedError | undefined) => void;

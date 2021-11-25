@@ -5,12 +5,12 @@ import { UserDTO } from '../logic/DTO/userDTO';
 @Injectable({
 	providedIn: 'root',
 })
-export class GameStateService {
+export class RoomStateService {
 	private playersInGame = new Map<string, Player>();
 
 	constructor() {}
 
-	resetGameState(): void {
+	resetRoomState(): void {
 		this.playersInGame.clear();
 	}
 
@@ -33,6 +33,10 @@ export class GameStateService {
 
 	getAllUsernamesAsArray(): Player[] {
 		return Array.from(this.playersInGame.values());
+	}
+
+	areAllPlayersReady(): boolean {
+		return Array.from(this.playersInGame.values()).every((player) => player.isReady);
 	}
 }
 
