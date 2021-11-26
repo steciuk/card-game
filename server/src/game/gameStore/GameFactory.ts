@@ -1,8 +1,8 @@
 import { BadRequestError } from '../../errors/httpErrors/BadRequestError';
 import { GameTypes } from '../GameTypes';
 import { Game } from './Game';
-import { Player } from './GamesStore';
-import { MakaoGame } from './MakaoGame';
+import { MakaoGame } from './makao/MakaoGame';
+import { Player } from './Player';
 
 export class GameFactory {
 	static createGameObject(

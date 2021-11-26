@@ -1,5 +1,5 @@
 import { GameTypes } from '../GameTypes';
-import { Player } from './GamesStore';
+import { Player, PlayerDTO } from './Player';
 
 export abstract class Game {
 	// CONSTANTS
@@ -16,10 +16,10 @@ export abstract class Game {
 	// VARIABLES
 	isStarted = false;
 	numPlayersInGame = 0;
-	playersInGame = new Map<string, Player>();
+	abstract playersInGame: Map<string, Player>;
 
 	isRoomFull(): boolean {
-		return this.maxPlayers - this.numPlayersInGame > 0;
+		return this.maxPlayers - this.numPlayersInGame <= 0;
 	}
 
 	start(): void {
@@ -30,8 +30,8 @@ export abstract class Game {
 		this.isStarted = false;
 	}
 
-	getAllPlayers(): Player[] {
-		return Array.from(this.playersInGame.values());
+	getAllPlayersDTO(): PlayerDTO[] {
+		return Array.from(this.playersInGame.values()).map((player) => player.toPlayerDTO());
 	}
 
 	addPlayer(player: Player): void {

@@ -28,12 +28,3 @@ export class GamesStore {
 		return Array.from(this.activeGames.values());
 	}
 }
-
-export class Player {
-	isReady = false;
-	constructor(public id: string, public username: string) {}
-
-	toggleIsReady(): void {
-		this.isReady = !this.isReady;
-	}
-}
