@@ -1,5 +1,4 @@
 import { Scene } from 'phaser';
-import { Player, RoomStateService } from 'src/app/services/room-state.service';
 import { SocketService } from 'src/app/services/socket.service';
 
 import { SOCKET_GAME_EVENTS } from '../socketEvents/socketEvents';
@@ -13,13 +12,9 @@ type PhaserConfig = Phaser.Types.Scenes.SettingsConfig;
 export abstract class BaseScene extends Scene {
 	protected registeredEvents = new Map<SOCKET_GAME_EVENTS, AnyCallback>();
 	key: SCENE_KEYS;
-	private nextSceneKey?: SCENE_KEYS;
+	nextSceneKey?: SCENE_KEYS;
 
-	constructor(
-		protected socketService: SocketService,
-		protected roomStateService: RoomStateService,
-		config: PhaserConfig
-	) {
+	constructor(protected socketService: SocketService, config: PhaserConfig) {
 		super(config);
 		this.key = config.key as SCENE_KEYS;
 		this.registerBaseListeners();
@@ -46,7 +41,10 @@ export abstract class BaseScene extends Scene {
 
 	protected nextScene(): void {
 		if (this.nextSceneKey) this.changeScene(this.nextSceneKey);
-		else console.error('Next scene key not set');
+		else {
+			console.log(this);
+			console.error('Next scene key not set');
+		}
 	}
 
 	private unregisterSocketListenersForThisScene(): void {
@@ -77,26 +75,14 @@ export abstract class BaseScene extends Scene {
 	}
 
 	private registerBaseListeners(): void {
-		this.socketService.registerSocketListener(SOCKET_GAME_EVENTS.PLAYERS_IN_GAME, (players: Player[]) => {
-			this.roomStateService.setPlayersInGame(players);
-		});
-
-		this.socketService.registerSocketListener(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, (player: Player) => {
-			this.roomStateService.addPlayer(player);
-		});
-
-		this.socketService.registerSocketListener(
-			SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED,
-			(playerId: string) => {
-				this.roomStateService.removePlayer(playerId);
-			}
-		);
-
-		this.socketService.registerSocketListener(
-			SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY,
-			(dto: { id: string; isReady: boolean }) => {
-				this.roomStateService.setPlayerReady(dto.id, dto.isReady);
-			}
-		);
+		// this.socketService.registerSocketListener(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, (player: Player) => {
+		// 	console.log(`player connected: ${player.id}`);
+		// });
+		// this.socketService.registerSocketListener(
+		// 	SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED,
+		// 	(playerId: string) => {
+		// 		console.log(`player disconnected: ${playerId}`);
+		// 	}
+		// );
 	}
 }

@@ -35,7 +35,6 @@ export class NewGameFormComponent implements OnInit, OnDestroy {
 	}
 
 	onSubmit(form: NgForm): void {
-		console.log(form.value);
 		const formValue = form.value;
 		if (formValue.password === '') delete formValue.password;
 

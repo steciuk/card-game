@@ -7,6 +7,7 @@ import { MakaoPlayer } from './MakaoPlayer';
 export class MakaoGame extends Game {
 	playersInGame = new Map<string, MakaoPlayer>();
 	deck = new Deck(DECK_TYPE.FULL);
+	discarded = new Deck(DECK_TYPE.FULL);
 	playersInOrder: MakaoPlayer[];
 	currentPlayer = 0;
 
@@ -28,16 +29,23 @@ export class MakaoGame extends Game {
 		this.playersInOrder = shuffleArray(Array.from(this.playersInGame.values()));
 
 		this.deck.full();
+		this.discarded.empty();
 		this.playersInOrder.forEach((player) => {
 			player.deck.add(this.deck.popNumRandomCardsAndRefillDeckIfNotEnough(5));
 		});
 	}
 
-	getCurrentPlayersId(): string {
-		return this.playersInOrder[this.currentPlayer].id;
-	}
-
 	getPlayersInOrderIds(): string[] {
 		return this.playersInOrder.map((player) => player.id);
 	}
+
+	// toMakaoGameStateDTO(player: MakaoPlayer): MakaoGameStateDTO {
+	// 	// return {};
+	// }
 }
+
+// class MakaoGameStateDTO {
+// 	constructor(private cards: CardId[], private currentPlayer: number){
+
+// 	}
+// }

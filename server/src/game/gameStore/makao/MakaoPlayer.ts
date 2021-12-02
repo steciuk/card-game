@@ -8,3 +8,14 @@ export class MakaoPlayer extends Player {
 		super(id, username, socketId);
 	}
 }
+
+export class MakaoPlayerDTO {
+	private id: string;
+	private username: string;
+	private numCards: number;
+	constructor(makaoPlayer: MakaoPlayer) {
+		this.id = makaoPlayer.id;
+		this.username = makaoPlayer.username;
+		this.numCards = makaoPlayer.deck.getNumOfCardsInDeck();
+	}
+}

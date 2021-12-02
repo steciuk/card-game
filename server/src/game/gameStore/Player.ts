@@ -11,8 +11,10 @@ export abstract class Player {
 	}
 
 	toPlayerDTO(): PlayerDTO {
-		return { id: this.id, username: this.username, isReady: this.isReady };
+		return new PlayerDTO(this.id, this.username, this.isReady);
 	}
 }
 
-export type PlayerDTO = { id: string; username: string; isReady: boolean };
+export class PlayerDTO {
+	constructor(private id: string, private username: string, private isReady: boolean) {}
+}

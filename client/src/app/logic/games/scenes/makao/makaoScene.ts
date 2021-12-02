@@ -1,12 +1,13 @@
-import { RoomStateService } from 'src/app/services/room-state.service';
 import { SocketService } from 'src/app/services/socket.service';
 
+import { SOCKET_GAME_EVENTS } from '../../socketEvents/socketEvents';
 import { BaseScene } from '../baseScene';
 import { SCENE_KEYS } from '../gamesSetup';
 
 export class MakaoScene extends BaseScene {
-	constructor(socketService: SocketService, roomStateService: RoomStateService) {
-		super(socketService, roomStateService, { key: SCENE_KEYS.MAKAO });
+	constructor(socketService: SocketService) {
+		super(socketService, { key: SCENE_KEYS.MAKAO });
+		this.registerListeners();
 	}
 
 	init(): void {}
@@ -20,4 +21,15 @@ export class MakaoScene extends BaseScene {
 	}
 
 	update(): void {}
+
+	registerListeners(): void {
+		this.registerSocketListenerForScene(
+			SOCKET_GAME_EVENTS.START_GAME,
+			(cards: string[], playersInOrderIds: string[]) => {
+				console.log(cards);
+				console.log(playersInOrderIds);
+				this.nextScene();
+			}
+		);
+	}
 }

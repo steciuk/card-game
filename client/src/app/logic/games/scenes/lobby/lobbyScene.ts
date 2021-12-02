@@ -1,5 +1,4 @@
 import { GameObjects } from 'phaser';
-import { RoomStateService } from 'src/app/services/room-state.service';
 import { SocketService } from 'src/app/services/socket.service';
 
 import { HEX_COLORS } from '../../phaserComponents/HexColors';
@@ -9,11 +8,14 @@ import { BaseScene } from '../baseScene';
 import { SCENE_KEYS } from '../gamesSetup';
 
 export class LobbyScene extends BaseScene {
-	constructor(socketService: SocketService, roomStateService: RoomStateService) {
-		super(socketService, roomStateService, { key: SCENE_KEYS.LOBBY });
+	playersInLobby = new Map<string, PlayerLobbyInfo>();
+
+	constructor(socketService: SocketService) {
+		super(socketService, { key: SCENE_KEYS.LOBBY });
 		this.registerListeners();
 	}
 
+	//TODO: change to PhaserComponent
 	private usernames: GameObjects.Text[] = [];
 	private startBtn!: PhaserButton;
 
@@ -21,8 +23,6 @@ export class LobbyScene extends BaseScene {
 	preload(): void {}
 	create(): void {
 		this.updateUsernames();
-
-		////
 
 		new PhaserButton(this, this.xRelative(0.5), this.yRelative(0.8), 'Ready', () => {
 			this.socketService.emitSocketEvent(SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY);
@@ -34,6 +34,7 @@ export class LobbyScene extends BaseScene {
 				console.log(messageToLog);
 			});
 		}).disable();
+		this.updateStartButton();
 
 		// this.time.addEvent({
 		// 	delay: 3000,
@@ -50,7 +51,7 @@ export class LobbyScene extends BaseScene {
 		this.usernames.forEach((username) => {
 			username.destroy();
 		});
-		this.roomStateService.getAllUsernamesAsArray().forEach((player, i) => {
+		this.playersInLobbyAsArray.forEach((player, i) => {
 			if (player.isReady)
 				this.usernames.push(this.add.text(10, 10 * i, player.username, { color: HEX_COLORS.GREEN }));
 			else this.usernames.push(this.add.text(10, 10 * i, player.username, { color: HEX_COLORS.BLACK }));
@@ -58,31 +59,69 @@ export class LobbyScene extends BaseScene {
 	}
 
 	private updateStartButton(): void {
-		if (this.roomStateService.areAllPlayersReady()) this.startBtn.enable();
+		if (
+			this.playersInLobbyAsArray.every((player) => {
+				return player.isReady;
+			})
+		)
+			this.startBtn.enable();
 		else this.startBtn.disable();
 	}
 
 	private registerListeners(): void {
-		this.registerSocketListenerForScene(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, () => {
-			this.updateUsernames();
-		});
-
-		this.registerSocketListenerForScene(SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED, () => {
-			this.updateUsernames();
-		});
-
-		this.registerSocketListenerForScene(SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY, () => {
-			this.updateUsernames();
-			this.updateStartButton();
-		});
-
 		this.registerSocketListenerForScene(
-			SOCKET_GAME_EVENTS.START_GAME,
-			(cards: string[], playersInOrderIds: string[]) => {
-				console.log(cards);
-				console.log(playersInOrderIds);
-				this.nextScene();
+			SOCKET_GAME_EVENTS.PLAYERS_IN_GAME,
+			(players: PlayerLobbyInfo[]) => {
+				this.playersInLobby.clear();
+				players.forEach((player) => {
+					this.playersInLobby.set(player.id, player);
+				});
 			}
 		);
+
+		this.registerSocketListenerForScene(
+			SOCKET_GAME_EVENTS.PLAYER_CONNECTED,
+			(player: PlayerLobbyInfo) => {
+				this.playersInLobby.set(player.id, player);
+				this.updateUsernames();
+				this.updateStartButton();
+			}
+		);
+
+		this.registerSocketListenerForScene(
+			SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED,
+			(player: PlayerLobbyInfo) => {
+				this.playersInLobby.delete(player.id);
+				this.updateUsernames();
+				this.updateStartButton();
+			}
+		);
+
+		this.registerSocketListenerForScene(
+			SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY,
+			(player: PlayerLobbyInfo) => {
+				const playerInLobby = this.playersInLobby.get(player.id);
+				if (playerInLobby) {
+					playerInLobby.isReady = player.isReady;
+					this.updateUsernames();
+					this.updateStartButton();
+				}
+			}
+		);
+
+		this.registerSocketListenerForScene(SOCKET_GAME_EVENTS.START_GAME, () => {
+			console.log(this.nextSceneKey);
+			this.nextScene();
+		});
+	}
+
+	private get playersInLobbyAsArray(): PlayerLobbyInfo[] {
+		return Array.from(this.playersInLobby.values());
 	}
 }
+
+type PlayerLobbyInfo = {
+	id: string;
+	username: string;
+	isReady: boolean;
+};

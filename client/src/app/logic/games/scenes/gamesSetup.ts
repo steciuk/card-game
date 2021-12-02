@@ -1,10 +1,17 @@
-import { RoomStateService } from 'src/app/services/room-state.service';
 import { SocketService } from 'src/app/services/socket.service';
 
 import { BaseScene } from './baseScene';
+import { LobbyScene } from './lobby/lobbyScene';
+import { MakaoScene } from './makao/makaoScene';
 
 export enum GameTypes {
 	MAKAO = 'MAKAO',
+}
+
+export class GAME_CONFIG {
+	static readonly MAKAO = new GAME_CONFIG([LobbyScene, MakaoScene]);
+
+	private constructor(public SceneConstructors: SceneInterface[]) {}
 }
 
 export enum SCENE_KEYS {
@@ -15,10 +22,9 @@ export enum SCENE_KEYS {
 export class GameSetup {
 	private createdScenes: BaseScene[] = [];
 
-	constructor(socketService: SocketService, roomStateService: RoomStateService, scenes: SceneInterface[]) {
-		roomStateService.resetRoomState();
-		scenes.forEach((Constructor) => {
-			this.createdScenes.push(new Constructor(socketService, roomStateService));
+	constructor(socketService: SocketService, gameConfig: GAME_CONFIG) {
+		gameConfig.SceneConstructors.forEach((Constructor) => {
+			this.createdScenes.push(new Constructor(socketService));
 		});
 
 		for (let i = 0; i < this.createdScenes.length - 1; i++) {
@@ -32,5 +38,5 @@ export class GameSetup {
 }
 
 interface SceneInterface {
-	new (socketService: SocketService, roomState: RoomStateService): BaseScene;
+	new (socketService: SocketService): BaseScene;
 }

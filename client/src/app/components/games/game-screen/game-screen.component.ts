@@ -1,12 +1,9 @@
 import Phaser from 'phaser';
 import { GameDTO } from 'src/app/logic/DTO/gameDTO';
 import { PHASER_CONFIG } from 'src/app/logic/games/phaserConfig';
-import { GameSetup } from 'src/app/logic/games/scenes/gamesSetup';
-import { MakaoScene } from 'src/app/logic/games/scenes/makao/makaoScene';
-import { LobbyScene } from 'src/app/logic/games/scenes/menu/lobbyScene';
+import { GAME_CONFIG, GameSetup } from 'src/app/logic/games/scenes/gamesSetup';
 import { BUILD_IN_SOCKET_GAME_EVENTS } from 'src/app/logic/games/socketEvents/socketEvents';
 import { HttpService } from 'src/app/services/http.service';
-import { RoomStateService } from 'src/app/services/room-state.service';
 import { SocketService } from 'src/app/services/socket.service';
 import { SubSink } from 'subsink';
 
@@ -36,8 +33,7 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 		private route: ActivatedRoute,
 		private http: HttpService,
 		private router: Router,
-		private socketService: SocketService,
-		private roomStateService: RoomStateService
+		private socketService: SocketService
 	) {}
 
 	ngOnInit(): void {
@@ -78,7 +74,7 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 			console.log('err', error);
 		});
 
-		this.gameSetup = new GameSetup(this.socketService, this.roomStateService, [LobbyScene, MakaoScene]);
+		this.gameSetup = new GameSetup(this.socketService, GAME_CONFIG.MAKAO);
 
 		this.socketService.connect();
 	}

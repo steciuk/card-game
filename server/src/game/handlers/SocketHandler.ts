@@ -68,16 +68,23 @@ export abstract class GameHandler {
 
 		socket.on(SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY, () => {
 			player.toggleIsReady();
-			this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY, gameId, {
-				id: player.id,
-				isReady: player.isReady,
-			});
+			this.emitToRoomAndSender(
+				socket,
+				SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY,
+				gameId,
+				player.toPlayerDTO()
+			);
 		});
 
 		socket.on(BUILD_IN_SOCKET_GAME_EVENTS.DISCONNECT, (reason) => {
 			GameHandler.connectedUsers.delete(userId);
 			game.removePlayer(userId);
-			this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED, userId);
+			this.emitToRoomAndSender(
+				socket,
+				SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED,
+				gameId,
+				player.toPlayerDTO()
+			);
 
 			llog(`Socket ${socket.id} disconnected - ${reason}`);
 		});
