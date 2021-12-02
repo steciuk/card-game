@@ -76,8 +76,13 @@ export class LobbyScene extends BaseScene {
 			this.updateStartButton();
 		});
 
-		this.registerSocketListenerForScene(SOCKET_GAME_EVENTS.START_GAME, () => {
-			this.nextScene();
-		});
+		this.registerSocketListenerForScene(
+			SOCKET_GAME_EVENTS.START_GAME,
+			(cards: string[], playersInOrderIds: string[]) => {
+				console.log(cards);
+				console.log(playersInOrderIds);
+				this.nextScene();
+			}
+		);
 	}
 }

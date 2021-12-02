@@ -74,13 +74,6 @@ export abstract class GameHandler {
 			});
 		});
 
-		socket.on(SOCKET_GAME_EVENTS.START_GAME, (callback: (messageToLog: string) => void) => {
-			if (game.areAllPlayersReady()) {
-				game.start();
-				this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.START_GAME, gameId);
-			} else callback('Not all players ready'); //TODO: standardize callback responses
-		});
-
 		socket.on(BUILD_IN_SOCKET_GAME_EVENTS.DISCONNECT, (reason) => {
 			GameHandler.connectedUsers.delete(userId);
 			game.removePlayer(userId);
@@ -151,7 +144,12 @@ export abstract class GameHandler {
 
 			GameHandler.connectedUsers.add(userId);
 
-			const newPlayer = PlayerFactory.createPlayerObject(game.gameType, user.id, user.username);
+			const newPlayer = PlayerFactory.createPlayerObject(
+				game.gameType,
+				user.id,
+				user.username,
+				socket.id
+			);
 			game.addPlayer(newPlayer);
 			socket.join(gameId);
 			socket.to(gameId).emit(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, newPlayer.toPlayerDTO());

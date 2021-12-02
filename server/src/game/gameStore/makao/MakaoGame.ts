@@ -1,14 +1,18 @@
+import { shuffleArray } from '../../../utils/Tools';
 import { GameTypes } from '../../GameTypes';
+import { Deck, DECK_TYPE } from '../deck/Deck';
 import { Game } from '../Game';
-import { Player } from '../Player';
 import { MakaoPlayer } from './MakaoPlayer';
 
 export class MakaoGame extends Game {
-	playersInGame: Map<string, MakaoPlayer>;
+	playersInGame = new Map<string, MakaoPlayer>();
+	deck = new Deck(DECK_TYPE.FULL);
+	playersInOrder: MakaoPlayer[];
+	currentPlayer = 0;
 
 	constructor(
 		public gameType: GameTypes,
-		public owner: Player,
+		public owner: { id: string; username: string },
 		public maxPlayers: number,
 		public roomName: string,
 		public isPasswordProtected: boolean,
@@ -17,5 +21,23 @@ export class MakaoGame extends Game {
 		public password?: string
 	) {
 		super(gameType, owner, maxPlayers, roomName, isPasswordProtected, created, id, password);
+	}
+
+	start(): void {
+		super.start();
+		this.playersInOrder = shuffleArray(Array.from(this.playersInGame.values()));
+
+		this.deck.full();
+		this.playersInOrder.forEach((player) => {
+			player.deck.add(this.deck.popNumRandomCardsAndRefillDeckIfNotEnough(5));
+		});
+	}
+
+	getCurrentPlayersId(): string {
+		return this.playersInOrder[this.currentPlayer].id;
+	}
+
+	getPlayersInOrderIds(): string[] {
+		return this.playersInOrder.map((player) => player.id);
 	}
 }

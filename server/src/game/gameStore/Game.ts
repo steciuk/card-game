@@ -5,7 +5,7 @@ export abstract class Game {
 	// CONSTANTS
 	constructor(
 		public gameType: GameTypes,
-		public owner: Player,
+		public owner: { id: string; username: string },
 		public maxPlayers: number,
 		public roomName: string,
 		public isPasswordProtected: boolean,

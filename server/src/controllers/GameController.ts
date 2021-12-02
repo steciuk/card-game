@@ -9,7 +9,6 @@ import {
 } from '../errors/httpErrors/ResourceNotFoundError';
 import { GameFactory } from '../game/gameStore/GameFactory';
 import { GamesStore } from '../game/gameStore/GamesStore';
-import { PlayerFactory } from '../game/gameStore/PlayerFactory';
 import { dtoValidationMiddleware } from '../middlewares/DtoValidationMiddleware';
 import { jwtAuthMiddleware } from '../middlewares/JwtAuthMiddleware';
 import { GameModel } from '../models/GameModel';
@@ -56,7 +55,7 @@ export class GameController extends Controller {
 
 		const game = GameFactory.createGameObject(
 			savedGame.gameType,
-			PlayerFactory.createPlayerObject(savedGame.gameType, owner.id, owner.username),
+			{ id: owner.id, username: owner.username },
 			savedGame.maxPlayers,
 			savedGame.roomName,
 			createdGame.isPasswordProtected,
