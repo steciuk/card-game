@@ -28,7 +28,6 @@ export class MakaoScene extends BaseScene {
 			(cards: string[], playersInOrderIds: string[]) => {
 				console.log(cards);
 				console.log(playersInOrderIds);
-				this.nextScene();
 			}
 		);
 	}
