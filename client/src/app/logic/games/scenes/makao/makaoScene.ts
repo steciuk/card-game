@@ -1,6 +1,6 @@
 import { SocketService } from 'src/app/services/socket.service';
 
-import { PhaserDeck } from '../../phaserComponents/phaserDeck';
+import { CardPlayedDTO, PhaserDeck } from '../../phaserComponents/phaserDeck';
 import { PhaserDropZone } from '../../phaserComponents/phaserDropZone';
 import { SOCKET_GAME_EVENTS } from '../../socketEvents/socketEvents';
 import { BaseScene } from '../baseScene';
@@ -28,6 +28,7 @@ export class MakaoScene extends BaseScene {
 
 	constructor(socketService: SocketService) {
 		super(socketService, { key: SCENE_KEYS.MAKAO });
+		this.registerListeners();
 	}
 
 	init(): void {}
@@ -55,6 +56,21 @@ export class MakaoScene extends BaseScene {
 	}
 
 	update(): void {}
+
+	registerListeners(): void {
+		//FIXME: temporary
+		console.log('eeeee');
+		this.registerSocketListenerForScene(
+			SOCKET_GAME_EVENTS.CARD_PLAYED,
+			(cardPlayedDTO: CardPlayedDTO) => {
+				console.log('cardPlayedDTO');
+				this.players.get(cardPlayedDTO.playerId as string)?.deck.destroyCard();
+				this.add
+					.sprite(this.xRelative(0.5), this.yRelative(0.5), cardPlayedDTO.message)
+					.setScale(SCENE_CONFIG.BASE_CARD_SCALE);
+			}
+		);
+	}
 
 	private updateGameState(makaoGameStateForPlayer: MakaoGameStateForPlayerDTO): void {
 		const midPoint = { x: this.xRelative(0.5), y: this.yRelative(0.5) };
@@ -115,7 +131,7 @@ export class MakaoScene extends BaseScene {
 	private drawOtherPlayersCards(): void {
 		this.shiftedPlayersIdsInOrder.slice(1).forEach((playerId) => {
 			const player = this.players.get(playerId) as MakaoPlayer;
-			new PhaserDeck(
+			player.deck = new PhaserDeck(
 				this,
 				player.x,
 				player.y,
@@ -184,6 +200,8 @@ class MakaoPlayer {
 	x = 0;
 	y = 0;
 	rotation = 0;
+	//FIXME: temporary
+	deck!: PhaserDeck;
 
 	constructor(public id: string, public username: string, public numCards: number) {}
 

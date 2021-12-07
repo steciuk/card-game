@@ -21,10 +21,10 @@ export class MakaoHandler extends GameHandler {
 		if (!(player instanceof MakaoPlayer)) throw new Error('PlayerType mismatch');
 
 		socket.on(SOCKET_GAME_EVENTS.START_GAME, (callback: (messageToLog: string) => void) => {
-			if (game.areAllPlayersReady()) {
-				game.start();
-				this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.START_GAME, game.id);
-			} else callback('Not all players ready'); //TODO: standardize callback responses
+			if (game.numPlayersInGame < 2) return callback('Minimum 2 players required');
+			if (!game.areAllPlayersReady()) return callback('Not all players ready');
+			game.start();
+			this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.START_GAME, game.id);
 		});
 
 		socket.on(
@@ -39,8 +39,15 @@ export class MakaoHandler extends GameHandler {
 			(cardId: CardId, callback: (response: CardPlayedDTO) => void) => {
 				// if(game.currentPlayerId !== player.id) return callback({played: false, message: 'Not your turn'})
 				const cardPlayed = player.deck.pop(cardId);
-				if (cardPlayed) return callback({ played: true });
-				else return callback({ played: false, message: 'No such card in your deck' });
+				if (!cardPlayed) return callback({ played: false, message: 'No such card in your deck' });
+
+				socket.to(game.id).emit(SOCKET_GAME_EVENTS.CARD_PLAYED, {
+					played: true,
+					playerId: player.id,
+					message: cardPlayed,
+				});
+
+				callback({ played: true, message: cardPlayed });
 			}
 		);
 	}
@@ -48,5 +55,6 @@ export class MakaoHandler extends GameHandler {
 
 type CardPlayedDTO = {
 	played: boolean;
-	message?: string;
+	playerId?: string;
+	message: string;
 };

@@ -57,6 +57,10 @@ export class PhaserDeck {
 								if (response.played) {
 									card.destroy();
 									this.alignCards();
+									//FIXME: Temporary. Create way to update game state with animations
+									scene.add
+										.sprite(scene.xRelative(0.5), scene.yRelative(0.5), response.message)
+										.setScale(cardsScale);
 								}
 							}
 						);
@@ -66,12 +70,18 @@ export class PhaserDeck {
 		}
 	}
 
-	private alignCards(): void {
+	//FIXME: temporary
+	destroyCard(): void {
+		this.deck.getAt(0).destroy();
+	}
+
+	alignCards(): void {
 		Actions.PlaceOnLine(this.deck.getAll(), this.cardsLine);
 	}
 }
 
-type CardPlayedDTO = {
+export type CardPlayedDTO = {
 	played: boolean;
-	message?: string;
+	playerId?: string;
+	message: string;
 };

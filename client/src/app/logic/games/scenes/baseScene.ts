@@ -66,11 +66,11 @@ export abstract class BaseScene extends Scene {
 		this.load.image('RB', 'assets/cards/backs/red_back.png');
 	}
 
-	protected xRelative(x: number): number {
+	xRelative(x: number): number {
 		return this.width * x;
 	}
 
-	protected yRelative(y: number): number {
+	yRelative(y: number): number {
 		return this.height * y;
 	}
 
