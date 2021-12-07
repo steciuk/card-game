@@ -2,14 +2,18 @@ import { shuffleArray } from '../../../utils/Tools';
 import { GameTypes } from '../../GameTypes';
 import { Deck, DECK_TYPE } from '../deck/Deck';
 import { Game } from '../Game';
-import { MakaoPlayer } from './MakaoPlayer';
+import {
+	MakaoPlayer,
+	OtherMakaoPlayerDTO,
+	ThisMakaoPlayerDTO
+} from './MakaoPlayer';
 
 export class MakaoGame extends Game {
 	playersInGame = new Map<string, MakaoPlayer>();
 	deck = new Deck(DECK_TYPE.FULL);
 	discarded = new Deck(DECK_TYPE.FULL);
 	playersInOrder: MakaoPlayer[];
-	currentPlayer = 0;
+	currentPlayerNumber = 0;
 
 	constructor(
 		public gameType: GameTypes,
@@ -34,18 +38,22 @@ export class MakaoGame extends Game {
 			player.deck.add(this.deck.popNumRandomCardsAndRefillDeckIfNotEnough(5));
 		});
 	}
-
-	getPlayersInOrderIds(): string[] {
-		return this.playersInOrder.map((player) => player.id);
-	}
-
-	// toMakaoGameStateDTO(player: MakaoPlayer): MakaoGameStateDTO {
-	// 	// return {};
-	// }
 }
 
-// class MakaoGameStateDTO {
-// 	constructor(private cards: CardId[], private currentPlayer: number){
+export class MakaoGameStateForPlayerDTO {
+	constructor(
+		private thisMakaoPlayer: ThisMakaoPlayerDTO,
+		private currentPlayerNumber: number,
+		private makaoPlayersInOrder: OtherMakaoPlayerDTO[]
+	) {}
 
-// 	}
-// }
+	static fromMakaoGameDTO(makaoGame: MakaoGame, makaoPlayer: MakaoPlayer): MakaoGameStateForPlayerDTO {
+		return new MakaoGameStateForPlayerDTO(
+			ThisMakaoPlayerDTO.fromMakaoPlayer(makaoPlayer),
+			makaoGame.currentPlayerNumber,
+			makaoGame.playersInOrder.map((makaoPlayer: MakaoPlayer) =>
+				OtherMakaoPlayerDTO.fromMakaoPlayer(makaoPlayer)
+			)
+		);
+	}
+}

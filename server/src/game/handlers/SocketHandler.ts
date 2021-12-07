@@ -7,7 +7,6 @@ import {
 	ResourceNotFoundError
 } from '../../errors/httpErrors/ResourceNotFoundError';
 import { SocketBadConnectionError } from '../../errors/socketErrors/SocketBadConnectionError';
-import { SocketGameAlreadyStartedError } from '../../errors/socketErrors/SocketGameAlreadyStartedError';
 import { SocketRoomFullError } from '../../errors/socketErrors/SocketRoomFullError';
 import { SocketUnauthorizedError } from '../../errors/socketErrors/SocketUnauthorizedError';
 import { SocketUserAlreadyConnectedError } from '../../errors/socketErrors/SocketUserAlreadyConnectedError';
@@ -139,7 +138,8 @@ export abstract class GameHandler {
 			const game = GamesStore.Instance.getGame(gameId);
 			if (!game) return next(new ResourceNotFoundError(DB_RESOURCES.GAME, gameId)); // TODO: change since not using db anymore
 
-			if (game.isStarted) next(new SocketGameAlreadyStartedError());
+			//FIXME: Uncomment! Dev purpose only!
+			// if (game.isStarted) next(new SocketGameAlreadyStartedError());
 
 			if (game.isPasswordProtected) {
 				const password = socket.handshake.query.password;

@@ -6,6 +6,7 @@ export enum SOCKET_GAME_EVENTS {
 	PLAYERS_IN_GAME = 'players_in_game',
 	PLAYER_TOGGLE_READY = 'player_toggle_ready',
 	START_GAME = 'start_game',
+	GET_GAME_STATE = 'get_game_state',
 }
 
 export enum BUILD_IN_SOCKET_GAME_EVENTS {

@@ -1,6 +1,9 @@
 import { Server, Socket } from 'socket.io';
 
-import { MakaoGame } from '../gameStore/makao/MakaoGame';
+import {
+	MakaoGame,
+	MakaoGameStateForPlayerDTO
+} from '../gameStore/makao/MakaoGame';
 import { MakaoPlayer } from '../gameStore/makao/MakaoPlayer';
 import { GameTypes } from '../GameTypes';
 import { SOCKET_GAME_EVENTS } from './SocketEvents';
@@ -19,21 +22,15 @@ export class MakaoHandler extends GameHandler {
 		socket.on(SOCKET_GAME_EVENTS.START_GAME, (callback: (messageToLog: string) => void) => {
 			if (game.areAllPlayersReady()) {
 				game.start();
-				socket.emit(
-					SOCKET_GAME_EVENTS.START_GAME,
-					player.deck.getInDeck(),
-					game.getPlayersInOrderIds()
-				);
-				game.playersInOrder.forEach((playerInGame: MakaoPlayer) => {
-					socket
-						.to(playerInGame.socketId)
-						.emit(
-							SOCKET_GAME_EVENTS.START_GAME,
-							playerInGame.deck.getInDeck(),
-							game.getPlayersInOrderIds()
-						);
-				});
+				this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.START_GAME, game.id);
 			} else callback('Not all players ready'); //TODO: standardize callback responses
 		});
+
+		socket.on(
+			SOCKET_GAME_EVENTS.GET_GAME_STATE,
+			(callback: (makaoGameStateForPlayer: MakaoGameStateForPlayerDTO) => void) => {
+				callback(MakaoGameStateForPlayerDTO.fromMakaoGameDTO(game, player));
+			}
+		);
 	}
 }

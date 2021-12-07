@@ -8,7 +8,7 @@ import { BaseScene } from '../baseScene';
 import { SCENE_KEYS } from '../gamesSetup';
 
 export class LobbyScene extends BaseScene {
-	playersInLobby = new Map<string, PlayerLobbyInfo>();
+	playersInLobby = new Map<string, LobbyPlayerDTO>();
 
 	constructor(socketService: SocketService) {
 		super(socketService, { key: SCENE_KEYS.LOBBY });
@@ -71,7 +71,7 @@ export class LobbyScene extends BaseScene {
 	private registerListeners(): void {
 		this.registerSocketListenerForScene(
 			SOCKET_GAME_EVENTS.PLAYERS_IN_GAME,
-			(players: PlayerLobbyInfo[]) => {
+			(players: LobbyPlayerDTO[]) => {
 				this.playersInLobby.clear();
 				players.forEach((player) => {
 					this.playersInLobby.set(player.id, player);
@@ -79,18 +79,15 @@ export class LobbyScene extends BaseScene {
 			}
 		);
 
-		this.registerSocketListenerForScene(
-			SOCKET_GAME_EVENTS.PLAYER_CONNECTED,
-			(player: PlayerLobbyInfo) => {
-				this.playersInLobby.set(player.id, player);
-				this.updateUsernames();
-				this.updateStartButton();
-			}
-		);
+		this.registerSocketListenerForScene(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, (player: LobbyPlayerDTO) => {
+			this.playersInLobby.set(player.id, player);
+			this.updateUsernames();
+			this.updateStartButton();
+		});
 
 		this.registerSocketListenerForScene(
 			SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED,
-			(player: PlayerLobbyInfo) => {
+			(player: LobbyPlayerDTO) => {
 				this.playersInLobby.delete(player.id);
 				this.updateUsernames();
 				this.updateStartButton();
@@ -99,7 +96,7 @@ export class LobbyScene extends BaseScene {
 
 		this.registerSocketListenerForScene(
 			SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY,
-			(player: PlayerLobbyInfo) => {
+			(player: LobbyPlayerDTO) => {
 				const playerInLobby = this.playersInLobby.get(player.id);
 				if (playerInLobby) {
 					playerInLobby.isReady = player.isReady;
@@ -110,17 +107,16 @@ export class LobbyScene extends BaseScene {
 		);
 
 		this.registerSocketListenerForScene(SOCKET_GAME_EVENTS.START_GAME, () => {
-			console.log(this.nextSceneKey);
 			this.nextScene();
 		});
 	}
 
-	private get playersInLobbyAsArray(): PlayerLobbyInfo[] {
+	private get playersInLobbyAsArray(): LobbyPlayerDTO[] {
 		return Array.from(this.playersInLobby.values());
 	}
 }
 
-type PlayerLobbyInfo = {
+type LobbyPlayerDTO = {
 	id: string;
 	username: string;
 	isReady: boolean;

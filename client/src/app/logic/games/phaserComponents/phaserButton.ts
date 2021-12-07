@@ -1,15 +1,13 @@
 import { GameObjects, Scene } from 'phaser';
 
 import { HEX_COLORS } from './HexColors';
-import { PhaserBaseComponent } from './phaserBaseComponent';
 
-export class PhaserButton extends PhaserBaseComponent {
+export class PhaserButton {
 	private button: GameObjects.Text;
 
 	constructor(scene: Scene, x: number, y: number, text: string, callback: () => void) {
-		super();
-
-		this.button = this.add(scene.add.text(x, y, text))
+		this.button = scene.add
+			.text(x, y, text)
 			.setOrigin(0.5)
 			.setPadding(10)
 			.setStyle({ backgroundColor: HEX_COLORS.GREEN })
