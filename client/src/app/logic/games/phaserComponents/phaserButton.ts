@@ -1,6 +1,6 @@
 import { GameObjects, Scene } from 'phaser';
 
-import { HEX_COLORS } from './HexColors';
+import { HEX_COLORS_STRING } from './HexColors';
 
 export class PhaserButton {
 	private button: GameObjects.Text;
@@ -10,20 +10,20 @@ export class PhaserButton {
 			.text(x, y, text)
 			.setOrigin(0.5)
 			.setPadding(10)
-			.setStyle({ backgroundColor: HEX_COLORS.GREEN })
+			.setStyle({ backgroundColor: HEX_COLORS_STRING.GREEN })
 			.setInteractive({ useHandCursor: true })
 			.on('pointerup', callback)
-			.on('pointerover', () => this.button.setStyle({ backgroundColor: HEX_COLORS.DARK_GREEN }))
-			.on('pointerout', () => this.button.setStyle({ backgroundColor: HEX_COLORS.GREEN }));
+			.on('pointerover', () => this.button.setStyle({ backgroundColor: HEX_COLORS_STRING.DARK_GREEN }))
+			.on('pointerout', () => this.button.setStyle({ backgroundColor: HEX_COLORS_STRING.GREEN }));
 	}
 
 	disable(): PhaserButton {
-		this.button.setStyle({ backgroundColor: HEX_COLORS.GRAY }).disableInteractive();
+		this.button.setStyle({ backgroundColor: HEX_COLORS_STRING.GRAY }).disableInteractive();
 		return this;
 	}
 
 	enable(): PhaserButton {
-		this.button.setStyle({ backgroundColor: HEX_COLORS.GREEN }).setInteractive();
+		this.button.setStyle({ backgroundColor: HEX_COLORS_STRING.GREEN }).setInteractive();
 		return this;
 	}
 }

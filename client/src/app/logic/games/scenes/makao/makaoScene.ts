@@ -1,7 +1,7 @@
 import { SocketService } from 'src/app/services/socket.service';
 
 import { PhaserDeck } from '../../phaserComponents/phaserDeck';
-import { PHASER_CONFIG } from '../../phaserConfig';
+import { PhaserDropZone } from '../../phaserComponents/phaserDropZone';
 import { SOCKET_GAME_EVENTS } from '../../socketEvents/socketEvents';
 import { BaseScene } from '../baseScene';
 import { SCENE_KEYS } from '../gamesSetup';
@@ -12,6 +12,7 @@ const SCENE_CONFIG = {
 	BASE_CARD_SCALE: 0.2,
 	MIN_CARD_SCALE: 0.1,
 	THIS_PLAYER_DECK_PART_OF_SCREEN_WIDTH: 0.8,
+	DROP_ZONE_PERCENTAGE_OF_SCREEN: 0.3,
 };
 
 export class MakaoScene extends BaseScene {
@@ -50,6 +51,7 @@ export class MakaoScene extends BaseScene {
 	private afterCreate(): void {
 		this.drawOtherPlayersCards();
 		this.drawThisPlayersCards();
+		this.drawDropZone();
 	}
 
 	update(): void {}
@@ -74,8 +76,7 @@ export class MakaoScene extends BaseScene {
 		);
 
 		const radius =
-			(Math.min(PHASER_CONFIG.height, PHASER_CONFIG.width) / 2) *
-			SCENE_CONFIG.N_GON_RADIUS_PART_OF_GAME_SCREEN;
+			(Math.min(this.height, this.width) / 2) * SCENE_CONFIG.N_GON_RADIUS_PART_OF_GAME_SCREEN;
 
 		this.deckWidth =
 			2 * radius * Math.sin(Math.PI / this.numberOfPlayers) * SCENE_CONFIG.DECK_PART_OF_N_GON_SIDE;
@@ -105,8 +106,9 @@ export class MakaoScene extends BaseScene {
 			this.yRelative(0.9),
 			0,
 			SCENE_CONFIG.BASE_CARD_SCALE,
-			PHASER_CONFIG.width * SCENE_CONFIG.THIS_PLAYER_DECK_PART_OF_SCREEN_WIDTH,
-			this.thisPlayer.cards
+			this.width * SCENE_CONFIG.THIS_PLAYER_DECK_PART_OF_SCREEN_WIDTH,
+			this.thisPlayer.cards,
+			true
 		);
 	}
 
@@ -121,9 +123,20 @@ export class MakaoScene extends BaseScene {
 				this.otherPlayersCardsScale,
 				this.deckWidth,
 				'RB',
+				false,
 				player.numCards
 			);
 		});
+	}
+
+	private drawDropZone(): void {
+		new PhaserDropZone(
+			this,
+			this.xRelative(0.5),
+			this.yRelative(0.5),
+			this.xRelative(SCENE_CONFIG.DROP_ZONE_PERCENTAGE_OF_SCREEN),
+			this.yRelative(SCENE_CONFIG.DROP_ZONE_PERCENTAGE_OF_SCREEN)
+		);
 	}
 }
 

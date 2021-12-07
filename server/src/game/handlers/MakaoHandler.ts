@@ -1,5 +1,6 @@
 import { Server, Socket } from 'socket.io';
 
+import { CardId } from '../gameStore/deck/Card';
 import {
 	MakaoGame,
 	MakaoGameStateForPlayerDTO
@@ -32,5 +33,20 @@ export class MakaoHandler extends GameHandler {
 				callback(MakaoGameStateForPlayerDTO.fromMakaoGameDTO(game, player));
 			}
 		);
+
+		socket.on(
+			SOCKET_GAME_EVENTS.CARD_PLAYED,
+			(cardId: CardId, callback: (response: CardPlayedDTO) => void) => {
+				// if(game.currentPlayerId !== player.id) return callback({played: false, message: 'Not your turn'})
+				const cardPlayed = player.deck.pop(cardId);
+				if (cardPlayed) return callback({ played: true });
+				else return callback({ played: false, message: 'No such card in your deck' });
+			}
+		);
 	}
 }
+
+type CardPlayedDTO = {
+	played: boolean;
+	message?: string;
+};

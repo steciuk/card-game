@@ -14,7 +14,7 @@ export abstract class BaseScene extends Scene {
 	key: SCENE_KEYS;
 	nextSceneKey?: SCENE_KEYS;
 
-	constructor(protected socketService: SocketService, config: PhaserConfig) {
+	constructor(public socketService: SocketService, config: PhaserConfig) {
 		super(config);
 		this.key = config.key as SCENE_KEYS;
 		this.registerBaseListeners();
@@ -67,11 +67,19 @@ export abstract class BaseScene extends Scene {
 	}
 
 	protected xRelative(x: number): number {
-		return this.sys.game.canvas.width * x;
+		return this.width * x;
 	}
 
 	protected yRelative(y: number): number {
-		return this.sys.game.canvas.width * y;
+		return this.height * y;
+	}
+
+	protected get width(): number {
+		return this.sys.game.canvas.width;
+	}
+
+	protected get height(): number {
+		return this.sys.game.canvas.height;
 	}
 
 	private registerBaseListeners(): void {

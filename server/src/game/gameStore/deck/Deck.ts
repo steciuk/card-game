@@ -39,8 +39,9 @@ export class Deck {
 		}
 	}
 
-	pop(cardId: CardId): CardId {
+	pop(cardId: CardId): CardId | null {
 		const index = this.inDeck.indexOf(cardId);
+		if (index < 0) return null;
 		this.inDeck.splice(index, 1);
 		return cardId;
 	}
@@ -58,7 +59,7 @@ export class Deck {
 		if (num <= this.inDeck.length) {
 			for (let i = 0; i < num; i++) {
 				const card = chooseRandomArrayElement(this.inDeck);
-				cards.push(this.pop(card));
+				cards.push(this.pop(card) as CardId);
 			}
 		} else if (discarded) {
 			const missing = num - this.inDeck.length;

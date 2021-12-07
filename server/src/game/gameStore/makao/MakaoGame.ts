@@ -28,6 +28,10 @@ export class MakaoGame extends Game {
 		super(gameType, owner, maxPlayers, roomName, isPasswordProtected, created, id, password);
 	}
 
+	get currentPlayerId(): string {
+		return this.playersInOrder[this.currentPlayerNumber].id;
+	}
+
 	start(): void {
 		super.start();
 		this.playersInOrder = shuffleArray(Array.from(this.playersInGame.values()));
