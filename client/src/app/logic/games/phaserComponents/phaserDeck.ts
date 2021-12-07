@@ -1,4 +1,4 @@
-import { GameObjects, Scene } from 'phaser';
+import { Actions, GameObjects, Geom, Scene } from 'phaser';
 
 export class PhaserDeck {
 	private deck: GameObjects.Container;
@@ -10,16 +10,17 @@ export class PhaserDeck {
 		rotation: number,
 		cardsScale: number,
 		deckWidth: number,
-		cards: string | string[],
+		cardIds: string | string[],
 		numberOfCards = 1
 	) {
 		this.deck = scene.add.container(x, y).setRotation(rotation);
-		if (Array.isArray(cards)) {
-			cards.forEach((card, i) => this.deck.add(scene.add.sprite(i * 80, 0, card).setScale(cardsScale)));
-		} else {
-			for (let i = 0; i < numberOfCards; i++) {
-				this.deck.add(scene.add.sprite(i * 80, 0, cards).setScale(cardsScale));
-			}
-		}
+		let cardsToDraw: string[] = [];
+
+		Array.isArray(cardIds) ? (cardsToDraw = cardIds) : (cardsToDraw = Array(numberOfCards).fill(cardIds));
+
+		cardsToDraw.forEach((card, i) => this.deck.add(scene.add.sprite(0, 0, card).setScale(cardsScale)));
+
+		const line = new Geom.Line(-deckWidth / 2, 0, deckWidth / 2, 0);
+		Actions.PlaceOnLine(this.deck.getAll(), line);
 	}
 }
