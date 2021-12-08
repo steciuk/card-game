@@ -2,8 +2,8 @@ import { Server, Socket } from 'socket.io';
 
 import { CardId } from '../gameStore/deck/Card';
 import {
-	MakaoGame,
-	MakaoGameStateForPlayerDTO
+	InitialMakaoGameStateForPlayerDTO,
+	MakaoGame
 } from '../gameStore/makao/MakaoGame';
 import { MakaoPlayer } from '../gameStore/makao/MakaoPlayer';
 import { GameTypes } from '../GameTypes';
@@ -29,23 +29,26 @@ export class MakaoHandler extends GameHandler {
 
 		socket.on(
 			SOCKET_GAME_EVENTS.GET_GAME_STATE,
-			(callback: (makaoGameStateForPlayer: MakaoGameStateForPlayerDTO) => void) => {
-				callback(MakaoGameStateForPlayerDTO.fromMakaoGameDTO(game, player));
+			(callback: (makaoGameStateForPlayer: InitialMakaoGameStateForPlayerDTO) => void) => {
+				callback(InitialMakaoGameStateForPlayerDTO.fromMakaoGameDTO(game, player));
 			}
 		);
 
 		socket.on(
 			SOCKET_GAME_EVENTS.CARD_PLAYED,
-			(cardId: CardId, callback: (response: CardPlayedDTO) => void) => {
-				// if(game.currentPlayerId !== player.id) return callback({played: false, message: 'Not your turn'})
+			(cardId: CardId, callback: (response: CardPlayedResponseDTO) => void) => {
+				if (game.currentPlayerId !== player.id)
+					return callback({ played: false, message: 'Not your turn' });
 				const cardPlayed = player.deck.pop(cardId);
 				if (!cardPlayed) return callback({ played: false, message: 'No such card in your deck' });
 
-				socket.to(game.id).emit(SOCKET_GAME_EVENTS.CARD_PLAYED, {
-					played: true,
+				game.nextPlayer();
+
+				this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.CARD_PLAYED, game.id, {
 					playerId: player.id,
-					message: cardPlayed,
-				});
+					cardId: cardPlayed,
+					currentPlayerId: game.currentPlayerId,
+				} as CardPlayedDTO);
 
 				callback({ played: true, message: cardPlayed });
 			}
@@ -53,8 +56,13 @@ export class MakaoHandler extends GameHandler {
 	}
 }
 
-type CardPlayedDTO = {
+type CardPlayedResponseDTO = {
 	played: boolean;
-	playerId?: string;
 	message: string;
+};
+
+type CardPlayedDTO = {
+	playerId: string;
+	cardId: CardId;
+	currentPlayerId: string;
 };

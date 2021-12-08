@@ -23,7 +23,7 @@ export class OtherMakaoPlayerDTO {
 }
 
 export class ThisMakaoPlayerDTO {
-	constructor(private id: string, private username: string, private cards: CardId[]) {}
+	constructor(private id: string, private username: string, private cardIds: CardId[]) {}
 
 	static fromMakaoPlayer(makaoPlayer: MakaoPlayer): ThisMakaoPlayerDTO {
 		return new ThisMakaoPlayerDTO(makaoPlayer.id, makaoPlayer.username, makaoPlayer.deck.getInDeck());

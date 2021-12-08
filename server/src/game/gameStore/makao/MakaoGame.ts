@@ -32,6 +32,11 @@ export class MakaoGame extends Game {
 		return this.playersInOrder[this.currentPlayerNumber].id;
 	}
 
+	nextPlayer(): void {
+		if (this.currentPlayerNumber >= this.numPlayersInGame - 1) this.currentPlayerNumber = 0;
+		else this.currentPlayerNumber++;
+	}
+
 	start(): void {
 		super.start();
 		this.playersInOrder = shuffleArray(Array.from(this.playersInGame.values()));
@@ -44,17 +49,20 @@ export class MakaoGame extends Game {
 	}
 }
 
-export class MakaoGameStateForPlayerDTO {
+export class InitialMakaoGameStateForPlayerDTO {
 	constructor(
 		private thisMakaoPlayer: ThisMakaoPlayerDTO,
-		private currentPlayerNumber: number,
+		private currentPlayerId: string,
 		private makaoPlayersInOrder: OtherMakaoPlayerDTO[]
 	) {}
 
-	static fromMakaoGameDTO(makaoGame: MakaoGame, makaoPlayer: MakaoPlayer): MakaoGameStateForPlayerDTO {
-		return new MakaoGameStateForPlayerDTO(
+	static fromMakaoGameDTO(
+		makaoGame: MakaoGame,
+		makaoPlayer: MakaoPlayer
+	): InitialMakaoGameStateForPlayerDTO {
+		return new InitialMakaoGameStateForPlayerDTO(
 			ThisMakaoPlayerDTO.fromMakaoPlayer(makaoPlayer),
-			makaoGame.currentPlayerNumber,
+			makaoGame.currentPlayerId,
 			makaoGame.playersInOrder.map((makaoPlayer: MakaoPlayer) =>
 				OtherMakaoPlayerDTO.fromMakaoPlayer(makaoPlayer)
 			)

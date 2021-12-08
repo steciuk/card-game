@@ -66,6 +66,10 @@ export abstract class BaseScene extends Scene {
 		this.load.image('RB', 'assets/cards/backs/red_back.png');
 	}
 
+	protected loadTurnArrow(): void {
+		this.load.image('arrow', 'assets/tables/arrow.png');
+	}
+
 	xRelative(x: number): number {
 		return this.width * x;
 	}

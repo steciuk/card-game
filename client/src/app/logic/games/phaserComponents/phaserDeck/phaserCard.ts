@@ -6,4 +6,8 @@ export class PhaserCard extends GameObjects.Sprite {
 		this.setScale(scale);
 		scene.add.existing(this);
 	}
+
+	randomizeAngle(): void {
+		this.setAngle(Math.random() * 20 - 10);
+	}
 }

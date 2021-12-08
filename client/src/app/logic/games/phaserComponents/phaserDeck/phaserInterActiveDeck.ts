@@ -1,7 +1,8 @@
 import { BaseScene } from '../../scenes/baseScene';
 import { SOCKET_GAME_EVENTS } from '../../socketEvents/socketEvents';
 import { HEX_COLORS_NUMBER } from '../HexColors';
-import { CardPlayedDTO, PhaserDeck } from './phaserDeck';
+import { PhaserCard } from './phaserCard';
+import { PhaserDeck } from './phaserDeck';
 
 export class PhaserInterActiveDeck extends PhaserDeck {
 	constructor(
@@ -10,47 +11,52 @@ export class PhaserInterActiveDeck extends PhaserDeck {
 		y: number,
 		rotation: number,
 		cardsScale: number,
-		deckWidth: number,
-		cardIds: string | string[],
-		numberOfCards = 1
+		deckWidth: number
 	) {
-		super(scene, x, y, rotation, cardsScale, deckWidth, cardIds, numberOfCards);
+		super(scene, x, y, rotation, cardsScale, deckWidth);
+	}
 
-		this.getAllCards().forEach((card) => {
-			card.setInteractive({ draggable: true });
-			scene.input.setDraggable(card);
+	protected addCard(card: PhaserCard): void {
+		super.addCard(card);
 
-			card.on('drag', (_pointer: unknown, dragX: number, dragY: number) => {
-				(card.x = dragX), (card.y = dragY);
-			});
+		card.setInteractive({ draggable: true });
+		this.scene.input.setDraggable(card);
 
-			card.on('dragstart', () => {
-				card.setTint(HEX_COLORS_NUMBER.YELLOW);
-				this.bringCardToTop(card);
-			});
+		card.on('drag', (_pointer: unknown, dragX: number, dragY: number) => {
+			(card.x = dragX), (card.y = dragY);
+		});
 
-			card.on('dragend', (_pointer: unknown, _dragX: number, _dragY: number, dropped: boolean) => {
-				card.setTint();
-				if (!dropped) {
-					card.x = card.input.dragStartX;
-					card.y = card.input.dragStartY;
-				} else {
-					scene.socketService.emitSocketEvent(
-						SOCKET_GAME_EVENTS.CARD_PLAYED,
-						card.texture.key,
-						(response: CardPlayedDTO) => {
-							if (response.played) {
-								card.destroy();
-								this.alignCards();
-								//FIXME: Temporary. Create way to update game state with animations
-								scene.add
-									.sprite(scene.xRelative(0.5), scene.yRelative(0.5), response.message)
-									.setScale(cardsScale);
-							}
+		card.on('dragstart', () => {
+			card.setTint(HEX_COLORS_NUMBER.YELLOW);
+			this.bringCardToTop(card);
+		});
+
+		card.on('dragend', (_pointer: unknown, _dragX: number, _dragY: number, dropped: boolean) => {
+			card.setTint();
+			if (!dropped) {
+				card.x = card.input.dragStartX;
+				card.y = card.input.dragStartY;
+			} else {
+				this.scene.socketService.emitSocketEvent(
+					SOCKET_GAME_EVENTS.CARD_PLAYED,
+					card.texture.key,
+					(response: CardPlayedResponseDTO) => {
+						if (response.played) {
+							card.destroy();
+							this.alignCards();
+						} else {
+							card.x = card.input.dragStartX;
+							card.y = card.input.dragStartY;
+							console.warn(response.message);
 						}
-					);
-				}
-			});
+					}
+				);
+			}
 		});
 	}
 }
+
+export type CardPlayedResponseDTO = {
+	played: boolean;
+	message: string;
+};

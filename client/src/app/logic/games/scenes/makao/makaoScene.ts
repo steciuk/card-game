@@ -1,11 +1,11 @@
 import { SocketService } from 'src/app/services/socket.service';
 
-import {
-	CardPlayedDTO,
-	PhaserDeck
-} from '../../phaserComponents/phaserDeck/phaserDeck';
+import { HEX_COLORS_STRING } from '../../phaserComponents/HexColors';
+import { PhaserCard } from '../../phaserComponents/phaserDeck/phaserCard';
+import { PhaserDeck } from '../../phaserComponents/phaserDeck/phaserDeck';
 import { PhaserInterActiveDeck } from '../../phaserComponents/phaserDeck/phaserInterActiveDeck';
 import { PhaserDropZone } from '../../phaserComponents/phaserDropZone';
+import { PhaserTurnArrow } from '../../phaserComponents/phaserTurnArrow';
 import { SOCKET_GAME_EVENTS } from '../../socketEvents/socketEvents';
 import { BaseScene } from '../baseScene';
 import { SCENE_KEYS } from '../gamesSetup';
@@ -20,15 +20,14 @@ const SCENE_CONFIG = {
 };
 
 export class MakaoScene extends BaseScene {
-	thisPlayer!: ThisMakaoPlayerDTO;
+	thisPlayer!: ThisMakaoPlayer;
 	playersIdsInOrder: string[] = [];
 	shiftedPlayersIdsInOrder: string[] = [];
 	players = new Map<string, OtherMakaoPlayer>();
-	currentPlayerNumber = 0;
+	currentPlayerId = '';
 	numberOfPlayers = 0;
 
-	deckWidth = 0;
-	otherPlayersCardsScale = 0;
+	turnArrow!: PhaserTurnArrow;
 
 	constructor(socketService: SocketService) {
 		super(socketService, { key: SCENE_KEYS.MAKAO });
@@ -40,13 +39,16 @@ export class MakaoScene extends BaseScene {
 	preload(): void {
 		this.loadAllPlayingCards();
 		this.loadBacks();
+		this.loadTurnArrow();
 	}
 
 	create(): void {
 		this.add.text(0, 0, 'Makao');
+		this.drawDropZone();
+
 		this.socketService.emitSocketEvent(
 			SOCKET_GAME_EVENTS.GET_GAME_STATE,
-			(makaoGameStateForPlayer: MakaoGameStateForPlayerDTO) => {
+			(makaoGameStateForPlayer: InitialMakaoGameStateForPlayerDTO) => {
 				this.updateGameState(makaoGameStateForPlayer);
 				this.afterCreate();
 			}
@@ -54,38 +56,45 @@ export class MakaoScene extends BaseScene {
 	}
 
 	private afterCreate(): void {
-		// this.drawOtherPlayersCards();
-		this.drawThisPlayersCards();
-		this.drawDropZone();
+		this.turnArrow = new PhaserTurnArrow(this, this.getCurrentPlayer().rotation);
 	}
 
 	update(): void {}
 
 	registerListeners(): void {
-		//FIXME: temporary
 		this.registerSocketListenerForScene(
 			SOCKET_GAME_EVENTS.CARD_PLAYED,
 			(cardPlayedDTO: CardPlayedDTO) => {
-				this.players.get(cardPlayedDTO.playerId as string)?.deck.destroyCard();
-				this.add
-					.sprite(this.xRelative(0.5), this.yRelative(0.5), cardPlayedDTO.message)
-					.setScale(SCENE_CONFIG.BASE_CARD_SCALE);
+				if (cardPlayedDTO.playerId !== this.thisPlayer.id) {
+					this.players.get(cardPlayedDTO.playerId)?.deck.destroyCard();
+				}
+				new PhaserCard(
+					this,
+					this.xRelative(0.5),
+					this.yRelative(0.5),
+					cardPlayedDTO.cardId,
+					SCENE_CONFIG.BASE_CARD_SCALE
+				).randomizeAngle();
+
+				// TODO: updateGameState
+				this.currentPlayerId = cardPlayedDTO.currentPlayerId;
+				//
+				this.updateTurnArrow();
 			}
 		);
 	}
 
-	private updateGameState(makaoGameStateForPlayer: MakaoGameStateForPlayerDTO): void {
+	private updateGameState(makaoGameStateForPlayer: InitialMakaoGameStateForPlayerDTO): void {
 		const midPoint = { x: this.xRelative(0.5), y: this.yRelative(0.5) };
 
-		this.thisPlayer = makaoGameStateForPlayer.thisMakaoPlayer;
-		this.currentPlayerNumber = makaoGameStateForPlayer.currentPlayerNumber;
+		this.currentPlayerId = makaoGameStateForPlayer.currentPlayerId;
 		this.numberOfPlayers = makaoGameStateForPlayer.makaoPlayersInOrder.length;
 
 		this.playersIdsInOrder = makaoGameStateForPlayer.makaoPlayersInOrder.map(
 			(makaoPlayer) => makaoPlayer.id
 		);
 
-		const thisPlayerIndex = this.playersIdsInOrder.indexOf(this.thisPlayer.id);
+		const thisPlayerIndex = this.playersIdsInOrder.indexOf(makaoGameStateForPlayer.thisMakaoPlayer.id);
 		this.shiftedPlayersIdsInOrder = [...this.playersIdsInOrder];
 		this.shiftedPlayersIdsInOrder = this.shiftedPlayersIdsInOrder.concat(
 			this.shiftedPlayersIdsInOrder.splice(0, thisPlayerIndex)
@@ -111,9 +120,7 @@ export class MakaoScene extends BaseScene {
 			.forEach((otherMakaoPlayerDTO, i) => {
 				i += 1;
 				const otherPlayer = new OtherMakaoPlayer(
-					otherMakaoPlayerDTO.id,
-					otherMakaoPlayerDTO.username,
-					otherMakaoPlayerDTO.numCards,
+					otherMakaoPlayerDTO,
 					this,
 					Math.round(
 						midPoint.x + radius * Math.cos(Math.PI * ((2 * i) / this.numberOfPlayers + 0.5))
@@ -128,35 +135,27 @@ export class MakaoScene extends BaseScene {
 
 				this.players.set(otherPlayer.id, otherPlayer);
 			});
-	}
 
-	private drawThisPlayersCards(): void {
-		new PhaserInterActiveDeck(
+		this.thisPlayer = new ThisMakaoPlayer(
+			makaoGameStateForPlayer.thisMakaoPlayer,
 			this,
 			this.xRelative(0.5),
 			this.yRelative(0.9),
 			0,
 			SCENE_CONFIG.BASE_CARD_SCALE,
-			this.width * SCENE_CONFIG.THIS_PLAYER_DECK_PART_OF_SCREEN_WIDTH,
-			this.thisPlayer.cards
+			this.width * SCENE_CONFIG.THIS_PLAYER_DECK_PART_OF_SCREEN_WIDTH
 		);
 	}
 
-	// private drawOtherPlayersCards(): void {
-	// 	this.shiftedPlayersIdsInOrder.slice(1).forEach((playerId) => {
-	// 		const player = this.players.get(playerId) as MakaoPlayer;
-	// 		player.deck = new PhaserDeck(
-	// 			this,
-	// 			player.x,
-	// 			player.y,
-	// 			player.rotation,
-	// 			this.otherPlayersCardsScale,
-	// 			this.deckWidth,
-	// 			'RB',
-	// 			player.numCards
-	// 		);
-	// 	});
-	// }
+	private updateTurnArrow(): void {
+		this.turnArrow.updateRotation(this.getCurrentPlayer().rotation);
+	}
+
+	private getCurrentPlayer(): MakaoPlayer {
+		return this.currentPlayerId === this.thisPlayer.id
+			? this.thisPlayer
+			: (this.players.get(this.currentPlayerId) as MakaoPlayer);
+	}
 
 	private drawDropZone(): void {
 		new PhaserDropZone(
@@ -169,6 +168,12 @@ export class MakaoScene extends BaseScene {
 	}
 }
 
+type CardPlayedDTO = {
+	playerId: string;
+	cardId: string;
+	currentPlayerId: string;
+};
+
 type OtherMakaoPlayerDTO = {
 	id: string;
 	username: string;
@@ -178,45 +183,24 @@ type OtherMakaoPlayerDTO = {
 type ThisMakaoPlayerDTO = {
 	id: string;
 	username: string;
-	cards: string[];
+	cardIds: string[];
 };
 
-type MakaoGameStateForPlayerDTO = {
+type InitialMakaoGameStateForPlayerDTO = {
 	thisMakaoPlayer: ThisMakaoPlayerDTO;
-	currentPlayerNumber: number;
+	currentPlayerId: string;
 	makaoPlayersInOrder: OtherMakaoPlayerDTO[];
 };
 
-// class MakaoPlayer {
-// 	x = 0;
-// 	y = 0;
-// 	rotation = 0;
+class MakaoPlayer {
+	constructor(public id: string, public username: string, public rotation: number) {}
+}
 
-// 	constructor(public id: string, public username: string) {}
-// }
-
-// class ThisMakaoPlayer extends MakaoPlayer {
-// 	constructor(id: string, username: string, public cards: string[]) {
-// 		super(id, username);
-// 	}
-
-// 	static fromThisMakaoPlayerDTO(thisMakaoPlayerDto: ThisMakaoPlayerDTO): ThisMakaoPlayer {
-// 		return new ThisMakaoPlayer(
-// 			thisMakaoPlayerDto.id,
-// 			thisMakaoPlayerDto.username,
-// 			thisMakaoPlayerDto.cards
-// 		);
-// 	}
-// }
-
-class OtherMakaoPlayer {
-	//FIXME: temporary
-	deck: PhaserDeck;
+class ThisMakaoPlayer extends MakaoPlayer {
+	deck: PhaserInterActiveDeck;
 
 	constructor(
-		public id: string,
-		public username: string,
-		public numCards: number,
+		thisMakaoPlayerDTO: ThisMakaoPlayerDTO,
 		scene: BaseScene,
 		x: number,
 		y: number,
@@ -224,6 +208,36 @@ class OtherMakaoPlayer {
 		cardsScale: number,
 		deckWidth: number
 	) {
-		this.deck = new PhaserDeck(scene, x, y, rotation, cardsScale, deckWidth, 'RB', numCards);
+		super(thisMakaoPlayerDTO.id, thisMakaoPlayerDTO.username, rotation);
+		this.id = thisMakaoPlayerDTO.id;
+		this.username = thisMakaoPlayerDTO.username;
+		this.deck = new PhaserInterActiveDeck(scene, x, y, rotation, cardsScale, deckWidth);
+		this.deck.addCards(thisMakaoPlayerDTO.cardIds);
+	}
+}
+
+class OtherMakaoPlayer extends MakaoPlayer {
+	deck: PhaserDeck;
+
+	constructor(
+		otherMakaoPlayerDTO: OtherMakaoPlayerDTO,
+		scene: BaseScene,
+		x: number,
+		y: number,
+		rotation: number,
+		cardsScale: number,
+		deckWidth: number
+	) {
+		super(otherMakaoPlayerDTO.id, otherMakaoPlayerDTO.username, rotation);
+		this.deck = new PhaserDeck(scene, x, y, rotation, cardsScale, deckWidth);
+		this.deck.addCards('RB', otherMakaoPlayerDTO.numCards);
+		this.deck.addToAdditionalContainer(
+			// TODO: magic numbers, do cleaner
+			scene.add
+				.text(0, -100 - cardsScale * 100, otherMakaoPlayerDTO.username, {
+					color: HEX_COLORS_STRING.BLACK,
+				})
+				.setOrigin(0.5)
+		);
 	}
 }
