@@ -22,7 +22,7 @@ export class MakaoHandler extends GameHandler {
 
 		socket.on(SOCKET_GAME_EVENTS.START_GAME, (callback: (messageToLog: string) => void) => {
 			if (game.numPlayersInGame < 2) return callback('Minimum 2 players required');
-			if (!game.areAllPlayersReady()) return callback('Not all players ready');
+			if (!player.isOwner && !game.areAllPlayersReady()) return callback('Not all players ready');
 			game.start();
 			this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.START_GAME, game.id);
 		});

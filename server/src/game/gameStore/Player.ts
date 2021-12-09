@@ -3,18 +3,24 @@ export abstract class Player {
 	constructor(
 		public readonly id: string,
 		public readonly username: string,
-		public readonly socketId: string
+		public readonly socketId: string,
+		public readonly isOwner: boolean
 	) {}
 
 	toggleIsReady(): void {
 		this.isReady = !this.isReady;
 	}
-
-	toPlayerDTO(): PlayerDTO {
-		return new PlayerDTO(this.id, this.username, this.isReady);
-	}
 }
 
 export class PlayerDTO {
-	constructor(private id: string, private username: string, private isReady: boolean) {}
+	constructor(
+		private id: string,
+		private username: string,
+		private isReady: boolean,
+		private isOwner: boolean
+	) {}
+
+	static fromPlayer(player: Player): PlayerDTO {
+		return new PlayerDTO(player.id, player.username, player.isReady, player.isOwner);
+	}
 }

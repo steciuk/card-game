@@ -31,7 +31,7 @@ export abstract class Game {
 	}
 
 	getAllPlayersDTO(): PlayerDTO[] {
-		return Array.from(this.playersInGame.values()).map((player) => player.toPlayerDTO());
+		return Array.from(this.playersInGame.values()).map((player) => PlayerDTO.fromPlayer(player));
 	}
 
 	addPlayer(player: Player): void {

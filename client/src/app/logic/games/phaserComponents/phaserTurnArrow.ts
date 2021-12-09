@@ -25,6 +25,7 @@ export class PhaserTurnArrow {
 	}
 
 	updateRotation(rotation: number): void {
+		if (this.container.rotation - rotation < -Math.PI) rotation -= 2 * Math.PI;
 		this.scene.tweens.add({
 			targets: this.container,
 			rotation: rotation,

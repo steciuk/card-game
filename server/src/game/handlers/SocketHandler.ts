@@ -16,7 +16,7 @@ import { validateJWT } from '../../utils/authorization/Jwt';
 import { elog, llog } from '../../utils/Logger';
 import { Game } from '../gameStore/Game';
 import { GamesStore } from '../gameStore/GamesStore';
-import { Player } from '../gameStore/Player';
+import { Player, PlayerDTO } from '../gameStore/Player';
 import { PlayerFactory } from '../gameStore/PlayerFactory';
 import { GameTypes } from '../GameTypes';
 import {
@@ -71,7 +71,7 @@ export abstract class GameHandler {
 				socket,
 				SOCKET_GAME_EVENTS.PLAYER_TOGGLE_READY,
 				gameId,
-				player.toPlayerDTO()
+				PlayerDTO.fromPlayer(player)
 			);
 		});
 
@@ -82,7 +82,7 @@ export abstract class GameHandler {
 				socket,
 				SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED,
 				gameId,
-				player.toPlayerDTO()
+				PlayerDTO.fromPlayer(player)
 			);
 
 			llog(`Socket ${socket.id} disconnected - ${reason}`);
@@ -155,12 +155,16 @@ export abstract class GameHandler {
 				game.gameType,
 				user.id,
 				user.username,
-				socket.id
+				socket.id,
+				game.owner.id === user.id
 			);
 			game.addPlayer(newPlayer);
 			socket.join(gameId);
-			socket.to(gameId).emit(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, newPlayer.toPlayerDTO());
-			socket.emit(SOCKET_GAME_EVENTS.PLAYERS_IN_GAME, game.getAllPlayersDTO());
+			socket.to(gameId).emit(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, PlayerDTO.fromPlayer(newPlayer));
+			socket.emit(SOCKET_GAME_EVENTS.PLAYERS_IN_GAME, {
+				players: game.getAllPlayersDTO(),
+				thisPlayer: PlayerDTO.fromPlayer(newPlayer),
+			});
 
 			next();
 		} catch (error: unknown) {

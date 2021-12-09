@@ -9,6 +9,7 @@ import { SCENE_KEYS } from '../gamesSetup';
 
 export class LobbyScene extends BaseScene {
 	playersInLobby = new Map<string, LobbyPlayerDTO>();
+	isOwner = false;
 
 	constructor(socketService: SocketService) {
 		super(socketService, { key: SCENE_KEYS.LOBBY });
@@ -65,9 +66,11 @@ export class LobbyScene extends BaseScene {
 
 	private updateStartButton(): void {
 		if (
-			this.playersInLobbyAsArray.every((player) => {
-				return player.isReady;
-			})
+			this.playersInLobby.size >= 2 &&
+			(this.isOwner ||
+				this.playersInLobbyAsArray.every((player) => {
+					return player.isReady;
+				}))
 		)
 			this.startBtn.enable();
 		else this.startBtn.disable();
@@ -76,9 +79,10 @@ export class LobbyScene extends BaseScene {
 	private registerListeners(): void {
 		this.registerSocketListenerForScene(
 			SOCKET_GAME_EVENTS.PLAYERS_IN_GAME,
-			(players: LobbyPlayerDTO[]) => {
+			(response: { players: LobbyPlayerDTO[]; thisPlayer: LobbyPlayerDTO }) => {
 				this.playersInLobby.clear();
-				players.forEach((player) => {
+				this.isOwner = response.thisPlayer.isOwner;
+				response.players.forEach((player) => {
 					this.playersInLobby.set(player.id, player);
 				});
 			}
@@ -125,4 +129,5 @@ type LobbyPlayerDTO = {
 	id: string;
 	username: string;
 	isReady: boolean;
+	isOwner: boolean;
 };
