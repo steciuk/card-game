@@ -4,19 +4,19 @@ import { Player, PlayerDTO } from './Player';
 export abstract class Game {
 	// CONSTANTS
 	constructor(
-		public gameType: GameTypes,
-		public owner: { id: string; username: string },
-		public maxPlayers: number,
-		public roomName: string,
-		public isPasswordProtected: boolean,
-		public created: number,
-		public id: string,
-		public password?: string
+		public readonly gameType: GameTypes,
+		public readonly owner: { id: string; username: string },
+		public readonly maxPlayers: number,
+		public readonly roomName: string,
+		public readonly isPasswordProtected: boolean,
+		public readonly created: number,
+		public readonly id: string,
+		public readonly password?: string
 	) {}
 	// VARIABLES
 	isStarted = false;
 	numPlayersInGame = 0;
-	abstract playersInGame: Map<string, Player>;
+	protected abstract playersInGame: Map<string, Player>;
 
 	isRoomFull(): boolean {
 		return this.maxPlayers - this.numPlayersInGame <= 0;

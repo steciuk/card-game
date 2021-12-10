@@ -6,7 +6,6 @@ import { PhaserCard } from './phaserCard';
 export class PhaserDeck {
 	private cardsContainer: GameObjects.Container;
 	private additionalContainer: GameObjects.Container;
-	private cards: PhaserCard[] = [];
 	protected cardsLine: Geom.Line;
 
 	constructor(
@@ -14,7 +13,7 @@ export class PhaserDeck {
 		x: number,
 		y: number,
 		rotation: number,
-		protected cardsScale: number,
+		protected height: number,
 		deckWidth: number
 	) {
 		this.cardsContainer = scene.add.container(x, y).setRotation(rotation);
@@ -27,15 +26,17 @@ export class PhaserDeck {
 		this.cardsContainer.getAt(0)?.destroy();
 	}
 
-	addCards(cardIds: string | string[], numberOfCards = 1): void {
+	addCards(cardIds: string | string[], randomizeCardRotation = false, numberOfCards = 1): void {
 		let cardIdsToDraw: string[] = [];
 		Array.isArray(cardIds)
 			? (cardIdsToDraw = cardIds)
 			: (cardIdsToDraw = Array(numberOfCards).fill(cardIds));
 
-		cardIdsToDraw.forEach((cardId) =>
-			this.addCard(new PhaserCard(this.scene, 0, 0, cardId, this.cardsScale))
-		);
+		cardIdsToDraw.forEach((cardId) => {
+			const card = new PhaserCard(this.scene, 0, 0, cardId, this.height);
+			if (randomizeCardRotation) card.randomizeAngle();
+			this.addCard(card);
+		});
 
 		this.alignCards();
 	}

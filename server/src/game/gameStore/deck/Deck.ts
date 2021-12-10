@@ -54,25 +54,34 @@ export class Deck {
 		return this.inDeck;
 	}
 
-	popNumRandomCardsAndRefillDeckIfNotEnough(num: number, discarded?: Deck): CardId[] {
-		let cards: CardId[] = [];
+	getLastInDeck(): CardId {
+		return this.inDeck[this.inDeck.length - 1];
+	}
+
+	popNumRandomCardsAndRefillDeckIfNotEnough(
+		num: number,
+		discarded?: Deck
+	): { cardIds: CardId[]; refilled: boolean } {
+		let refilled = false;
+		let cardIds: CardId[] = [];
 		if (num <= this.inDeck.length) {
 			for (let i = 0; i < num; i++) {
 				const card = chooseRandomArrayElement(this.inDeck);
-				cards.push(this.pop(card) as CardId);
+				cardIds.push(this.pop(card) as CardId);
 			}
 		} else if (discarded) {
+			refilled = true;
 			const missing = num - this.inDeck.length;
-			cards = [...this.inDeck];
+			cardIds = [...this.inDeck];
 			this.inDeck = [...discarded.inDeck];
 			discarded.empty();
-			cards.push(...this.popNumRandomCardsAndRefillDeckIfNotEnough(missing));
+			cardIds.push(...this.popNumRandomCardsAndRefillDeckIfNotEnough(missing).cardIds);
 		} else {
-			cards = [...this.inDeck];
+			cardIds = [...this.inDeck];
 			this.empty();
 		}
 
-		return cards;
+		return { cardIds: cardIds, refilled: refilled };
 	}
 }
 

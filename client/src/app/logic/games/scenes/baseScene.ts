@@ -78,6 +78,10 @@ export abstract class BaseScene extends Scene {
 		return this.height * y;
 	}
 
+	get smallerScreenDimension(): number {
+		return Math.min(this.height, this.width);
+	}
+
 	protected get width(): number {
 		return this.sys.game.canvas.width;
 	}

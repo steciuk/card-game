@@ -38,9 +38,9 @@ export class MakaoHandler extends GameHandler {
 			SOCKET_GAME_EVENTS.CARD_PLAYED,
 			(cardId: CardId, callback: (response: CardPlayedResponseDTO) => void) => {
 				if (game.currentPlayerId !== player.id)
-					return callback({ played: false, message: 'Not your turn' });
+					return callback({ success: false, message: 'Not your turn' });
 				const cardPlayed = player.deck.pop(cardId);
-				if (!cardPlayed) return callback({ played: false, message: 'No such card in your deck' });
+				if (!cardPlayed) return callback({ success: false, message: 'No such card in your deck' });
 
 				game.nextPlayer();
 
@@ -50,15 +50,27 @@ export class MakaoHandler extends GameHandler {
 					currentPlayerId: game.currentPlayerId,
 				} as CardPlayedDTO);
 
-				callback({ played: true, message: cardPlayed });
+				callback({ success: true, message: cardPlayed });
 			}
 		);
+
+		socket.on(SOCKET_GAME_EVENTS.GET_CARD, (callback: (response: CardTakenResponseDTO) => void) => {
+			const { cardIds, refilled } = game.getNumCards(1);
+			player.deck.add(cardIds);
+			callback({ success: true, cardIds: cardIds });
+		});
 	}
 }
 
 type CardPlayedResponseDTO = {
-	played: boolean;
+	success: boolean;
 	message: string;
+};
+
+type CardTakenResponseDTO = {
+	success: boolean;
+	cardIds: CardId[];
+	message?: string;
 };
 
 type CardPlayedDTO = {

@@ -1,5 +1,6 @@
 import { shuffleArray } from '../../../utils/Tools';
 import { GameTypes } from '../../GameTypes';
+import { CardId } from '../deck/Card';
 import { Deck, DECK_TYPE } from '../deck/Deck';
 import { Game } from '../Game';
 import {
@@ -9,21 +10,21 @@ import {
 } from './MakaoPlayer';
 
 export class MakaoGame extends Game {
-	playersInGame = new Map<string, MakaoPlayer>();
-	deck = new Deck(DECK_TYPE.FULL);
-	discarded = new Deck(DECK_TYPE.FULL);
+	protected playersInGame = new Map<string, MakaoPlayer>();
+	readonly deck = new Deck(DECK_TYPE.FULL);
+	readonly discarded = new Deck(DECK_TYPE.FULL);
 	playersInOrder: MakaoPlayer[];
-	currentPlayerNumber = 0;
+	private currentPlayerNumber = 0;
 
 	constructor(
-		public gameType: GameTypes,
-		public owner: { id: string; username: string },
-		public maxPlayers: number,
-		public roomName: string,
-		public isPasswordProtected: boolean,
-		public created: number,
-		public id: string,
-		public password?: string
+		gameType: GameTypes,
+		owner: { id: string; username: string },
+		maxPlayers: number,
+		roomName: string,
+		isPasswordProtected: boolean,
+		created: number,
+		id: string,
+		password?: string
 	) {
 		super(gameType, owner, maxPlayers, roomName, isPasswordProtected, created, id, password);
 	}
@@ -43,9 +44,19 @@ export class MakaoGame extends Game {
 
 		this.deck.full();
 		this.discarded.empty();
+
+		this.discarded.add(this.deck.popNumRandomCardsAndRefillDeckIfNotEnough(1).cardIds);
 		this.playersInOrder.forEach((player) => {
-			player.deck.add(this.deck.popNumRandomCardsAndRefillDeckIfNotEnough(5));
+			player.deck.add(this.deck.popNumRandomCardsAndRefillDeckIfNotEnough(5).cardIds);
 		});
+	}
+
+	getNumCards(num: number): { cardIds: CardId[]; refilled: boolean } {
+		return this.deck.popNumRandomCardsAndRefillDeckIfNotEnough(num, this.discarded);
+	}
+
+	discardCard(cardId: CardId): void {
+		this.discarded.add(cardId);
 	}
 }
 
@@ -53,7 +64,9 @@ export class InitialMakaoGameStateForPlayerDTO {
 	constructor(
 		private thisMakaoPlayer: ThisMakaoPlayerDTO,
 		private currentPlayerId: string,
-		private makaoPlayersInOrder: OtherMakaoPlayerDTO[]
+		private makaoPlayersInOrder: OtherMakaoPlayerDTO[],
+		private numberOfCardsInDeck: number,
+		private startingCardId: CardId
 	) {}
 
 	static fromMakaoGameDTO(
@@ -65,7 +78,9 @@ export class InitialMakaoGameStateForPlayerDTO {
 			makaoGame.currentPlayerId,
 			makaoGame.playersInOrder.map((makaoPlayer: MakaoPlayer) =>
 				OtherMakaoPlayerDTO.fromMakaoPlayer(makaoPlayer)
-			)
+			),
+			makaoGame.deck.getInDeck().length,
+			makaoGame.discarded.getLastInDeck()
 		);
 	}
 }

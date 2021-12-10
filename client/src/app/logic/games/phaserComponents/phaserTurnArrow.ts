@@ -7,10 +7,8 @@ export class PhaserTurnArrow {
 	private arrow: GameObjects.Sprite;
 	private yOffset = 150;
 
-	constructor(private scene: BaseScene, rotation: number) {
-		this.container = scene.add
-			.container(scene.xRelative(0.5), scene.yRelative(0.5))
-			.setRotation(rotation);
+	constructor(private scene: BaseScene, x: number, y: number, rotation: number) {
+		this.container = scene.add.container(x, y).setRotation(rotation);
 		this.arrow = scene.add.sprite(0, this.yOffset, 'arrow').setScale(0.05);
 		this.container.add(this.arrow);
 

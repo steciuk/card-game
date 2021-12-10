@@ -4,16 +4,9 @@ import { HEX_COLORS_NUMBER } from '../HexColors';
 import { PhaserCard } from './phaserCard';
 import { PhaserDeck } from './phaserDeck';
 
-export class PhaserInterActiveDeck extends PhaserDeck {
-	constructor(
-		scene: BaseScene,
-		x: number,
-		y: number,
-		rotation: number,
-		cardsScale: number,
-		deckWidth: number
-	) {
-		super(scene, x, y, rotation, cardsScale, deckWidth);
+export class PhaserPlayableDeck extends PhaserDeck {
+	constructor(scene: BaseScene, x: number, y: number, rotation: number, height: number, deckWidth: number) {
+		super(scene, x, y, rotation, height, deckWidth);
 	}
 
 	protected addCard(card: PhaserCard): void {
@@ -28,7 +21,6 @@ export class PhaserInterActiveDeck extends PhaserDeck {
 
 		card.on('dragstart', () => {
 			card.setTint(HEX_COLORS_NUMBER.YELLOW);
-			this.bringCardToTop(card);
 		});
 
 		card.on('dragend', (_pointer: unknown, _dragX: number, _dragY: number, dropped: boolean) => {
@@ -41,7 +33,7 @@ export class PhaserInterActiveDeck extends PhaserDeck {
 					SOCKET_GAME_EVENTS.CARD_PLAYED,
 					card.texture.key,
 					(response: CardPlayedResponseDTO) => {
-						if (response.played) {
+						if (response.success) {
 							card.destroy();
 							this.alignCards();
 						} else {
@@ -56,7 +48,7 @@ export class PhaserInterActiveDeck extends PhaserDeck {
 	}
 }
 
-export type CardPlayedResponseDTO = {
-	played: boolean;
+type CardPlayedResponseDTO = {
+	success: boolean;
 	message: string;
 };
