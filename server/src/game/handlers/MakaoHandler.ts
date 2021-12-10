@@ -42,39 +42,58 @@ export class MakaoHandler extends GameHandler {
 				const cardPlayed = player.deck.pop(cardId);
 				if (!cardPlayed) return callback({ success: false, message: 'No such card in your deck' });
 
-				game.nextPlayer();
-
-				this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.CARD_PLAYED, game.id, {
+				const cardPlayedDTO: CardPlayedDTO = {
 					playerId: player.id,
 					cardId: cardPlayed,
-					currentPlayerId: game.currentPlayerId,
-				} as CardPlayedDTO);
-
+				};
+				this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.CARD_PLAYED, game.id, cardPlayedDTO);
 				callback({ success: true, message: cardPlayed });
 			}
 		);
 
-		socket.on(SOCKET_GAME_EVENTS.GET_CARD, (callback: (response: CardTakenResponseDTO) => void) => {
-			const { cardIds, refilled } = game.getNumCards(1);
+		socket.on(SOCKET_GAME_EVENTS.CARDS_TAKEN, (callback: (response: CardsTakenResponseDTO) => void) => {
+			if (game.currentPlayerId !== player.id)
+				return callback({ success: false, cardIds: [], message: 'Not your turn' });
+
+			const { cardIds, refilled } = game.popNumRandomCardsFromDeckAndRefillWithDiscardedIfNeeded(1);
 			player.deck.add(cardIds);
-			callback({ success: true, cardIds: cardIds });
+
+			const cardsTakenDTO: CardsTakenDTO = { playerId: player.id, numCards: 1 };
+			this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.CARDS_TAKEN, game.id, cardsTakenDTO);
+			callback({ success: true, message: '', cardIds: cardIds });
+		});
+
+		socket.on(SOCKET_GAME_EVENTS.TURN_FINISHED, () => {
+			if (game.currentPlayerId !== player.id) return;
+
+			game.nextPlayer();
+			const turnFinishedDTO: TurnFinishedDTO = { playerId: game.currentPlayerId };
+			this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.TURN_FINISHED, game.id, turnFinishedDTO);
 		});
 	}
 }
+
+type TurnFinishedDTO = {
+	playerId: string;
+};
 
 type CardPlayedResponseDTO = {
 	success: boolean;
 	message: string;
 };
 
-type CardTakenResponseDTO = {
+type CardsTakenResponseDTO = {
 	success: boolean;
 	cardIds: CardId[];
-	message?: string;
+	message: string;
 };
 
 type CardPlayedDTO = {
 	playerId: string;
 	cardId: CardId;
-	currentPlayerId: string;
+};
+
+type CardsTakenDTO = {
+	playerId: string;
+	numCards: number;
 };

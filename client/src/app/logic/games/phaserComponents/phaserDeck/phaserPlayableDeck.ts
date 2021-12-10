@@ -46,6 +46,14 @@ export class PhaserPlayableDeck extends PhaserDeck {
 			}
 		});
 	}
+
+	disable(): void {
+		this.cardsContainer.getAll().forEach((card) => card.disableInteractive());
+	}
+
+	enable(): void {
+		this.cardsContainer.getAll().forEach((card) => card.setInteractive());
+	}
 }
 
 type CardPlayedResponseDTO = {

@@ -1,6 +1,7 @@
 import { SocketService } from 'src/app/services/socket.service';
 
 import { HEX_COLORS_STRING } from '../../phaserComponents/HexColors';
+import { PhaserButton } from '../../phaserComponents/phaserButton';
 import { PhaserClickableDeck } from '../../phaserComponents/phaserDeck/phaserClickableDeck';
 import { PhaserDeck } from '../../phaserComponents/phaserDeck/phaserDeck';
 import { PhaserPlayableDeck } from '../../phaserComponents/phaserDeck/phaserPlayableDeck';
@@ -31,6 +32,7 @@ export class MakaoScene extends BaseScene {
 	discarded!: PhaserDeck;
 	deck!: PhaserClickableDeck;
 	turnArrow!: PhaserTurnArrow;
+	finishTurnButton!: PhaserButton;
 
 	constructor(socketService: SocketService) {
 		super(socketService, { key: SCENE_KEYS.MAKAO });
@@ -57,46 +59,6 @@ export class MakaoScene extends BaseScene {
 			this.smallerScreenDimension * SCENE_CONFIG.DROP_ZONE_PERCENTAGE_OF_SCREEN
 		);
 
-		this.addGameDecks();
-
-		this.socketService.emitSocketEvent(
-			SOCKET_GAME_EVENTS.GET_GAME_STATE,
-			(makaoGameStateForPlayer: InitialMakaoGameStateForPlayerDTO) => {
-				this.updateGameState(makaoGameStateForPlayer);
-				this.afterCreate();
-			}
-		);
-	}
-
-	private afterCreate(): void {
-		this.turnArrow = new PhaserTurnArrow(
-			this,
-			this.midPoint.x,
-			this.midPoint.y,
-			this.getCurrentPlayer().rotation
-		);
-	}
-
-	update(): void {}
-
-	private registerListeners(): void {
-		this.registerSocketListenerForScene(
-			SOCKET_GAME_EVENTS.CARD_PLAYED,
-			(cardPlayedDTO: CardPlayedDTO) => {
-				if (cardPlayedDTO.playerId !== this.thisPlayer.id) {
-					this.players.get(cardPlayedDTO.playerId)?.deck.destroyCard();
-				}
-				this.discarded.addCards(cardPlayedDTO.cardId, true);
-
-				// TODO: updateGameState
-				this.currentPlayerId = cardPlayedDTO.currentPlayerId;
-				//
-				this.updateTurnArrow();
-			}
-		);
-	}
-
-	private addGameDecks(): void {
 		this.discarded = new PhaserDeck(
 			this,
 			this.midPoint.x,
@@ -115,15 +77,74 @@ export class MakaoScene extends BaseScene {
 			0
 		);
 
+		this.turnArrow = new PhaserTurnArrow(this, this.midPoint.x, this.midPoint.y, 0);
+
+		this.finishTurnButton = new PhaserButton(
+			this,
+			this.xRelative(0.1),
+			this.yRelative(0.75),
+			'Finish turn',
+			() => {
+				this.socketService.emitSocketEvent(SOCKET_GAME_EVENTS.TURN_FINISHED);
+			}
+		);
+
+		this.socketService.emitSocketEvent(
+			SOCKET_GAME_EVENTS.GET_GAME_STATE,
+			(makaoGameStateForPlayer: InitialMakaoGameStateForPlayerDTO) => {
+				this.updateGameState(makaoGameStateForPlayer);
+				this.afterCreate();
+			}
+		);
+	}
+
+	private afterCreate(): void {
+		this.updateTurnBasedElements();
+
 		this.deck.addEvent('pointerup', () => {
 			this.socketService.emitSocketEvent(
-				SOCKET_GAME_EVENTS.GET_CARD,
-				(cardTakenResponseDTO: CardTakenResponseDTO) => {
-					if (!cardTakenResponseDTO.success) return;
-					this.thisPlayer.deck.addCards(cardTakenResponseDTO.cardIds);
+				SOCKET_GAME_EVENTS.CARDS_TAKEN,
+				(cardTakenResponseDTO: CardsTakenResponseDTO) => {
+					if (cardTakenResponseDTO.success)
+						this.thisPlayer.deck.addCards(cardTakenResponseDTO.cardIds);
+					else console.warn(cardTakenResponseDTO.message);
 				}
 			);
 		});
+	}
+
+	update(): void {}
+
+	private registerListeners(): void {
+		this.registerSocketListenerForScene(
+			SOCKET_GAME_EVENTS.CARD_PLAYED,
+			(cardPlayedDTO: CardPlayedDTO) => {
+				if (cardPlayedDTO.playerId !== this.thisPlayer.id) {
+					this.players.get(cardPlayedDTO.playerId)?.deck.destroyNumLastCards(1);
+				}
+				this.discarded.addCards(cardPlayedDTO.cardId, true);
+			}
+		);
+
+		this.registerSocketListenerForScene(
+			SOCKET_GAME_EVENTS.CARDS_TAKEN,
+			(cardsTakenDTO: CardsTakenDTO) => {
+				if (cardsTakenDTO.playerId !== this.thisPlayer.id) {
+					this.players
+						.get(cardsTakenDTO.playerId)
+						?.deck.addCards('RB', false, cardsTakenDTO.numCards);
+				}
+				this.deck.destroyNumLastCards(cardsTakenDTO.numCards);
+			}
+		);
+
+		this.registerSocketListenerForScene(
+			SOCKET_GAME_EVENTS.TURN_FINISHED,
+			(turnFinishedDTO: TurnFinishedDTO) => {
+				this.currentPlayerId = turnFinishedDTO.playerId;
+				this.updateTurnBasedElements();
+			}
+		);
 	}
 
 	private updateGameState(makaoGameStateForPlayer: InitialMakaoGameStateForPlayerDTO): void {
@@ -191,27 +212,49 @@ export class MakaoScene extends BaseScene {
 		);
 	}
 
-	private updateTurnArrow(): void {
+	private updateTurnBasedElements(): void {
 		this.turnArrow.updateRotation(this.getCurrentPlayer().rotation);
+
+		if (this.isThisPlayerTurn) {
+			this.finishTurnButton.enable();
+			this.thisPlayer.deck.enable();
+			this.deck.enable();
+		} else {
+			this.finishTurnButton.disable();
+			this.thisPlayer.deck.disable();
+			this.deck.disable();
+		}
 	}
 
 	private getCurrentPlayer(): MakaoPlayer {
-		return this.currentPlayerId === this.thisPlayer.id
+		return this.isThisPlayerTurn
 			? this.thisPlayer
 			: (this.players.get(this.currentPlayerId) as MakaoPlayer);
 	}
+
+	private get isThisPlayerTurn(): boolean {
+		return this.currentPlayerId === this.thisPlayer.id;
+	}
 }
+
+type TurnFinishedDTO = {
+	playerId: string;
+};
 
 type CardPlayedDTO = {
 	playerId: string;
 	cardId: string;
-	currentPlayerId: string;
 };
 
-type CardTakenResponseDTO = {
+type CardsTakenDTO = {
+	playerId: string;
+	numCards: number;
+};
+
+type CardsTakenResponseDTO = {
 	success: boolean;
 	cardIds: string[];
-	message?: string;
+	message: string;
 };
 
 type OtherMakaoPlayerDTO = {

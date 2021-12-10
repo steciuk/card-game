@@ -51,7 +51,10 @@ export class MakaoGame extends Game {
 		});
 	}
 
-	getNumCards(num: number): { cardIds: CardId[]; refilled: boolean } {
+	popNumRandomCardsFromDeckAndRefillWithDiscardedIfNeeded(num: number): {
+		cardIds: CardId[];
+		refilled: boolean;
+	} {
 		return this.deck.popNumRandomCardsAndRefillDeckIfNotEnough(num, this.discarded);
 	}
 

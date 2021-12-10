@@ -4,6 +4,7 @@ import { HEX_COLORS_STRING } from './HexColors';
 
 export class PhaserButton {
 	private button: GameObjects.Text;
+	private isEnabled = true;
 
 	constructor(scene: Scene, x: number, y: number, text: string, callback: () => void) {
 		this.button = scene.add
@@ -14,15 +15,19 @@ export class PhaserButton {
 			.setInteractive({ useHandCursor: true })
 			.on('pointerup', callback)
 			.on('pointerover', () => this.button.setStyle({ backgroundColor: HEX_COLORS_STRING.DARK_GREEN }))
-			.on('pointerout', () => this.button.setStyle({ backgroundColor: HEX_COLORS_STRING.GREEN }));
+			.on('pointerout', () => {
+				if (this.isEnabled) this.button.setStyle({ backgroundColor: HEX_COLORS_STRING.GREEN });
+			});
 	}
 
 	disable(): PhaserButton {
-		this.button.setStyle({ backgroundColor: HEX_COLORS_STRING.GRAY }).disableInteractive();
+		this.isEnabled = false;
+		this.button.disableInteractive().setStyle({ backgroundColor: HEX_COLORS_STRING.GRAY });
 		return this;
 	}
 
 	enable(): PhaserButton {
+		this.isEnabled = true;
 		this.button.setStyle({ backgroundColor: HEX_COLORS_STRING.GREEN }).setInteractive();
 		return this;
 	}

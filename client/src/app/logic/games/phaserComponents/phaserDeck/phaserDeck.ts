@@ -4,7 +4,7 @@ import { BaseScene } from '../../scenes/baseScene';
 import { PhaserCard } from './phaserCard';
 
 export class PhaserDeck {
-	private cardsContainer: GameObjects.Container;
+	protected cardsContainer: GameObjects.Container;
 	private additionalContainer: GameObjects.Container;
 	protected cardsLine: Geom.Line;
 
@@ -21,9 +21,12 @@ export class PhaserDeck {
 		this.cardsLine = new Geom.Line(-deckWidth / 2, 0, deckWidth / 2, 0);
 	}
 
-	//FIXME: temporary
-	destroyCard(): void {
-		this.cardsContainer.getAt(0)?.destroy();
+	destroyNumLastCards(num: number): void {
+		for (let i = 0; i < num; i++) {
+			const card = this.cardsContainer.last;
+			if (card) card.destroy();
+		}
+		this.alignCards();
 	}
 
 	addCards(cardIds: string | string[], randomizeCardRotation = false, numberOfCards = 1): void {
