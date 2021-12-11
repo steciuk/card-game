@@ -20,7 +20,7 @@ export class PhaserPlayableDeck extends PhaserDeck {
 		});
 
 		card.on('dragstart', () => {
-			card.setTint(HEX_COLORS_NUMBER.YELLOW);
+			card.setTint(HEX_COLORS_NUMBER.GRAY);
 		});
 
 		card.on('dragend', (_pointer: unknown, _dragX: number, _dragY: number, dropped: boolean) => {

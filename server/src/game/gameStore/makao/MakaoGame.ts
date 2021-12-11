@@ -11,8 +11,8 @@ import {
 
 export class MakaoGame extends Game {
 	protected playersInGame = new Map<string, MakaoPlayer>();
-	readonly deck = new Deck(DECK_TYPE.FULL);
-	readonly discarded = new Deck(DECK_TYPE.FULL);
+	private readonly deck = new Deck(DECK_TYPE.FULL);
+	private readonly discarded = new Deck(DECK_TYPE.FULL);
 	playersInOrder: MakaoPlayer[];
 	private currentPlayerNumber = 0;
 
@@ -54,8 +54,18 @@ export class MakaoGame extends Game {
 	popNumRandomCardsFromDeckAndRefillWithDiscardedIfNeeded(num: number): {
 		cardIds: CardId[];
 		refilled: boolean;
-	} {
+	} | null {
+		if (this.deck.getNumOfCardsInDeck() <= 0 && this.discarded.getNumOfCardsInDeck() <= 1) return null;
+		console.log(this.deck.getNumOfCardsInDeck(), this.discarded.getNumOfCardsInDeck());
 		return this.deck.popNumRandomCardsAndRefillDeckIfNotEnough(num, this.discarded);
+	}
+
+	get numCardsInDeck(): number {
+		return this.deck.getInDeck().length;
+	}
+
+	get topCard(): CardId {
+		return this.discarded.getLastInDeck();
 	}
 
 	discardCard(cardId: CardId): void {
@@ -82,8 +92,8 @@ export class InitialMakaoGameStateForPlayerDTO {
 			makaoGame.playersInOrder.map((makaoPlayer: MakaoPlayer) =>
 				OtherMakaoPlayerDTO.fromMakaoPlayer(makaoPlayer)
 			),
-			makaoGame.deck.getInDeck().length,
-			makaoGame.discarded.getLastInDeck()
+			makaoGame.numCardsInDeck,
+			makaoGame.topCard
 		);
 	}
 }

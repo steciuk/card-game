@@ -42,6 +42,7 @@ export class MakaoHandler extends GameHandler {
 				const cardPlayed = player.deck.pop(cardId);
 				if (!cardPlayed) return callback({ success: false, message: 'No such card in your deck' });
 
+				game.discardCard(cardPlayed);
 				const cardPlayedDTO: CardPlayedDTO = {
 					playerId: player.id,
 					cardId: cardPlayed,
@@ -51,17 +52,29 @@ export class MakaoHandler extends GameHandler {
 			}
 		);
 
-		socket.on(SOCKET_GAME_EVENTS.CARDS_TAKEN, (callback: (response: CardsTakenResponseDTO) => void) => {
-			if (game.currentPlayerId !== player.id)
-				return callback({ success: false, cardIds: [], message: 'Not your turn' });
+		socket.on(
+			SOCKET_GAME_EVENTS.CARDS_TAKEN,
+			(numCards: number, callback: (response: CardsTakenResponseDTO) => void) => {
+				if (game.currentPlayerId !== player.id)
+					return callback({ success: false, cardIds: [], message: 'Not your turn' });
 
-			const { cardIds, refilled } = game.popNumRandomCardsFromDeckAndRefillWithDiscardedIfNeeded(1);
-			player.deck.add(cardIds);
+				const takeCardsResult =
+					game.popNumRandomCardsFromDeckAndRefillWithDiscardedIfNeeded(numCards);
+				if (!takeCardsResult)
+					return callback({ success: false, cardIds: [], message: 'No more cards to take' });
 
-			const cardsTakenDTO: CardsTakenDTO = { playerId: player.id, numCards: 1 };
-			this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.CARDS_TAKEN, game.id, cardsTakenDTO);
-			callback({ success: true, message: '', cardIds: cardIds });
-		});
+				player.deck.add(takeCardsResult.cardIds);
+
+				const cardsTakenDTO: CardsTakenDTO = {
+					playerId: player.id,
+					numCards: takeCardsResult.cardIds.length,
+					deckRefilled: takeCardsResult.refilled,
+					numCardsInRefilled: game.numCardsInDeck,
+				};
+				this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.CARDS_TAKEN, game.id, cardsTakenDTO);
+				callback({ success: true, message: '', cardIds: takeCardsResult.cardIds });
+			}
+		);
 
 		socket.on(SOCKET_GAME_EVENTS.TURN_FINISHED, () => {
 			if (game.currentPlayerId !== player.id) return;
@@ -96,4 +109,6 @@ type CardPlayedDTO = {
 type CardsTakenDTO = {
 	playerId: string;
 	numCards: number;
+	deckRefilled: boolean;
+	numCardsInRefilled: number;
 };

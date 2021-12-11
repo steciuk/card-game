@@ -64,7 +64,7 @@ export class Deck {
 	): { cardIds: CardId[]; refilled: boolean } {
 		let refilled = false;
 		let cardIds: CardId[] = [];
-		if (num <= this.inDeck.length) {
+		if (num < this.inDeck.length) {
 			for (let i = 0; i < num; i++) {
 				const card = chooseRandomArrayElement(this.inDeck);
 				cardIds.push(this.pop(card) as CardId);
@@ -73,8 +73,7 @@ export class Deck {
 			refilled = true;
 			const missing = num - this.inDeck.length;
 			cardIds = [...this.inDeck];
-			this.inDeck = [...discarded.inDeck];
-			discarded.empty();
+			this.inDeck = [...discarded.inDeck.splice(0, discarded.inDeck.length - 1)];
 			cardIds.push(...this.popNumRandomCardsAndRefillDeckIfNotEnough(missing).cardIds);
 		} else {
 			cardIds = [...this.inDeck];

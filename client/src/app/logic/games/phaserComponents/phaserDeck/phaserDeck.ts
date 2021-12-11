@@ -29,7 +29,17 @@ export class PhaserDeck {
 		this.alignCards();
 	}
 
-	addCards(cardIds: string | string[], randomizeCardRotation = false, numberOfCards = 1): void {
+	destroyAllButNumLastCards(num: number): void {
+		const numAllCards = this.getAllCards().length;
+		for (let i = 0; i < numAllCards - num; i++) {
+			const card = this.cardsContainer.first;
+			if (card) card.destroy();
+		}
+		this.alignCards();
+	}
+
+	// TODO: cleaner randomize flags
+	addCards(cardIds: string | string[], randomizeCardsRotation = false, numberOfCards = 1): void {
 		let cardIdsToDraw: string[] = [];
 		Array.isArray(cardIds)
 			? (cardIdsToDraw = cardIds)
@@ -37,7 +47,7 @@ export class PhaserDeck {
 
 		cardIdsToDraw.forEach((cardId) => {
 			const card = new PhaserCard(this.scene, 0, 0, cardId, this.height);
-			if (randomizeCardRotation) card.randomizeAngle();
+			if (randomizeCardsRotation) card.randomizeAngle();
 			this.addCard(card);
 		});
 

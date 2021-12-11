@@ -104,6 +104,7 @@ export class MakaoScene extends BaseScene {
 		this.deck.addEvent('pointerup', () => {
 			this.socketService.emitSocketEvent(
 				SOCKET_GAME_EVENTS.CARDS_TAKEN,
+				1,
 				(cardTakenResponseDTO: CardsTakenResponseDTO) => {
 					if (cardTakenResponseDTO.success)
 						this.thisPlayer.deck.addCards(cardTakenResponseDTO.cardIds);
@@ -134,7 +135,11 @@ export class MakaoScene extends BaseScene {
 						.get(cardsTakenDTO.playerId)
 						?.deck.addCards('RB', false, cardsTakenDTO.numCards);
 				}
-				this.deck.destroyNumLastCards(cardsTakenDTO.numCards);
+
+				if (!cardsTakenDTO.deckRefilled) return this.deck.destroyNumLastCards(cardsTakenDTO.numCards);
+				this.discarded.destroyAllButNumLastCards(1);
+				this.deck.destroyAllButNumLastCards(0);
+				this.deck.addCards('RB', true, cardsTakenDTO.numCardsInRefilled);
 			}
 		);
 
@@ -249,6 +254,8 @@ type CardPlayedDTO = {
 type CardsTakenDTO = {
 	playerId: string;
 	numCards: number;
+	deckRefilled: boolean;
+	numCardsInRefilled: number;
 };
 
 type CardsTakenResponseDTO = {
