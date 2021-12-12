@@ -37,7 +37,7 @@ export class MakaoHandler extends GameHandler {
 		socket.on(
 			SOCKET_GAME_EVENTS.CARD_PLAYED,
 			(cardId: CardId, callback: (response: ResponseDTO) => void) => {
-				if (!game.cardsPlayerCanPlay(player, cardId).length)
+				if (!game.canPlayerPlayCard(player, cardId))
 					return callback({ success: false, message: 'Cannot play that card' });
 
 				player.deck.remove(cardId);

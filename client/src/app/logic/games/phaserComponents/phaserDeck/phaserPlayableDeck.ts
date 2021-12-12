@@ -1,7 +1,6 @@
 import { BaseScene } from '../../scenes/baseScene';
 import { ResponseDTO } from '../../scenes/makao/makaoScene';
 import { SOCKET_GAME_EVENTS } from '../../socketEvents/socketEvents';
-import { HEX_COLORS_NUMBER } from '../HexColors';
 import { PhaserCard } from './phaserCard';
 import { PhaserDeck } from './phaserDeck';
 
@@ -29,12 +28,7 @@ export class PhaserPlayableDeck extends PhaserDeck {
 			(card.x = dragX), (card.y = dragY);
 		});
 
-		card.on('dragstart', () => {
-			card.setTint(HEX_COLORS_NUMBER.GRAY);
-		});
-
 		card.on('dragend', (_pointer: unknown, _dragX: number, _dragY: number, dropped: boolean) => {
-			card.setTint();
 			if (!dropped) {
 				card.x = card.input.dragStartX;
 				card.y = card.input.dragStartY;
@@ -57,9 +51,16 @@ export class PhaserPlayableDeck extends PhaserDeck {
 		});
 	}
 
-	enable(enable: boolean): PhaserPlayableDeck {
-		if (enable) this.cardsContainer.getAll().forEach((card) => card.setInteractive());
-		else this.cardsContainer.getAll().forEach((card) => card.disableInteractive());
+	enableOnlyGivenCards(cardIds: string[]): PhaserPlayableDeck {
+		this.getAllCards().forEach((card) => {
+			if (cardIds.indexOf(card.cardId) >= 0) {
+				card.setInteractive();
+				card.setGlow(true);
+			} else {
+				card.disableInteractive();
+				card.setGlow(false);
+			}
+		});
 
 		return this;
 	}

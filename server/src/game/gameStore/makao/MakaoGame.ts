@@ -80,13 +80,16 @@ export class MakaoGame extends Game {
 		return true;
 	}
 
-	cardsPlayerCanPlay(player: MakaoPlayer, cardId?: CardId): CardId[] {
+	cardsPlayerCanPlay(player: MakaoPlayer): CardId[] {
 		if (!this.isPlayerTurn(player.id)) return [];
-		if (cardId) {
-			if (player.deck.hasCard(cardId)) return [cardId];
-			else return [];
-		}
-		return player.deck.getInDeck();
+		const topCardId = this.topCard;
+		return player.deck
+			.getInDeck()
+			.filter((cardId) => cardId[0] === topCardId[0] || cardId[1] === topCardId[1]);
+	}
+
+	canPlayerPlayCard(player: MakaoPlayer, cardId: CardId): boolean {
+		return this.cardsPlayerCanPlay(player).indexOf(cardId) >= 0;
 	}
 
 	canPlayerFinishTurn(player: MakaoPlayer): boolean {

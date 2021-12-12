@@ -4,7 +4,7 @@ import { BaseScene } from '../../scenes/baseScene';
 import { PhaserCard } from './phaserCard';
 
 export class PhaserDeck {
-	protected cardsContainer: GameObjects.Container;
+	private cardsContainer: GameObjects.Container;
 	private additionalContainer: GameObjects.Container;
 	protected cardsLine: Geom.Line;
 
@@ -63,7 +63,7 @@ export class PhaserDeck {
 		Actions.PlaceOnLine(this.cardsContainer.getAll(), this.cardsLine);
 	}
 
-	private getAllCards(): PhaserCard[] {
+	protected getAllCards(): PhaserCard[] {
 		return this.cardsContainer.getAll() as PhaserCard[];
 	}
 

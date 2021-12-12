@@ -5,6 +5,8 @@ import { PhaserDeck } from './phaserDeck';
 
 export class PhaserClickableDeck extends PhaserDeck {
 	private clickZone: GameObjects.Zone;
+	private event?: (...args: unknown[]) => void;
+	private eventName?: string;
 
 	constructor(scene: BaseScene, x: number, y: number, rotation: number, height: number, deckWidth: number) {
 		super(scene, x, y, rotation, height, deckWidth);
@@ -22,15 +24,17 @@ export class PhaserClickableDeck extends PhaserDeck {
 		return this;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	addEvent(eventName: string, callback: (...args: any[]) => void): PhaserClickableDeck {
-		this.clickZone.on(eventName, callback);
+	addEvent(eventName: string, callback: (...args: unknown[]) => void): PhaserClickableDeck {
+		this.event = callback;
+		this.eventName = eventName;
 		return this;
 	}
 
 	enable(enable: boolean): PhaserClickableDeck {
-		if (enable) this.clickZone.setInteractive();
-		else this.clickZone.disableInteractive();
+		// if (enable){
+		// 	this.getAllCards()
+		// } this.clickZone.setInteractive();
+		// else this.clickZone.disableInteractive();
 
 		return this;
 	}

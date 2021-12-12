@@ -232,14 +232,12 @@ export class MakaoScene extends BaseScene {
 	}
 
 	private updateTurnBasedInteractiveElements(actionsDto: ActionsDTO | null): void {
-		console.log(
-			!!actionsDto?.canPlayerFinishTurn,
-			!!actionsDto?.canPlayerTakeCard,
-			!!actionsDto?.cardsPlayerCanPlay.length
-		);
+		console.log(actionsDto?.cardsPlayerCanPlay);
 		this.finishTurnButton.enable(!!actionsDto?.canPlayerFinishTurn);
 		this.deck.enable(!!actionsDto?.canPlayerTakeCard);
-		this.thisPlayer.deck.enable(!!actionsDto?.cardsPlayerCanPlay.length);
+
+		if (!actionsDto) this.thisPlayer.deck.enableOnlyGivenCards([]);
+		else this.thisPlayer.deck.enableOnlyGivenCards(actionsDto.cardsPlayerCanPlay);
 	}
 
 	private getPlayer(playerId: string): MakaoPlayer {
@@ -321,7 +319,7 @@ class ThisMakaoPlayer extends MakaoPlayer {
 		this.id = thisMakaoPlayerDTO.id;
 		this.username = thisMakaoPlayerDTO.username;
 		this.deck = new PhaserPlayableDeck(scene, x, y, rotation, cardsScale, deckWidth);
-		this.deck.addCards(thisMakaoPlayerDTO.cardIds).enable(false);
+		this.deck.addCards(thisMakaoPlayerDTO.cardIds).enableOnlyGivenCards([]);
 	}
 }
 
