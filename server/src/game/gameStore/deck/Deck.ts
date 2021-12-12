@@ -13,7 +13,7 @@ export class Deck {
 		this.validColors = deckType.colors;
 	}
 
-	isCardValidForDeck(cardId: CardId): boolean {
+	private isCardValidForDeck(cardId: CardId): boolean {
 		return this.validShapes.includes(cardId[0] as Shape) && this.validColors.includes(cardId[1] as Color);
 	}
 
@@ -39,11 +39,12 @@ export class Deck {
 		}
 	}
 
-	pop(cardId: CardId): CardId | null {
-		const index = this.inDeck.indexOf(cardId);
-		if (index < 0) return null;
-		this.inDeck.splice(index, 1);
-		return cardId;
+	hasCard(cardId: CardId): boolean {
+		return this.inDeck.indexOf(cardId) >= 0;
+	}
+
+	remove(cardId: CardId): void {
+		this.inDeck.splice(this.inDeck.indexOf(cardId), 1);
 	}
 
 	getNumOfCardsInDeck(): number {
@@ -67,7 +68,8 @@ export class Deck {
 		if (num < this.inDeck.length) {
 			for (let i = 0; i < num; i++) {
 				const card = chooseRandomArrayElement(this.inDeck);
-				cardIds.push(this.pop(card) as CardId);
+				this.remove(card);
+				cardIds.push(card);
 			}
 		} else if (discarded) {
 			refilled = true;

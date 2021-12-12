@@ -1,4 +1,5 @@
 import { BaseScene } from '../../scenes/baseScene';
+import { ResponseDTO } from '../../scenes/makao/makaoScene';
 import { SOCKET_GAME_EVENTS } from '../../socketEvents/socketEvents';
 import { HEX_COLORS_NUMBER } from '../HexColors';
 import { PhaserCard } from './phaserCard';
@@ -7,6 +8,15 @@ import { PhaserDeck } from './phaserDeck';
 export class PhaserPlayableDeck extends PhaserDeck {
 	constructor(scene: BaseScene, x: number, y: number, rotation: number, height: number, deckWidth: number) {
 		super(scene, x, y, rotation, height, deckWidth);
+	}
+
+	addCards(
+		cardIds: string | string[],
+		randomizeCardsRotation?: boolean,
+		numberOfCards?: number
+	): PhaserPlayableDeck {
+		super.addCards(cardIds, randomizeCardsRotation, numberOfCards);
+		return this;
 	}
 
 	protected addCard(card: PhaserCard): void {
@@ -32,7 +42,7 @@ export class PhaserPlayableDeck extends PhaserDeck {
 				this.scene.socketService.emitSocketEvent(
 					SOCKET_GAME_EVENTS.CARD_PLAYED,
 					card.texture.key,
-					(response: CardPlayedResponseDTO) => {
+					(response: ResponseDTO) => {
 						if (response.success) {
 							card.destroy();
 							this.alignCards();
@@ -47,16 +57,10 @@ export class PhaserPlayableDeck extends PhaserDeck {
 		});
 	}
 
-	disable(): void {
-		this.cardsContainer.getAll().forEach((card) => card.disableInteractive());
-	}
+	enable(enable: boolean): PhaserPlayableDeck {
+		if (enable) this.cardsContainer.getAll().forEach((card) => card.setInteractive());
+		else this.cardsContainer.getAll().forEach((card) => card.disableInteractive());
 
-	enable(): void {
-		this.cardsContainer.getAll().forEach((card) => card.setInteractive());
+		return this;
 	}
 }
-
-type CardPlayedResponseDTO = {
-	success: boolean;
-	message: string;
-};

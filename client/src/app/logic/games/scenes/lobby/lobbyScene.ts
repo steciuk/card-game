@@ -34,7 +34,7 @@ export class LobbyScene extends BaseScene {
 				//TODO: standardize callback responses
 				console.log(messageToLog);
 			});
-		}).disable();
+		}).enable(false);
 		this.updateStartButton();
 
 		// this.time.addEvent({
@@ -72,8 +72,8 @@ export class LobbyScene extends BaseScene {
 					return player.isReady;
 				}))
 		)
-			this.startBtn.enable();
-		else this.startBtn.disable();
+			this.startBtn.enable(true);
+		else this.startBtn.enable(false);
 	}
 
 	private registerListeners(): void {

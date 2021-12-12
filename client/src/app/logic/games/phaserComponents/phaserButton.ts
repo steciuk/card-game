@@ -20,15 +20,11 @@ export class PhaserButton {
 			});
 	}
 
-	disable(): PhaserButton {
-		this.isEnabled = false;
-		this.button.disableInteractive().setStyle({ backgroundColor: HEX_COLORS_STRING.GRAY });
-		return this;
-	}
+	enable(enable: boolean): PhaserButton {
+		if (enable) this.button.setStyle({ backgroundColor: HEX_COLORS_STRING.GREEN }).setInteractive();
+		else this.button.disableInteractive().setStyle({ backgroundColor: HEX_COLORS_STRING.GRAY });
 
-	enable(): PhaserButton {
-		this.isEnabled = true;
-		this.button.setStyle({ backgroundColor: HEX_COLORS_STRING.GREEN }).setInteractive();
+		this.isEnabled = enable;
 		return this;
 	}
 }

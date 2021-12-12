@@ -30,75 +30,77 @@ export class MakaoHandler extends GameHandler {
 		socket.on(
 			SOCKET_GAME_EVENTS.GET_GAME_STATE,
 			(callback: (makaoGameStateForPlayer: InitialMakaoGameStateForPlayerDTO) => void) => {
-				callback(InitialMakaoGameStateForPlayerDTO.fromMakaoGameDTO(game, player));
+				callback(InitialMakaoGameStateForPlayerDTO.fromMakaoGameAndPlayer(game, player));
 			}
 		);
 
 		socket.on(
 			SOCKET_GAME_EVENTS.CARD_PLAYED,
-			(cardId: CardId, callback: (response: CardPlayedResponseDTO) => void) => {
-				if (game.currentPlayerId !== player.id)
-					return callback({ success: false, message: 'Not your turn' });
-				const cardPlayed = player.deck.pop(cardId);
-				if (!cardPlayed) return callback({ success: false, message: 'No such card in your deck' });
+			(cardId: CardId, callback: (response: ResponseDTO) => void) => {
+				if (!game.cardsPlayerCanPlay(player, cardId).length)
+					return callback({ success: false, message: 'Cannot play that card' });
 
-				game.discardCard(cardPlayed);
+				player.deck.remove(cardId);
+				game.discardCard(cardId);
+
 				const cardPlayedDTO: CardPlayedDTO = {
 					playerId: player.id,
-					cardId: cardPlayed,
+					cardId: cardId,
 				};
 				this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.CARD_PLAYED, game.id, cardPlayedDTO);
-				callback({ success: true, message: cardPlayed });
+				callback({ success: true, message: cardId });
 			}
 		);
 
 		socket.on(
 			SOCKET_GAME_EVENTS.CARDS_TAKEN,
 			(numCards: number, callback: (response: CardsTakenResponseDTO) => void) => {
-				if (game.currentPlayerId !== player.id)
-					return callback({ success: false, cardIds: [], message: 'Not your turn' });
+				if (!game.canPlayerTakeCard(player))
+					return callback({ success: false, cardIds: [], message: 'Cannot take card' });
 
-				const takeCardsResult =
+				const { cardIds, refilled } =
 					game.popNumRandomCardsFromDeckAndRefillWithDiscardedIfNeeded(numCards);
-				if (!takeCardsResult)
-					return callback({ success: false, cardIds: [], message: 'No more cards to take' });
 
-				player.deck.add(takeCardsResult.cardIds);
+				player.deck.add(cardIds);
 
 				const cardsTakenDTO: CardsTakenDTO = {
 					playerId: player.id,
-					numCards: takeCardsResult.cardIds.length,
-					deckRefilled: takeCardsResult.refilled,
+					numCards: cardIds.length,
+					deckRefilled: refilled,
 					numCardsInRefilled: game.numCardsInDeck,
 				};
 				this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.CARDS_TAKEN, game.id, cardsTakenDTO);
-				callback({ success: true, message: '', cardIds: takeCardsResult.cardIds });
+				callback({ success: true, message: '', cardIds: cardIds });
 			}
 		);
 
-		socket.on(SOCKET_GAME_EVENTS.TURN_FINISHED, () => {
-			if (game.currentPlayerId !== player.id) return;
+		socket.on(SOCKET_GAME_EVENTS.TURN_FINISHED, (callback: (response: ResponseDTO) => void) => {
+			if (!game.canPlayerFinishTurn(player))
+				return callback({ success: false, message: 'Cannot finish turn' });
 
 			game.nextPlayer();
-			const turnFinishedDTO: TurnFinishedDTO = { playerId: game.currentPlayerId };
+			const currentPlayer = game.currentPlayer;
+			const turnFinishedDTO: TurnFinishedDTO = { playerId: currentPlayer.id };
 			this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.TURN_FINISHED, game.id, turnFinishedDTO);
+			socket
+				.to(currentPlayer.socketId)
+				.emit(SOCKET_GAME_EVENTS.UPDATE_ACTIONS, game.getActionsForPlayerDTO(currentPlayer));
+			return callback({ success: true, message: '' });
 		});
 	}
 }
+
+type ResponseDTO = {
+	success: boolean;
+	message: string;
+};
 
 type TurnFinishedDTO = {
 	playerId: string;
 };
 
-type CardPlayedResponseDTO = {
-	success: boolean;
-	message: string;
-};
-
-type CardsTakenResponseDTO = {
-	success: boolean;
+type CardsTakenResponseDTO = ResponseDTO & {
 	cardIds: CardId[];
-	message: string;
 };
 
 type CardPlayedDTO = {

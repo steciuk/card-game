@@ -39,7 +39,7 @@ export class PhaserDeck {
 	}
 
 	// TODO: cleaner randomize flags
-	addCards(cardIds: string | string[], randomizeCardsRotation = false, numberOfCards = 1): void {
+	addCards(cardIds: string | string[], randomizeCardsRotation = false, numberOfCards = 1): PhaserDeck {
 		let cardIdsToDraw: string[] = [];
 		Array.isArray(cardIds)
 			? (cardIdsToDraw = cardIds)
@@ -52,26 +52,28 @@ export class PhaserDeck {
 		});
 
 		this.alignCards();
+		return this;
 	}
 
 	protected addCard(card: PhaserCard): void {
 		this.cardsContainer.add(card);
 	}
 
-	alignCards(): void {
+	protected alignCards(): void {
 		Actions.PlaceOnLine(this.cardsContainer.getAll(), this.cardsLine);
 	}
 
-	getAllCards(): PhaserCard[] {
+	private getAllCards(): PhaserCard[] {
 		return this.cardsContainer.getAll() as PhaserCard[];
 	}
 
-	bringCardToTop(card: PhaserCard): void {
-		this.scene.children.bringToTop(this.cardsContainer);
-		this.cardsContainer.bringToTop(card);
-	}
+	// bringCardToTop(card: PhaserCard): void {
+	// 	this.scene.children.bringToTop(this.cardsContainer);
+	// 	this.cardsContainer.bringToTop(card);
+	// }
 
-	addToAdditionalContainer(gameObject: GameObjects.GameObject): void {
+	addToAdditionalContainer(gameObject: GameObjects.GameObject): PhaserDeck {
 		this.additionalContainer.add(gameObject);
+		return this;
 	}
 }

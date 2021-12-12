@@ -13,16 +13,25 @@ export class PhaserClickableDeck extends PhaserDeck {
 		this.addToAdditionalContainer(this.clickZone);
 	}
 
+	addCards(
+		cardIds: string | string[],
+		randomizeCardsRotation?: boolean,
+		numberOfCards?: number
+	): PhaserClickableDeck {
+		super.addCards(cardIds, randomizeCardsRotation, numberOfCards);
+		return this;
+	}
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	addEvent(eventName: string, callback: (...args: any[]) => void): void {
+	addEvent(eventName: string, callback: (...args: any[]) => void): PhaserClickableDeck {
 		this.clickZone.on(eventName, callback);
+		return this;
 	}
 
-	disable(): void {
-		this.clickZone.disableInteractive();
-	}
+	enable(enable: boolean): PhaserClickableDeck {
+		if (enable) this.clickZone.setInteractive();
+		else this.clickZone.disableInteractive();
 
-	enable(): void {
-		this.clickZone.setInteractive();
+		return this;
 	}
 }
