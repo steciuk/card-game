@@ -4,7 +4,7 @@ import { BaseScene } from '../../scenes/baseScene';
 import { PhaserCard } from './phaserCard';
 
 export class PhaserDeck {
-	private cardsContainer: GameObjects.Container;
+	protected cardsContainer: GameObjects.Container;
 	private additionalContainer: GameObjects.Container;
 	protected cardsLine: Geom.Line;
 
@@ -59,18 +59,13 @@ export class PhaserDeck {
 		this.cardsContainer.add(card);
 	}
 
-	protected alignCards(): void {
+	alignCards(): void {
 		Actions.PlaceOnLine(this.cardsContainer.getAll(), this.cardsLine);
 	}
 
 	protected getAllCards(): PhaserCard[] {
 		return this.cardsContainer.getAll() as PhaserCard[];
 	}
-
-	// bringCardToTop(card: PhaserCard): void {
-	// 	this.scene.children.bringToTop(this.cardsContainer);
-	// 	this.cardsContainer.bringToTop(card);
-	// }
 
 	addToAdditionalContainer(gameObject: GameObjects.GameObject): PhaserDeck {
 		this.additionalContainer.add(gameObject);

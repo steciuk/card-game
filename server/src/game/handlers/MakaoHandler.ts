@@ -2,6 +2,7 @@ import { Server, Socket } from 'socket.io';
 
 import { CardId } from '../gameStore/deck/Card';
 import {
+	ActionsDTO,
 	InitialMakaoGameStateForPlayerDTO,
 	MakaoGame
 } from '../gameStore/makao/MakaoGame';
@@ -36,27 +37,27 @@ export class MakaoHandler extends GameHandler {
 
 		socket.on(
 			SOCKET_GAME_EVENTS.CARD_PLAYED,
-			(cardId: CardId, callback: (response: ResponseDTO) => void) => {
+			(cardId: CardId, callback: (response: CardPlayedResponseDTO | FailureResponseDTO) => void) => {
 				if (!game.canPlayerPlayCard(player, cardId))
-					return callback({ success: false, message: 'Cannot play that card' });
+					return callback({ success: false, error: 'Cannot play that card' });
 
 				player.deck.remove(cardId);
-				game.discardCard(cardId);
+				game.playCard(cardId);
 
 				const cardPlayedDTO: CardPlayedDTO = {
 					playerId: player.id,
 					cardId: cardId,
 				};
-				this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.CARD_PLAYED, game.id, cardPlayedDTO);
-				callback({ success: true, message: cardId });
+				socket.to(game.id).emit(SOCKET_GAME_EVENTS.CARD_PLAYED, cardPlayedDTO);
+				callback({ success: true, actions: game.getActionsForPlayerDTO(player), cardId: cardId });
 			}
 		);
 
 		socket.on(
 			SOCKET_GAME_EVENTS.CARDS_TAKEN,
-			(numCards: number, callback: (response: CardsTakenResponseDTO) => void) => {
+			(numCards: number, callback: (response: CardsTakenResponseDTO | FailureResponseDTO) => void) => {
 				if (!game.canPlayerTakeCard(player))
-					return callback({ success: false, cardIds: [], message: 'Cannot take card' });
+					return callback({ success: false, error: 'Cannot take card' });
 
 				const { cardIds, refilled } =
 					game.popNumRandomCardsFromDeckAndRefillWithDiscardedIfNeeded(numCards);
@@ -69,38 +70,63 @@ export class MakaoHandler extends GameHandler {
 					deckRefilled: refilled,
 					numCardsInRefilled: game.numCardsInDeck,
 				};
-				this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.CARDS_TAKEN, game.id, cardsTakenDTO);
-				callback({ success: true, message: '', cardIds: cardIds });
+				socket.to(game.id).emit(SOCKET_GAME_EVENTS.CARDS_TAKEN, cardsTakenDTO);
+				callback({
+					success: true,
+					cardIds: cardIds,
+					actions: game.getActionsForPlayerDTO(player),
+					deckRefilled: refilled,
+					numCardsInRefilled: game.numCardsInDeck,
+				});
 			}
 		);
 
-		socket.on(SOCKET_GAME_EVENTS.TURN_FINISHED, (callback: (response: ResponseDTO) => void) => {
-			if (!game.canPlayerFinishTurn(player))
-				return callback({ success: false, message: 'Cannot finish turn' });
+		socket.on(
+			SOCKET_GAME_EVENTS.TURN_FINISHED,
+			(callback: (response: TurnFinishedResponseDTO | FailureResponseDTO) => void) => {
+				if (!game.canPlayerFinishTurn(player))
+					return callback({ success: false, error: 'Cannot finish turn' });
 
-			game.nextPlayer();
-			const currentPlayer = game.currentPlayer;
-			const turnFinishedDTO: TurnFinishedDTO = { playerId: currentPlayer.id };
-			this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.TURN_FINISHED, game.id, turnFinishedDTO);
-			socket
-				.to(currentPlayer.socketId)
-				.emit(SOCKET_GAME_EVENTS.UPDATE_ACTIONS, game.getActionsForPlayerDTO(currentPlayer));
-			return callback({ success: true, message: '' });
-		});
+				game.nextPlayer();
+				const currentPlayer = game.currentPlayer;
+				const turnFinishedDTO: TurnFinishedDTO = { playerId: currentPlayer.id };
+				socket.to(game.id).emit(SOCKET_GAME_EVENTS.TURN_FINISHED, turnFinishedDTO);
+				socket
+					.to(currentPlayer.socketId)
+					.emit(SOCKET_GAME_EVENTS.UPDATE_ACTIONS, game.getActionsForPlayerDTO(currentPlayer));
+				return callback({ success: true, playerId: currentPlayer.id });
+			}
+		);
 	}
 }
 
-type ResponseDTO = {
-	success: boolean;
-	message: string;
+type SuccessResponseDTO = {
+	success: true;
+};
+
+type FailureResponseDTO = {
+	success: false;
+	error: string;
+};
+
+type TurnFinishedResponseDTO = SuccessResponseDTO & {
+	playerId: string;
+};
+
+type CardPlayedResponseDTO = SuccessResponseDTO & {
+	cardId: CardId;
+	actions: ActionsDTO | null;
+};
+
+type CardsTakenResponseDTO = SuccessResponseDTO & {
+	cardIds: CardId[];
+	deckRefilled: boolean;
+	numCardsInRefilled: number;
+	actions: ActionsDTO | null;
 };
 
 type TurnFinishedDTO = {
 	playerId: string;
-};
-
-type CardsTakenResponseDTO = ResponseDTO & {
-	cardIds: CardId[];
 };
 
 type CardPlayedDTO = {

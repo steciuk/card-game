@@ -16,23 +16,26 @@ export class PhaserCard extends GameObjects.Sprite {
 
 	setGlow(glow: boolean): void {
 		if (glow) {
-			this.glowTween = this.scene.tweens.addCounter({
-				from: 0,
-				to: 1,
-				duration: 1500,
-				repeat: -1,
-				yoyo: true,
-				ease: Phaser.Math.Easing.Quintic.In,
-				onUpdate: (tween) => {
-					this.setTint(
-						Phaser.Display.Color.GetColor(
-							Math.floor(255 - 6 * tween.getValue()),
-							255,
-							Math.floor(255 - 181 * tween.getValue())
-						)
-					);
-				},
-			});
+			if (this.glowTween) this.glowTween.restart();
+			else {
+				this.glowTween = this.scene.tweens.addCounter({
+					from: 0,
+					to: 1,
+					duration: 1500,
+					repeat: -1,
+					yoyo: true,
+					ease: Phaser.Math.Easing.Quintic.In,
+					onUpdate: (tween) => {
+						this.setTint(
+							Phaser.Display.Color.GetColor(
+								Math.floor(255 - 6 * tween.getValue()),
+								255,
+								Math.floor(255 - 181 * tween.getValue())
+							)
+						);
+					},
+				});
+			}
 		} else {
 			this.glowTween?.stop();
 			this.glowTween = undefined;

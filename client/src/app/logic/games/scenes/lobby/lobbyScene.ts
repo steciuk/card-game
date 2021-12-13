@@ -36,14 +36,6 @@ export class LobbyScene extends BaseScene {
 			});
 		}).enable(false);
 		this.updateStartButton();
-
-		// this.time.addEvent({
-		// 	delay: 3000,
-		// 	loop: false,
-		// 	callback: () => {
-		// 		this.changeScene(SCENE_KEYS.MAKAO);
-		// 	},
-		// });
 	}
 
 	update(): void {}

@@ -16,6 +16,8 @@ export class MakaoGame extends Game {
 	playersInOrder: MakaoPlayer[];
 	private currentPlayerNumber = 0;
 
+	isCardPlayedThisTurn = false;
+
 	constructor(
 		gameType: GameTypes,
 		owner: { id: string; username: string },
@@ -34,14 +36,21 @@ export class MakaoGame extends Game {
 	}
 
 	nextPlayer(): void {
-		if (this.currentPlayerNumber >= this.numPlayersInGame - 1) this.currentPlayerNumber = 0;
-		else this.currentPlayerNumber++;
+		if (this.currentPlayerNumber >= this.numPlayersInGame - 1) {
+			this.currentPlayerNumber = 0;
+			return;
+		}
+
+		this.currentPlayerNumber++;
+		this.isCardPlayedThisTurn = false;
 	}
 
 	start(): void {
 		super.start();
 		this.playersInOrder = shuffleArray(Array.from(this.playersInGame.values()));
 
+		this.currentPlayerNumber = 0;
+		this.isCardPlayedThisTurn = false;
 		this.deck.full();
 		this.discarded.empty();
 
@@ -66,8 +75,9 @@ export class MakaoGame extends Game {
 		return this.discarded.getLastInDeck();
 	}
 
-	discardCard(cardId: CardId): void {
+	playCard(cardId: CardId): void {
 		this.discarded.add(cardId);
+		this.isCardPlayedThisTurn = true;
 	}
 
 	private isPlayerTurn(playerId: string): boolean {
@@ -76,13 +86,20 @@ export class MakaoGame extends Game {
 
 	canPlayerTakeCard(player: MakaoPlayer): boolean {
 		if (!this.isPlayerTurn(player.id)) return false;
+		if (this.isCardPlayedThisTurn) return false;
 		if (this.deck.getNumOfCardsInDeck() <= 0 && this.discarded.getNumOfCardsInDeck() <= 1) return false;
 		return true;
 	}
 
 	cardsPlayerCanPlay(player: MakaoPlayer): CardId[] {
 		if (!this.isPlayerTurn(player.id)) return [];
+
 		const topCardId = this.topCard;
+
+		if (this.isCardPlayedThisTurn) {
+			return player.deck.getInDeck().filter((cardId) => cardId[0] === topCardId[0]);
+		}
+
 		return player.deck
 			.getInDeck()
 			.filter((cardId) => cardId[0] === topCardId[0] || cardId[1] === topCardId[1]);
@@ -98,6 +115,7 @@ export class MakaoGame extends Game {
 	}
 
 	getActionsForPlayerDTO(player: MakaoPlayer): ActionsDTO {
+		console.log(this.isCardPlayedThisTurn);
 		return {
 			canPlayerTakeCard: this.canPlayerTakeCard(player),
 			cardsPlayerCanPlay: this.cardsPlayerCanPlay(player),
