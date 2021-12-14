@@ -97,7 +97,7 @@ export class MakaoScene extends BaseScene {
 						if (!turnFinishedResponseDTO.success)
 							return console.warn(turnFinishedResponseDTO.error);
 						this.updateTurnArrow(turnFinishedResponseDTO.playerId);
-						this.updateTurnBasedInteractiveElements(null);
+						this.updateTurnBasedInteractiveElements(turnFinishedResponseDTO.actions);
 					}
 				);
 			}
@@ -117,7 +117,6 @@ export class MakaoScene extends BaseScene {
 		this.deck.addEvent('pointerup', () => {
 			this.socketService.emitSocketEvent(
 				SOCKET_GAME_EVENTS.CARDS_TAKEN,
-				1,
 				(cardTakenResponseDTO: CardsTakenResponseDTO | FailureResponseDTO) => {
 					if (!cardTakenResponseDTO.success) return console.warn(cardTakenResponseDTO.error);
 					if (!cardTakenResponseDTO.deckRefilled)
@@ -272,6 +271,7 @@ type FailureResponseDTO = {
 
 type TurnFinishedResponseDTO = SuccessResponseDTO & {
 	playerId: string;
+	actions: ActionsDTO | null;
 };
 
 type CardPlayedResponseDTO = SuccessResponseDTO & {

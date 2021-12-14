@@ -4,6 +4,8 @@ import { Player } from '../Player';
 
 export class MakaoPlayer extends Player {
 	deck = new Deck(DECK_TYPE.FULL);
+	numCardsToTake = 0;
+	numTurnsToWait = 0;
 
 	constructor(id: string, username: string, socketId: string, isOwner: boolean) {
 		super(id, username, socketId, isOwner);

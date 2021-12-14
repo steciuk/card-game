@@ -55,14 +55,11 @@ export class MakaoHandler extends GameHandler {
 
 		socket.on(
 			SOCKET_GAME_EVENTS.CARDS_TAKEN,
-			(numCards: number, callback: (response: CardsTakenResponseDTO | FailureResponseDTO) => void) => {
+			(callback: (response: CardsTakenResponseDTO | FailureResponseDTO) => void) => {
 				if (!game.canPlayerTakeCard(player))
 					return callback({ success: false, error: 'Cannot take card' });
 
-				const { cardIds, refilled } =
-					game.popNumRandomCardsFromDeckAndRefillWithDiscardedIfNeeded(numCards);
-
-				player.deck.add(cardIds);
+				const { cardIds, refilled } = game.takeCard(player);
 
 				const cardsTakenDTO: CardsTakenDTO = {
 					playerId: player.id,
@@ -87,14 +84,21 @@ export class MakaoHandler extends GameHandler {
 				if (!game.canPlayerFinishTurn(player))
 					return callback({ success: false, error: 'Cannot finish turn' });
 
-				game.nextPlayer();
+				game.finishTurn();
 				const currentPlayer = game.currentPlayer;
 				const turnFinishedDTO: TurnFinishedDTO = { playerId: currentPlayer.id };
 				socket.to(game.id).emit(SOCKET_GAME_EVENTS.TURN_FINISHED, turnFinishedDTO);
-				socket
-					.to(currentPlayer.socketId)
-					.emit(SOCKET_GAME_EVENTS.UPDATE_ACTIONS, game.getActionsForPlayerDTO(currentPlayer));
-				return callback({ success: true, playerId: currentPlayer.id });
+
+				if (currentPlayer.id !== player.id) {
+					socket
+						.to(currentPlayer.socketId)
+						.emit(SOCKET_GAME_EVENTS.UPDATE_ACTIONS, game.getActionsForPlayerDTO(currentPlayer));
+				}
+				return callback({
+					success: true,
+					playerId: currentPlayer.id,
+					actions: game.getActionsForPlayerDTO(player),
+				});
 			}
 		);
 	}
@@ -111,6 +115,7 @@ type FailureResponseDTO = {
 
 type TurnFinishedResponseDTO = SuccessResponseDTO & {
 	playerId: string;
+	actions: ActionsDTO | null;
 };
 
 type CardPlayedResponseDTO = SuccessResponseDTO & {
