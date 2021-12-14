@@ -56,8 +56,22 @@ export class MakaoGame extends Game {
 
 		this.discarded.add(this.deck.popNumRandomCardsAndRefillDeckIfNotEnough(1).cardIds);
 		this.playersInOrder.forEach((player) => {
+			player.deck.empty();
 			player.deck.add(this.deck.popNumRandomCardsAndRefillDeckIfNotEnough(5).cardIds);
 		});
+	}
+
+	removePlayer(player: MakaoPlayer): void {
+		super.removePlayer(player);
+
+		if (this.isStarted) {
+			this.deck.add(player.deck.getInDeck());
+			const disconnectedPlayerIndex = this.playersInOrder.findIndex((makaoPlayer) => {
+				return makaoPlayer.id === player.id;
+			});
+			this.playersInOrder.splice(disconnectedPlayerIndex, 1);
+			if (disconnectedPlayerIndex === this.currentPlayerNumber) this.nextPlayer();
+		}
 	}
 
 	popNumRandomCardsFromDeckAndRefillWithDiscardedIfNeeded(num: number): {
@@ -115,7 +129,6 @@ export class MakaoGame extends Game {
 	}
 
 	getActionsForPlayerDTO(player: MakaoPlayer): ActionsDTO {
-		console.log(this.isCardPlayedThisTurn);
 		return {
 			canPlayerTakeCard: this.canPlayerTakeCard(player),
 			cardsPlayerCanPlay: this.cardsPlayerCanPlay(player),

@@ -77,7 +77,8 @@ export abstract class GameHandler {
 
 		socket.on(BUILD_IN_SOCKET_GAME_EVENTS.DISCONNECT, (reason) => {
 			GameHandler.connectedUsers.delete(userId);
-			game.removePlayer(userId);
+			game.removePlayer(player);
+
 			this.emitToRoomAndSender(
 				socket,
 				SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED,

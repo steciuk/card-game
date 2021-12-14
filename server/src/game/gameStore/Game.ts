@@ -39,8 +39,8 @@ export abstract class Game {
 		this.numPlayersInGame++;
 	}
 
-	removePlayer(id: string): void {
-		this.playersInGame.delete(id);
+	removePlayer(player: Player): void {
+		this.playersInGame.delete(player.id);
 		this.numPlayersInGame--;
 	}
 

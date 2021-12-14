@@ -33,12 +33,19 @@ export class MakaoScene extends BaseScene {
 	turnArrow!: PhaserTurnArrow;
 	finishTurnButton!: PhaserButton;
 
+	isSceneStarted = false;
+
 	constructor(socketService: SocketService) {
 		super(socketService, { key: SCENE_KEYS.MAKAO });
 		this.registerListeners();
 	}
 
 	init(): void {
+		this.isSceneStarted = true;
+		this.playersIdsInOrder = [];
+		this.shiftedPlayersIdsInOrder = [];
+		this.players = new Map<string, OtherMakaoPlayer>();
+		this.numberOfPlayers = 0;
 		this.midPoint = { x: this.xRelative(0.5), y: this.smallerScreenDimension / 2 };
 	}
 
@@ -99,6 +106,7 @@ export class MakaoScene extends BaseScene {
 		this.socketService.emitSocketEvent(
 			SOCKET_GAME_EVENTS.GET_GAME_STATE,
 			(makaoGameStateForPlayer: InitialMakaoGameStateForPlayerDTO) => {
+				console.log(makaoGameStateForPlayer);
 				this.updateGameState(makaoGameStateForPlayer);
 				this.afterCreate();
 			}
@@ -130,6 +138,10 @@ export class MakaoScene extends BaseScene {
 	update(): void {}
 
 	private registerListeners(): void {
+		this.registerSocketListenerForScene(SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED, () => {
+			if (this.isSceneStarted) this.scene.restart();
+		});
+
 		this.registerSocketListenerForScene(
 			SOCKET_GAME_EVENTS.CARD_PLAYED,
 			(cardPlayedDTO: CardPlayedDTO) => {
