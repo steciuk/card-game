@@ -1,6 +1,7 @@
 import { SocketService } from 'src/app/services/socket.service';
 
 import { BaseScene } from './baseScene';
+import { EndScene } from './end/endScene';
 import { LobbyScene } from './lobby/lobbyScene';
 import { MakaoScene } from './makao/makaoScene';
 
@@ -9,7 +10,7 @@ export enum GameTypes {
 }
 
 export class GAME_CONFIG {
-	static readonly MAKAO = new GAME_CONFIG([LobbyScene, MakaoScene]);
+	static readonly MAKAO = new GAME_CONFIG([LobbyScene, MakaoScene, EndScene]);
 
 	private constructor(public SceneConstructors: SceneInterface[]) {}
 }
@@ -17,6 +18,7 @@ export class GAME_CONFIG {
 export enum SCENE_KEYS {
 	LOBBY = 'LOBBY',
 	MAKAO = 'MAKAO',
+	END = 'END',
 }
 
 export class GameSetup {

@@ -171,6 +171,10 @@ export class MakaoScene extends BaseScene {
 		this.registerSocketListenerForScene(SOCKET_GAME_EVENTS.UPDATE_ACTIONS, (actionsDTO: ActionsDTO) => {
 			this.updateTurnBasedInteractiveElements(actionsDTO);
 		});
+
+		this.registerSocketListenerForScene(SOCKET_GAME_EVENTS.GAME_FINISHED, () => {
+			this.nextScene();
+		});
 	}
 
 	private updateGameState(makaoGameStateForPlayer: InitialMakaoGameStateForPlayerDTO): void {

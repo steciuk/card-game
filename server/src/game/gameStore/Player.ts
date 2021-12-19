@@ -1,5 +1,6 @@
 export abstract class Player {
 	isReady = false;
+	isDisconnected = false;
 	constructor(
 		public readonly id: string,
 		public readonly username: string,
