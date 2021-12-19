@@ -2,6 +2,7 @@ import { SocketService } from 'src/app/services/socket.service';
 
 import { HEX_COLORS_STRING } from '../../phaserComponents/HexColors';
 import { PhaserButton } from '../../phaserComponents/phaserButton';
+import { PhaserCard } from '../../phaserComponents/phaserDeck/phaserCard';
 import { PhaserClickableDeck } from '../../phaserComponents/phaserDeck/phaserClickableDeck';
 import { PhaserDeck } from '../../phaserComponents/phaserDeck/phaserDeck';
 import { PhaserPlayableDeck } from '../../phaserComponents/phaserDeck/phaserPlayableDeck';
@@ -262,6 +263,42 @@ export class MakaoScene extends BaseScene {
 			? this.thisPlayer
 			: (this.players.get(playerId) as MakaoPlayer);
 	}
+
+	chooseColor = (playedCard: PhaserCard, playedDeck: PhaserPlayableDeck): void => {
+		this.updateTurnBasedInteractiveElements(null);
+		new PhaserPlayableDeck(
+			this,
+			this.midPoint.x,
+			this.midPoint.y,
+			0,
+			SCENE_CONFIG.BASE_CARD_HEIGHT,
+			this.yRelative(0.5)
+		)
+			.registerCardEvent('pointerup', (chosenCard, deck) => {
+				return (): void => {
+					this.socketService.emitSocketEvent(
+						SOCKET_GAME_EVENTS.CARD_WITH_OPTION_PLAYED,
+						playedCard.cardId,
+						chosenCard.cardId,
+						(response: CardPlayedResponseDTO | FailureResponseDTO) => {
+							if (response.success) {
+								playedCard.destroy();
+								playedDeck.alignCards();
+								this.discarded.addCards(response.cardId, true);
+								this.updateTurnBasedInteractiveElements(response.actions);
+							} else {
+								playedCard.x = playedCard.input.dragStartX;
+								playedCard.y = playedCard.input.dragStartY;
+								console.warn(response.error);
+							}
+
+							deck.destroy();
+						}
+					);
+				};
+			})
+			.addCards(['AS', 'AH', 'AD', 'AC']);
+	};
 }
 
 type SuccessResponseDTO = {
@@ -365,9 +402,11 @@ class ThisMakaoPlayer extends MakaoPlayer {
 						card.x = card.input.dragStartX;
 						card.y = card.input.dragStartY;
 					} else {
+						if (card.cardId[0] === 'A') return scene.chooseColor(card, deck);
+
 						scene.socketService.emitSocketEvent(
 							SOCKET_GAME_EVENTS.CARD_PLAYED,
-							card.texture.key,
+							card.cardId,
 							(response: CardPlayedResponseDTO | FailureResponseDTO) => {
 								if (response.success) {
 									card.destroy();
@@ -407,7 +446,7 @@ class OtherMakaoPlayer extends MakaoPlayer {
 			.addToAdditionalContainer(
 				// TODO: magic numbers, do cleaner
 				scene.add
-					.text(0, -100 - cardsScale * 100, otherMakaoPlayerDTO.username, {
+					.text(0, -100 - cardsScale / 10, otherMakaoPlayerDTO.username, {
 						color: HEX_COLORS_STRING.BLACK,
 					})
 					.setOrigin(0.5)

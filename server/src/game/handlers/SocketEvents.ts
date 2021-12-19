@@ -8,6 +8,7 @@ export enum SOCKET_GAME_EVENTS {
 	START_GAME = 'start_game',
 	GET_GAME_STATE = 'get_game_state',
 	CARD_PLAYED = 'card_played',
+	CARD_WITH_OPTION_PLAYED = 'card_with_option_played',
 	CARDS_TAKEN = 'cards_taken',
 	TURN_FINISHED = 'turn_finished',
 	UPDATE_ACTIONS = 'update_actions',

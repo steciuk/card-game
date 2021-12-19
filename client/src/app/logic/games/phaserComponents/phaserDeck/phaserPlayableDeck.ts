@@ -47,6 +47,10 @@ export class PhaserPlayableDeck extends PhaserDeck {
 
 		return this;
 	}
+
+	destroy(): void {
+		super.destroy();
+	}
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

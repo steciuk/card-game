@@ -27,6 +27,7 @@ export class MakaoGame extends Game {
 	isCardTakenThisTurn = false;
 	attack: AttackType | null = null;
 	attackCount = 0;
+	changedCard: CardId | null = null;
 
 	constructor(
 		gameType: GameTypes,
@@ -50,6 +51,7 @@ export class MakaoGame extends Game {
 		this.isCardTakenThisTurn = false;
 		this.attack = null;
 		this.attackCount = 0;
+		this.changedCard = null;
 		this.deck.full();
 		this.discarded.empty();
 
@@ -132,10 +134,11 @@ export class MakaoGame extends Game {
 	}
 
 	get topCard(): CardId {
+		if (this.changedCard) return this.changedCard;
 		return this.discarded.getLastInDeck();
 	}
 
-	playCard(cardId: CardId): void {
+	playCard(cardId: CardId, chosenCardId?: CardId): void {
 		if (Card.isShape(cardId, '2') || Card.isShape(cardId, '3')) {
 			this.attack = AttackType.TWO_THREE;
 			this.attackCount += parseInt(cardId[0]);
@@ -154,6 +157,10 @@ export class MakaoGame extends Game {
 			this.attack = null;
 			this.attackCount = 0;
 		}
+
+		if (Card.isShape(cardId, 'A') && chosenCardId) {
+			this.changedCard = chosenCardId;
+		} else this.changedCard = null;
 
 		this.discarded.add(cardId);
 		this.isCardPlayedThisTurn = true;
@@ -218,6 +225,12 @@ export class MakaoGame extends Game {
 
 	canPlayerPlayCard(player: MakaoPlayer, cardId: CardId): boolean {
 		return this.cardsPlayerCanPlay(player).indexOf(cardId) >= 0;
+	}
+
+	canPlayerPlayCardWithOption(player: MakaoPlayer, playedCardId: CardId, chosenCardId: CardId): boolean {
+		if (this.cardsPlayerCanPlay(player).indexOf(playedCardId) < 0) return false;
+		if (Card.isShape(playedCardId, 'A')) return ['AS', 'AH', 'AD', 'AC'].includes(chosenCardId);
+		return false;
 	}
 
 	canPlayerFinishTurn(player: MakaoPlayer): boolean {

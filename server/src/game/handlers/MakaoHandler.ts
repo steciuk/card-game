@@ -1,11 +1,7 @@
 import { Server, Socket } from 'socket.io';
 
 import { CardId } from '../gameStore/deck/Card';
-import {
-	ActionsDTO,
-	InitialMakaoGameStateForPlayerDTO,
-	MakaoGame
-} from '../gameStore/makao/MakaoGame';
+import { ActionsDTO, InitialMakaoGameStateForPlayerDTO, MakaoGame } from '../gameStore/makao/MakaoGame';
 import { MakaoPlayer } from '../gameStore/makao/MakaoPlayer';
 import { GameTypes } from '../GameTypes';
 import { SOCKET_GAME_EVENTS } from './SocketEvents';
@@ -50,6 +46,33 @@ export class MakaoHandler extends GameHandler {
 				};
 				socket.to(game.id).emit(SOCKET_GAME_EVENTS.CARD_PLAYED, cardPlayedDTO);
 				callback({ success: true, actions: game.getActionsForPlayerDTO(player), cardId: cardId });
+			}
+		);
+
+		//TODO: merge with CARD_PLAYED?
+		socket.on(
+			SOCKET_GAME_EVENTS.CARD_WITH_OPTION_PLAYED,
+			(
+				playedCardId: CardId,
+				chosenCardId: CardId,
+				callback: (response: CardPlayedResponseDTO | FailureResponseDTO) => void
+			) => {
+				if (!game.canPlayerPlayCardWithOption(player, playedCardId, chosenCardId))
+					return callback({ success: false, error: 'Cannot play that card' });
+
+				player.deck.remove(playedCardId);
+				game.playCard(playedCardId, chosenCardId);
+
+				const cardPlayedDTO: CardPlayedDTO = {
+					playerId: player.id,
+					cardId: chosenCardId,
+				};
+				socket.to(game.id).emit(SOCKET_GAME_EVENTS.CARD_PLAYED, cardPlayedDTO);
+				callback({
+					success: true,
+					actions: game.getActionsForPlayerDTO(player),
+					cardId: chosenCardId,
+				});
 			}
 		);
 

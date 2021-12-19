@@ -38,7 +38,6 @@ export class PhaserDeck {
 		this.alignCards();
 	}
 
-	// TODO: cleaner randomize flags
 	addCards(cardIds: string | string[], randomizeCardsRotation = false, numberOfCards = 1): PhaserDeck {
 		let cardIdsToDraw: string[] = [];
 		Array.isArray(cardIds)
@@ -70,5 +69,10 @@ export class PhaserDeck {
 	addToAdditionalContainer(gameObject: GameObjects.GameObject): PhaserDeck {
 		this.additionalContainer.add(gameObject);
 		return this;
+	}
+
+	destroy(): void {
+		this.cardsContainer.destroy();
+		this.additionalContainer.destroy();
 	}
 }
