@@ -2,12 +2,8 @@ import { chooseRandomArrayElement, shuffleArray } from '../../../utils/Tools';
 import { GameTypes } from '../../GameTypes';
 import { Card, CardId, Colors } from '../deck/Card';
 import { Deck, DECK_TYPE } from '../deck/Deck';
-import { Game } from '../Game';
-import {
-	MakaoPlayer,
-	OtherMakaoPlayerDTO,
-	ThisMakaoPlayerDTO
-} from './MakaoPlayer';
+import { Game, GAME_STATE } from '../Game';
+import { MakaoPlayer, OtherMakaoPlayerDTO, ThisMakaoPlayerDTO } from './MakaoPlayer';
 
 enum AttackType {
 	TWO_THREE,
@@ -67,16 +63,14 @@ export class MakaoGame extends Game {
 		});
 	}
 
-	removePlayer(player: MakaoPlayer): void {
-		super.removePlayer(player);
+	disconnectPlayer(player: MakaoPlayer): void {
+		super.disconnectPlayer(player);
 
-		if (this.isStarted) {
+		if (this.gameState === GAME_STATE.STARTED) {
+			if (this.numConnectedPlayersInGame <= 1) return this.finish();
+
 			this.deck.add(player.deck.getInDeck());
-			const disconnectedPlayerIndex = this.playersInOrder.findIndex((makaoPlayer) => {
-				return makaoPlayer.id === player.id;
-			});
-			this.playersInOrder.splice(disconnectedPlayerIndex, 1);
-			if (disconnectedPlayerIndex === this.currentPlayerNumber) this.finishTurn();
+			if (this.currentPlayer.id === player.id) this.finishTurn();
 		}
 	}
 
@@ -84,24 +78,28 @@ export class MakaoGame extends Game {
 		return this.playersInOrder[this.currentPlayerNumber];
 	}
 
+	private nextPlayer(): void {
+		if (this.currentPlayerNumber >= this.numPlayersInGame - 1) this.currentPlayerNumber = 0;
+		else this.currentPlayerNumber++;
+	}
+
 	finishTurn(): void {
 		if (!this.isCardPlayedThisTurn && this.attack === AttackType.FOUR) {
 			this.attack = null;
-			this.currentPlayer.numTurnsToWait = this.attackCount - 1;
+			this.currentPlayer.numTurnsToWait += this.attackCount;
 			this.attackCount = 0;
 		}
 
-		if (this.currentPlayerNumber >= this.numPlayersInGame - 1) this.currentPlayerNumber = 0;
-		else this.currentPlayerNumber++;
-
-		const currentPlayer = this.currentPlayer;
-		if (currentPlayer.numTurnsToWait > 0) {
-			currentPlayer.numTurnsToWait--;
-			this.finishTurn();
-		}
+		if (this.currentPlayer.numTurnsToWait > 0) this.currentPlayer.numTurnsToWait--;
 
 		this.isCardPlayedThisTurn = false;
 		this.isCardTakenThisTurn = false;
+
+		do {
+			this.nextPlayer();
+		} while (this.currentPlayer.isDisconnected);
+
+		if (this.currentPlayer.numTurnsToWait > 0) this.finishTurn();
 	}
 
 	takeCard(player: MakaoPlayer): {
@@ -186,9 +184,7 @@ export class MakaoGame extends Game {
 		}
 
 		if (this.attack === AttackType.TWO_THREE) {
-			console.log('cardId');
 			return playerDeck.filter((cardId) => {
-				console.log(cardId);
 				return (
 					(Card.isShape(cardId, '2') || Card.isShape(cardId, '3')) &&
 					(Card.isShapeSameAs(cardId, topCardId) || Card.isColorSameAs(cardId, topCardId))
@@ -208,8 +204,15 @@ export class MakaoGame extends Game {
 		// 	return playerDeck.filter((cardId) => Card.isShape(cardId, 'J'));
 		// }
 
+		if (this.attack === null && Card.isShape(topCardId, 'Q')) {
+			return playerDeck;
+		}
+
 		return playerDeck.filter(
-			(cardId) => Card.isShapeSameAs(cardId, topCardId) || Card.isColorSameAs(cardId, topCardId)
+			(cardId) =>
+				Card.isShape(cardId, 'Q') ||
+				Card.isShapeSameAs(cardId, topCardId) ||
+				Card.isColorSameAs(cardId, topCardId)
 		);
 	}
 
@@ -218,9 +221,6 @@ export class MakaoGame extends Game {
 	}
 
 	canPlayerFinishTurn(player: MakaoPlayer): boolean {
-		console.log(this.attack);
-		console.log(player.username);
-		console.log(this.isCardPlayedThisTurn, this.isCardTakenThisTurn);
 		if (!this.isPlayerTurn(player.id)) return false;
 		if (player.numCardsToTake > 0) return false;
 		if (!this.isCardPlayedThisTurn && !this.isCardTakenThisTurn && this.attack !== AttackType.FOUR)
@@ -255,9 +255,9 @@ export class InitialMakaoGameStateForPlayerDTO {
 		return new InitialMakaoGameStateForPlayerDTO(
 			ThisMakaoPlayerDTO.fromMakaoPlayer(makaoPlayer),
 			makaoGame.currentPlayer.id,
-			makaoGame.playersInOrder.map((makaoPlayer: MakaoPlayer) =>
-				OtherMakaoPlayerDTO.fromMakaoPlayer(makaoPlayer)
-			),
+			makaoGame.playersInOrder
+				.filter((player) => !player.isDisconnected)
+				.map((makaoPlayer: MakaoPlayer) => OtherMakaoPlayerDTO.fromMakaoPlayer(makaoPlayer)),
 			makaoGame.numCardsInDeck,
 			makaoGame.topCard,
 			makaoGame.getActionsForPlayerDTO(makaoPlayer)
