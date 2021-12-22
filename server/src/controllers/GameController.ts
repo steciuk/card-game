@@ -9,8 +9,8 @@ import {
 } from '../errors/httpErrors/ResourceNotFoundError';
 import { GameFactory } from '../game/gameStore/GameFactory';
 import { GamesStore } from '../game/gameStore/GamesStore';
-import { dtoValidationMiddleware } from '../middlewares/dtoValidationMiddleware';
 import { jwtAuthMiddleware } from '../middlewares/JwtAuthMiddleware';
+import { validationMiddleware } from '../middlewares/ValidationMiddleware';
 import { GameModel } from '../models/GameModel';
 import { UserModel } from '../models/UserModel';
 import { AccessDatabaseFromMiddleware } from '../utils/decorators/DatabaseOperationsHandler';
@@ -27,7 +27,7 @@ export class GameController extends Controller {
 	private initializeRoutes(): void {
 		this.router.get('', jwtAuthMiddleware, this.getAllGames);
 		this.router.get('/:gameId', jwtAuthMiddleware, this.getGame);
-		this.router.post('', jwtAuthMiddleware, dtoValidationMiddleware(GameDTO), this.addGame);
+		this.router.post('', jwtAuthMiddleware, validationMiddleware(GameDTO), this.addGame);
 	}
 
 	private getAllGames(req: Request, res: Response, _next: NextFunction): void {

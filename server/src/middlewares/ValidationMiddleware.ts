@@ -5,7 +5,7 @@ import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { BadRequestError } from '../errors/httpErrors/BadRequestError';
 import { elog } from '../utils/Logger';
 
-export function dtoValidationMiddleware(type: ClassConstructor<object>): RequestHandler {
+export function validationMiddleware(type: ClassConstructor<object>): RequestHandler {
 	return (req: Request, res: Response, next: NextFunction): void => {
 		validate(plainToClass(type, req.body)).then((errors: ValidationError[]) => {
 			if (errors.length > 0) {
