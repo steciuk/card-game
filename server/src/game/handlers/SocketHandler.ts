@@ -2,8 +2,12 @@ import { Server, Socket } from 'socket.io';
 import { ExtendedError, Namespace } from 'socket.io/dist/namespace';
 
 import { HttpError } from '../../errors/httpErrors/HttpError';
-import { DB_RESOURCES, ResourceNotFoundError } from '../../errors/httpErrors/ResourceNotFoundError';
+import {
+	DB_RESOURCES,
+	ResourceNotFoundError
+} from '../../errors/httpErrors/ResourceNotFoundError';
 import { SocketBadConnectionError } from '../../errors/socketErrors/SocketBadConnectionError';
+import { SocketGameAlreadyStartedError } from '../../errors/socketErrors/SocketGameAlreadyStartedError';
 import { SocketRoomFullError } from '../../errors/socketErrors/SocketRoomFullError';
 import { SocketUnauthorizedError } from '../../errors/socketErrors/SocketUnauthorizedError';
 import { SocketUserAlreadyConnectedError } from '../../errors/socketErrors/SocketUserAlreadyConnectedError';
@@ -16,7 +20,11 @@ import { GamesStore } from '../gameStore/GamesStore';
 import { Player, PlayerDTO } from '../gameStore/Player';
 import { PlayerFactory } from '../gameStore/PlayerFactory';
 import { GameTypes } from '../GameTypes';
-import { BUILD_IN_SOCKET_GAME_EVENTS, SOCKET_EVENT, SOCKET_GAME_EVENTS } from './SocketEvents';
+import {
+	BUILD_IN_SOCKET_GAME_EVENTS,
+	SOCKET_EVENT,
+	SOCKET_GAME_EVENTS
+} from './SocketEvents';
 
 export abstract class GameHandler {
 	protected static connectedUsers = new Set<string>();
@@ -129,8 +137,7 @@ export abstract class GameHandler {
 			const game = GamesStore.Instance.getGame(gameId);
 			if (!game) return next(new ResourceNotFoundError(DB_RESOURCES.GAME, gameId)); // TODO: change since not using db anymore
 
-			//FIXME: Uncomment! Dev purpose only!
-			// if (game.isStarted) next(new SocketGameAlreadyStartedError());
+			if (game.gameState !== GAME_STATE.NOT_STARTED) next(new SocketGameAlreadyStartedError());
 
 			if (game.isPasswordProtected) {
 				const password = socket.handshake.query.password;

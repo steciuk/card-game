@@ -264,7 +264,7 @@ export class MakaoScene extends BaseScene {
 			: (this.players.get(playerId) as MakaoPlayer);
 	}
 
-	chooseColor = (playedCard: PhaserCard, playedDeck: PhaserPlayableDeck): void => {
+	chooseCard = (playedCard: PhaserCard, playedDeck: PhaserPlayableDeck, cards: string[]): void => {
 		this.updateTurnBasedInteractiveElements(null);
 		new PhaserPlayableDeck(
 			this,
@@ -297,7 +297,7 @@ export class MakaoScene extends BaseScene {
 					);
 				};
 			})
-			.addCards(['AS', 'AH', 'AD', 'AC']);
+			.addCards(cards);
 	};
 }
 
@@ -402,7 +402,10 @@ class ThisMakaoPlayer extends MakaoPlayer {
 						card.x = card.input.dragStartX;
 						card.y = card.input.dragStartY;
 					} else {
-						if (card.cardId[0] === 'A') return scene.chooseColor(card, deck);
+						if (card.cardId[0] === 'A')
+							return scene.chooseCard(card, deck, ['AS', 'AH', 'AD', 'AC']);
+						if (card.cardId[0] === 'J')
+							return scene.chooseCard(card, deck, ['5H', '6H', '7H', '8H', '9H', 'TH']);
 
 						scene.socketService.emitSocketEvent(
 							SOCKET_GAME_EVENTS.CARD_PLAYED,

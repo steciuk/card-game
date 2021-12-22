@@ -1,4 +1,4 @@
-import { Game } from './Game';
+import { Game, GAME_STATE } from './Game';
 
 export class GamesStore {
 	private static instance: GamesStore;
@@ -26,5 +26,9 @@ export class GamesStore {
 
 	get allGamesAsArray(): Game[] {
 		return Array.from(this.activeGames.values());
+	}
+
+	get allNotStartedGamesAsArray(): Game[] {
+		return this.allGamesAsArray.filter((game) => game.gameState === GAME_STATE.NOT_STARTED);
 	}
 }

@@ -6,9 +6,14 @@ export class MakaoPlayer extends Player {
 	deck = new Deck(DECK_TYPE.FULL);
 	numCardsToTake = 0;
 	numTurnsToWait = 0;
+	requestedCardToPlay: CardId | null = null;
 
 	constructor(id: string, username: string, socketId: string, isOwner: boolean) {
 		super(id, username, socketId, isOwner);
+	}
+
+	get isActive(): boolean {
+		return !this.isDisconnected && this.numTurnsToWait <= 0;
 	}
 }
 

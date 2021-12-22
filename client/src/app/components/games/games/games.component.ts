@@ -4,6 +4,7 @@ import { HttpService } from 'src/app/services/http.service';
 import { SubSink } from 'subsink';
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
 	selector: 'app-games',
@@ -14,14 +15,14 @@ export class GamesComponent implements OnInit, OnDestroy {
 	getUrl = '/games';
 	currentGames: GameDTO[] = [];
 
-	constructor(private http: HttpService, public authService: AuthService) {}
+	constructor(private http: HttpService, public authService: AuthService, private router: Router) {}
 
 	ngOnInit(): void {
 		this.refreshGames();
 	}
 
 	addNewGame(game: GameDTO): void {
-		this.currentGames.push(game);
+		this.router.navigateByUrl(`games/makao/${game.id}`);
 	}
 
 	ngOnDestroy(): void {

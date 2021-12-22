@@ -28,7 +28,7 @@ const gameSchema = new Schema<GameDocument>({
 		required: true,
 	},
 	roomName: {
-		type: String, // TODO: validate with regex
+		type: String,
 		minlength: 3,
 		maxlength: 20,
 		required: true,

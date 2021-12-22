@@ -31,7 +31,7 @@ export class GameController extends Controller {
 	}
 
 	private getAllGames(req: Request, res: Response, _next: NextFunction): void {
-		res.json(GamesStore.Instance.allGamesAsArray.map(GameResponseDTO.fromGame));
+		res.json(GamesStore.Instance.allNotStartedGamesAsArray.map(GameResponseDTO.fromGame));
 	}
 
 	@AccessDatabaseFromMiddleware()

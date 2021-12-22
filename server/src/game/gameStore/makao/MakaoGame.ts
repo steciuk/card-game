@@ -3,19 +3,25 @@ import { GameTypes } from '../../GameTypes';
 import { Card, CardId, Colors } from '../deck/Card';
 import { Deck, DECK_TYPE } from '../deck/Deck';
 import { Game, GAME_STATE } from '../Game';
-import { MakaoPlayer, OtherMakaoPlayerDTO, ThisMakaoPlayerDTO } from './MakaoPlayer';
+import {
+	MakaoPlayer,
+	OtherMakaoPlayerDTO,
+	ThisMakaoPlayerDTO
+} from './MakaoPlayer';
 
 enum AttackType {
 	TWO_THREE,
 	FOUR,
-	JACK,
 	KING,
 }
 
 export class MakaoGame extends Game {
-	static nonFunctionalCards: CardId[] = ['5', '6', '7', '8', '9', 'T']
+	static nonFunctionalShapes = ['5', '6', '7', '8', '9', 'T'];
+	static nonFunctionalCards: CardId[] = MakaoGame.nonFunctionalShapes
 		.flatMap((shape) => Colors.map((color) => (shape + color) as CardId))
 		.concat(['KC', 'KD']);
+
+	static requestableCards: CardId[] = MakaoGame.nonFunctionalShapes.map((shape) => (shape + 'H') as CardId);
 
 	protected playersInGame = new Map<string, MakaoPlayer>();
 	private readonly deck = new Deck(DECK_TYPE.FULL);
@@ -50,7 +56,7 @@ export class MakaoGame extends Game {
 		this.isCardPlayedThisTurn = false;
 		this.isCardTakenThisTurn = false;
 		this.attack = null;
-		this.attackCount = 0;
+		this.attackCount = 0; // number of cards to take or number of turns to wait
 		this.changedCard = null;
 		this.deck.full();
 		this.discarded.empty();
@@ -93,15 +99,12 @@ export class MakaoGame extends Game {
 		}
 
 		if (this.currentPlayer.numTurnsToWait > 0) this.currentPlayer.numTurnsToWait--;
+		this.nextPlayer();
+
+		while (!this.currentPlayer.isActive) return this.finishTurn();
 
 		this.isCardPlayedThisTurn = false;
 		this.isCardTakenThisTurn = false;
-
-		do {
-			this.nextPlayer();
-		} while (this.currentPlayer.isDisconnected);
-
-		if (this.currentPlayer.numTurnsToWait > 0) this.finishTurn();
 	}
 
 	takeCard(player: MakaoPlayer): {
@@ -121,10 +124,7 @@ export class MakaoGame extends Game {
 		}
 		player.deck.add(result.cardIds);
 		this.isCardTakenThisTurn = true;
-
-		// if (this.attack === AttackType.JACK) {
-		// 	return playerDeck.filter((cardId) => Card.isShape(cardId, 'J'));
-		// }
+		player.requestedCardToPlay = null;
 
 		return result;
 	}
@@ -138,7 +138,8 @@ export class MakaoGame extends Game {
 		return this.discarded.getLastInDeck();
 	}
 
-	playCard(cardId: CardId, chosenCardId?: CardId): void {
+	playCard(cardId: CardId, chosenCardId?: CardId): CardId {
+		let playedCard = cardId;
 		if (Card.isShape(cardId, '2') || Card.isShape(cardId, '3')) {
 			this.attack = AttackType.TWO_THREE;
 			this.attackCount += parseInt(cardId[0]);
@@ -149,21 +150,25 @@ export class MakaoGame extends Game {
 			//TODO: KS should work backwards
 			this.attack = AttackType.KING;
 			this.attackCount += 5;
-		}
-		// else if (Card.isShape(cardId, 'J')) {
-		// 	this.attack = AttackType.JACK;
-		// }
-		else if (this.attack === AttackType.KING && (cardId === 'KC' || cardId === 'KD')) {
+		} else if (this.attack === AttackType.KING && (cardId === 'KC' || cardId === 'KD')) {
 			this.attack = null;
 			this.attackCount = 0;
 		}
 
 		if (Card.isShape(cardId, 'A') && chosenCardId) {
 			this.changedCard = chosenCardId;
+			playedCard = chosenCardId;
 		} else this.changedCard = null;
+
+		if (Card.isShape(cardId, 'J') && chosenCardId) {
+			this.playersInOrder
+				.filter((player) => player.isActive)
+				.forEach((player) => (player.requestedCardToPlay = chosenCardId));
+		} else this.currentPlayer.requestedCardToPlay = null;
 
 		this.discarded.add(cardId);
 		this.isCardPlayedThisTurn = true;
+		return playedCard;
 	}
 
 	private isPlayerTurn(playerId: string): boolean {
@@ -190,6 +195,14 @@ export class MakaoGame extends Game {
 			return playerDeck.filter((cardId) => Card.isShapeSameAs(cardId, topCardId));
 		}
 
+		if (player.requestedCardToPlay) {
+			return playerDeck.filter(
+				(cardId) =>
+					Card.isShapeSameAs(cardId, player.requestedCardToPlay as CardId) ||
+					Card.isShape(cardId, 'J')
+			);
+		}
+
 		if (this.attack === AttackType.TWO_THREE) {
 			return playerDeck.filter((cardId) => {
 				return (
@@ -206,10 +219,6 @@ export class MakaoGame extends Game {
 		if (this.attack === AttackType.KING) {
 			return playerDeck.filter((cardId) => Card.isShape(cardId, 'K'));
 		}
-
-		// if (this.attack === AttackType.JACK) {
-		// 	return playerDeck.filter((cardId) => Card.isShape(cardId, 'J'));
-		// }
 
 		if (this.attack === null && Card.isShape(topCardId, 'Q')) {
 			return playerDeck;
@@ -230,6 +239,9 @@ export class MakaoGame extends Game {
 	canPlayerPlayCardWithOption(player: MakaoPlayer, playedCardId: CardId, chosenCardId: CardId): boolean {
 		if (this.cardsPlayerCanPlay(player).indexOf(playedCardId) < 0) return false;
 		if (Card.isShape(playedCardId, 'A')) return ['AS', 'AH', 'AD', 'AC'].includes(chosenCardId);
+		if (Card.isShape(playedCardId, 'J'))
+			return MakaoGame.nonFunctionalShapes.map((shape) => shape + 'H').includes(chosenCardId);
+
 		return false;
 	}
 

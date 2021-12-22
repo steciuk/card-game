@@ -1,4 +1,5 @@
 import { GameTypes } from '../GameTypes';
+import { GamesStore } from './GamesStore';
 import { Player, PlayerDTO } from './Player';
 
 export abstract class Game {
@@ -12,10 +13,13 @@ export abstract class Game {
 		public readonly created: number,
 		public readonly id: string,
 		public readonly password?: string
-	) {}
+	) {
+		this.startRemoveFromGameStoreTimeout();
+	}
 	// VARIABLES
 	gameState = GAME_STATE.NOT_STARTED;
 	protected abstract playersInGame: Map<string, Player>;
+	private removeFromGameStoreTimeout: NodeJS.Timeout;
 
 	get numPlayersInGame(): number {
 		return this.playersInGame.size;
@@ -43,15 +47,14 @@ export abstract class Game {
 
 	addPlayer(player: Player): void {
 		this.playersInGame.set(player.id, player);
+		this.stopRemoveFromGameStoreTimeout();
 	}
 
 	disconnectPlayer(player: Player): void {
-		if (this.gameState === GAME_STATE.NOT_STARTED) {
-			this.playersInGame.delete(player.id);
-			return;
-		}
+		if (this.gameState === GAME_STATE.NOT_STARTED) this.playersInGame.delete(player.id);
+		else player.isDisconnected = true;
 
-		player.isDisconnected = true;
+		if (this.numConnectedPlayersInGame <= 0) this.startRemoveFromGameStoreTimeout();
 	}
 
 	getPlayer(id: string): Player | undefined {
@@ -60,6 +63,16 @@ export abstract class Game {
 
 	areAllPlayersReady(): boolean {
 		return Array.from(this.playersInGame.values()).every((player) => player.isReady);
+	}
+
+	protected startRemoveFromGameStoreTimeout(): void {
+		this.removeFromGameStoreTimeout = setTimeout(() => {
+			GamesStore.Instance.deleteGame(this.id);
+		}, 60_000);
+	}
+
+	protected stopRemoveFromGameStoreTimeout(): void {
+		clearTimeout(this.removeFromGameStoreTimeout);
 	}
 }
 
