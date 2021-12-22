@@ -53,7 +53,10 @@ export class App {
 
 		const io = new Server(listener, {
 			cors: {
-				origin: [`http://localhost:${process.env.CLIENT_PORT}`], //TODO: for dev
+				origin: [
+					`http://localhost:${process.env.CLIENT_PORT}`,
+					'https://card-io-client.herokuapp.com/',
+				],
 			},
 		});
 
