@@ -9,7 +9,7 @@ import {
 } from '../errors/httpErrors/ResourceNotFoundError';
 import { GameFactory } from '../game/gameStore/GameFactory';
 import { GamesStore } from '../game/gameStore/GamesStore';
-import { dtoValidationMiddleware } from '../middlewares/DtoValidationMiddleware';
+import { dtoValidationMiddleware } from '../middlewares/dtoValidationMiddleware';
 import { jwtAuthMiddleware } from '../middlewares/JwtAuthMiddleware';
 import { GameModel } from '../models/GameModel';
 import { UserModel } from '../models/UserModel';

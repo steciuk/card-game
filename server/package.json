@@ -12,10 +12,6 @@
 		"prod": "npm-run-all build start",
 		"dev": "nodemon --watch src --exec ts-node ./src/Server.ts"
 	},
-	"engines": {
-		"node": "14.17.5",
-		"npm": "6.14.14"
-	},
 	"keywords": [],
 	"author": "Adam Steciuk",
 	"license": "ISC",
