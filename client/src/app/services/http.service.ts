@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 	providedIn: 'root',
 })
 export class HttpService {
-	private baseUrl = 'https://card-io-server.herokuapp.com/';
+	private baseUrl = 'https://card-io-server.herokuapp.com';
 
 	constructor(private http: HttpClient) {}
 
