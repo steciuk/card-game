@@ -5,7 +5,7 @@ import { UserDTO } from '../DTO/UserDTO';
 import { UserResponseDTO } from '../DTO/UserResponseDTO';
 import { InvalidCredentialsError } from '../errors/httpErrors/user/InvalidCredentialsError';
 import { UserExistsError } from '../errors/httpErrors/user/UserExistsError';
-import { dtoValidationMiddleware } from '../middlewares/DtoValidationMiddleware';
+import { validationMiddleware } from '../middlewares/ValidationMiddleware';
 import { UserModel } from '../models/UserModel';
 import { issueJWT } from '../utils/authorization/Jwt';
 import {
@@ -28,8 +28,8 @@ export class UserController extends Controller {
 		// this.router.get(`${this.path}/:id`, this.getUserById);
 		// this.router.patch(`${this.path}/:id`, this.modifyUser);
 		// this.router.delete(`${this.path}/:id`, this.deleteUser);
-		this.router.post('/register', dtoValidationMiddleware(UserDTO), this.registerUser);
-		this.router.post('/login', dtoValidationMiddleware(UserDTO), this.loginUser);
+		this.router.post('/register', validationMiddleware(UserDTO), this.registerUser);
+		this.router.post('/login', validationMiddleware(UserDTO), this.loginUser);
 	}
 
 	@AccessDatabaseFromMiddleware()
