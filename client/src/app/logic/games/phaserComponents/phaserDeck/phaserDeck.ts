@@ -1,12 +1,10 @@
-import { Actions, GameObjects, Geom } from 'phaser';
-
 import { BaseScene } from '../../scenes/baseScene';
 import { PhaserCard } from './phaserCard';
 
 export class PhaserDeck {
-	protected cardsContainer: GameObjects.Container;
-	private additionalContainer: GameObjects.Container;
-	protected cardsLine: Geom.Line;
+	protected cardsContainer: Phaser.GameObjects.Container;
+	private additionalContainer: Phaser.GameObjects.Container;
+	protected cardsLine: Phaser.Geom.Line;
 
 	constructor(
 		protected scene: BaseScene,
@@ -18,7 +16,7 @@ export class PhaserDeck {
 	) {
 		this.cardsContainer = scene.add.container(x, y).setRotation(rotation);
 		this.additionalContainer = scene.add.container(x, y).setRotation(rotation);
-		this.cardsLine = new Geom.Line(-deckWidth / 2, 0, deckWidth / 2, 0);
+		this.cardsLine = new Phaser.Geom.Line(-deckWidth / 2, 0, deckWidth / 2, 0);
 	}
 
 	destroyNumLastCards(num: number): void {
@@ -59,14 +57,14 @@ export class PhaserDeck {
 	}
 
 	alignCards(): void {
-		Actions.PlaceOnLine(this.cardsContainer.getAll(), this.cardsLine);
+		Phaser.Actions.PlaceOnLine(this.cardsContainer.getAll(), this.cardsLine);
 	}
 
 	protected getAllCards(): PhaserCard[] {
 		return this.cardsContainer.getAll() as PhaserCard[];
 	}
 
-	addToAdditionalContainer(gameObject: GameObjects.GameObject): PhaserDeck {
+	addToAdditionalContainer(gameObject: Phaser.GameObjects.GameObject): PhaserDeck {
 		this.additionalContainer.add(gameObject);
 		return this;
 	}

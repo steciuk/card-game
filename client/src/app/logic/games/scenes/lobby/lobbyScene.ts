@@ -1,4 +1,3 @@
-import { GameObjects } from 'phaser';
 import { SocketService } from 'src/app/services/socket.service';
 
 import { HEX_COLORS_STRING } from '../../phaserComponents/HexColors';
@@ -17,7 +16,7 @@ export class LobbyScene extends BaseScene {
 	}
 
 	//TODO: change to PhaserComponent
-	private usernames: GameObjects.Text[] = [];
+	private usernames: Phaser.GameObjects.Text[] = [];
 	private startBtn!: PhaserButton;
 
 	init(): void {}

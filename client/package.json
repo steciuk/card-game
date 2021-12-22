@@ -3,13 +3,17 @@
 	"version": "0.0.0",
 	"scripts": {
 		"ng": "ng",
-		"start": "ng serve",
+		"start": "node server.js",
 		"build": "ng build",
 		"watch": "ng build --watch --configuration development",
 		"test": "ng test",
 		"dev": "ng serve --watch"
 	},
 	"private": true,
+	"engines": {
+		"node": "14.17.5",
+		"npm": "6.14.14"
+	},
 	"dependencies": {
 		"@angular/animations": "~12.2.0",
 		"@angular/common": "~12.2.0",
@@ -20,6 +24,7 @@
 		"@angular/platform-browser-dynamic": "~12.2.0",
 		"@angular/router": "~12.2.0",
 		"bootstrap-icons": "^1.6.1",
+		"express": "^4.17.2",
 		"moment": "^2.29.1",
 		"ngx-log-monitor": "^1.2.0",
 		"phaser": "^3.55.2",

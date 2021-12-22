@@ -1,12 +1,10 @@
-import { GameObjects, Scene } from 'phaser';
-
 import { HEX_COLORS_STRING } from './HexColors';
 
 export class PhaserButton {
-	private button: GameObjects.Text;
+	private button: Phaser.GameObjects.Text;
 	private isEnabled = true;
 
-	constructor(scene: Scene, x: number, y: number, text: string, callback: () => void) {
+	constructor(scene: Phaser.Scene, x: number, y: number, text: string, callback: () => void) {
 		this.button = scene.add
 			.text(x, y, text)
 			.setOrigin(0.5)

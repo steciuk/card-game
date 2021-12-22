@@ -1,10 +1,8 @@
-import { GameObjects } from 'phaser';
-
 import { BaseScene } from '../scenes/baseScene';
 
 export class PhaserTurnArrow {
-	private container: GameObjects.Container;
-	private arrow: GameObjects.Sprite;
+	private container: Phaser.GameObjects.Container;
+	private arrow: Phaser.GameObjects.Sprite;
 	private yOffset = 150;
 
 	constructor(private scene: BaseScene, x: number, y: number, rotation: number) {

@@ -1,4 +1,3 @@
-import { Scene } from 'phaser';
 import { SocketService } from 'src/app/services/socket.service';
 
 import { SOCKET_GAME_EVENTS } from '../socketEvents/socketEvents';
@@ -9,7 +8,7 @@ type AnyCallback = (...args: any[]) => void;
 //TODO: restrict so key is mandatory
 type PhaserConfig = Phaser.Types.Scenes.SettingsConfig;
 
-export abstract class BaseScene extends Scene {
+export abstract class BaseScene extends Phaser.Scene {
 	protected registeredEvents = new Map<SOCKET_GAME_EVENTS, AnyCallback>();
 	key: SCENE_KEYS;
 	nextSceneKey?: SCENE_KEYS;

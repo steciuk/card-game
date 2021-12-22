@@ -1,11 +1,9 @@
-import { GameObjects, Scene } from 'phaser';
-
 import { HEX_COLORS_NUMBER } from './HexColors';
 
 export class PhaserDropZone {
-	private dropZoneContainer: GameObjects.Container;
+	private dropZoneContainer: Phaser.GameObjects.Container;
 
-	constructor(scene: Scene, x: number, y: number, width: number, height: number) {
+	constructor(scene: Phaser.Scene, x: number, y: number, width: number, height: number) {
 		this.dropZoneContainer = scene.add.container(x, y);
 		this.dropZoneContainer.add([
 			scene.add.zone(0, 0, width, height).setRectangleDropZone(width, height),

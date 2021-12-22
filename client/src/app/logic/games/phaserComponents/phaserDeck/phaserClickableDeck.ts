@@ -1,11 +1,9 @@
-import { GameObjects } from 'phaser';
-
 import { BaseScene } from '../../scenes/baseScene';
 import { PhaserCard } from './phaserCard';
 import { PhaserDeck } from './phaserDeck';
 
 export class PhaserClickableDeck extends PhaserDeck {
-	private clickZone: GameObjects.Zone;
+	private clickZone: Phaser.GameObjects.Zone;
 
 	constructor(scene: BaseScene, x: number, y: number, rotation: number, height: number, deckWidth: number) {
 		super(scene, x, y, rotation, height, deckWidth);
