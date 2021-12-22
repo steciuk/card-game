@@ -6,8 +6,8 @@
 	"scripts": {
 		"clean": "rimraf dist/*",
 		"tsc": "tsc",
-		"copy-keys": "copyfiles --flat src/keys/*.pem dist/keys",
-		"build": "npm-run-all clean tsc copy-keys",
+		"gen-keys": "node dist/keys/GenerateKeyPair.js",
+		"build": "npm-run-all clean tsc gen-keys",
 		"start": "node dist/Server.js",
 		"prod": "npm-run-all build start",
 		"dev": "nodemon --watch src --exec ts-node ./src/Server.ts"
@@ -34,7 +34,6 @@
 		"@types/socket.io": "^3.0.2",
 		"@typescript-eslint/eslint-plugin": "^5.0.0",
 		"@typescript-eslint/parser": "^5.0.0",
-		"copyfiles": "^2.4.1",
 		"eslint": "^8.0.1",
 		"eslint-plugin-unused-imports": "^1.1.5",
 		"nodemon": "^2.0.12",
