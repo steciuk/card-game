@@ -68,7 +68,7 @@ export abstract class Game {
 	protected startRemoveFromGameStoreTimeout(): void {
 		this.removeFromGameStoreTimeout = setTimeout(() => {
 			GamesStore.Instance.deleteGame(this.id);
-		}, 60_000);
+		}, 3 * 60_000);
 	}
 
 	protected stopRemoveFromGameStoreTimeout(): void {

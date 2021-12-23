@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -7,7 +8,7 @@ import { Injectable } from '@angular/core';
 	providedIn: 'root',
 })
 export class HttpService {
-	private baseUrl = 'https://card-io-server.herokuapp.com';
+	private baseUrl = environment.serverUrl;
 
 	constructor(private http: HttpClient) {}
 

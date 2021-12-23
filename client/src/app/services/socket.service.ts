@@ -1,4 +1,5 @@
 import { io, Socket } from 'socket.io-client';
+import { environment } from 'src/environments/environment';
 
 import { Injectable } from '@angular/core';
 
@@ -11,7 +12,7 @@ import { SOCKET_EVENTS } from '../logic/games/socketEvents/socketEvents';
 	providedIn: 'root',
 })
 export class SocketService {
-	private url = 'http://localhost:8080';
+	private url = environment.serverUrl;
 	private socket?: Socket;
 
 	constructor() {}
