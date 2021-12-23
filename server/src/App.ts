@@ -56,7 +56,7 @@ export class App {
 			process.env.PROD_MODE === 'true'
 				? new Server(listener, {
 						cors: {
-							origin: ['https://card-io-client.herokuapp.com/'],
+							origin: ['https://card-io-client.herokuapp.com'],
 						},
 				  })
 				: new Server(listener, {
