@@ -2,15 +2,15 @@
 	"name": "server",
 	"version": "1.0.0",
 	"description": "",
-	"main": "dist/Server.js",
+	"main": "dist/server.js",
 	"scripts": {
 		"clean": "rimraf dist/*",
 		"tsc": "tsc",
 		"gen-keys": "node dist/keys/GenerateKeyPair.js",
 		"build": "npm-run-all clean tsc gen-keys",
-		"start": "node dist/Server.js",
+		"start": "node dist/server.js",
 		"prod": "npm-run-all build start",
-		"dev": "nodemon --watch src --exec ts-node ./src/Server.ts"
+		"dev": "nodemon --watch src --exec ts-node ./src/server.ts"
 	},
 	"engines": {
 		"node": "14.17.5",
