@@ -107,7 +107,6 @@ export class MakaoScene extends BaseScene {
 		this.socketService.emitSocketEvent(
 			SOCKET_GAME_EVENTS.GET_GAME_STATE,
 			(makaoGameStateForPlayer: InitialMakaoGameStateForPlayerDTO) => {
-				console.log(makaoGameStateForPlayer);
 				this.updateGameState(makaoGameStateForPlayer);
 				this.afterCreate();
 			}

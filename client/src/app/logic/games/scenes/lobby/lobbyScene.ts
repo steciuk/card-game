@@ -43,15 +43,14 @@ export class LobbyScene extends BaseScene {
 		this.usernames.forEach((username) => {
 			username.destroy();
 		});
+		this.usernames = [];
 		this.playersInLobbyAsArray.forEach((player, i) => {
-			if (player.isReady)
-				this.usernames.push(
-					this.add.text(10, 10 * i, player.username, { color: HEX_COLORS_STRING.GREEN })
-				);
-			else
-				this.usernames.push(
-					this.add.text(10, 10 * i, player.username, { color: HEX_COLORS_STRING.BLACK })
-				);
+			const username = this.add.text(20, 30 * (i + 1), player.username);
+			username.setFontSize(20).setPadding(5).setColor(HEX_COLORS_STRING.BLACK);
+			player.isReady
+				? username.setBackgroundColor(HEX_COLORS_STRING.GREEN)
+				: username.setBackgroundColor(HEX_COLORS_STRING.GRAY);
+			this.usernames.push(username);
 		});
 	}
 
