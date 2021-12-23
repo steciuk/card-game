@@ -2,10 +2,7 @@ import { Server, Socket } from 'socket.io';
 import { ExtendedError, Namespace } from 'socket.io/dist/namespace';
 
 import { HttpError } from '../../errors/httpErrors/HttpError';
-import {
-	DB_RESOURCES,
-	ResourceNotFoundError
-} from '../../errors/httpErrors/ResourceNotFoundError';
+import { DB_RESOURCES, ResourceNotFoundError } from '../../errors/httpErrors/ResourceNotFoundError';
 import { SocketBadConnectionError } from '../../errors/socketErrors/SocketBadConnectionError';
 import { SocketGameAlreadyStartedError } from '../../errors/socketErrors/SocketGameAlreadyStartedError';
 import { SocketRoomFullError } from '../../errors/socketErrors/SocketRoomFullError';
@@ -20,11 +17,7 @@ import { GamesStore } from '../gameStore/GamesStore';
 import { Player, PlayerDTO } from '../gameStore/Player';
 import { PlayerFactory } from '../gameStore/PlayerFactory';
 import { GameTypes } from '../GameTypes';
-import {
-	BUILD_IN_SOCKET_GAME_EVENTS,
-	SOCKET_EVENT,
-	SOCKET_GAME_EVENTS
-} from './SocketEvents';
+import { BUILD_IN_SOCKET_GAME_EVENTS, SOCKET_EVENT, SOCKET_GAME_EVENTS } from './SocketEvents';
 
 export abstract class GameHandler {
 	protected static connectedUsers = new Set<string>();
@@ -82,7 +75,13 @@ export abstract class GameHandler {
 
 			if (game.gameState === GAME_STATE.FINISHED)
 				this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.GAME_FINISHED, gameId);
-			else this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED, gameId);
+			else
+				this.emitToRoomAndSender(
+					socket,
+					SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED,
+					gameId,
+					PlayerDTO.fromPlayer(player)
+				);
 
 			llog(`Socket ${socket.id} disconnected - ${reason}`);
 		});

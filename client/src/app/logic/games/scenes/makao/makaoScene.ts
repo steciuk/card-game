@@ -250,7 +250,6 @@ export class MakaoScene extends BaseScene {
 	}
 
 	updateTurnBasedInteractiveElements(actionsDto: ActionsDTO | null): void {
-		console.log(actionsDto);
 		this.finishTurnButton.enable(!!actionsDto?.canPlayerFinishTurn);
 		this.deck.enable(!!actionsDto?.canPlayerTakeCard);
 

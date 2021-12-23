@@ -4,13 +4,7 @@ import { HttpService } from 'src/app/services/http.service';
 import { enumToArray } from 'src/app/utils';
 import { SubSink } from 'subsink';
 
-import {
-	Component,
-	EventEmitter,
-	OnDestroy,
-	OnInit,
-	Output
-} from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
 @Component({
@@ -22,8 +16,8 @@ export class NewGameFormComponent implements OnInit, OnDestroy {
 	private subs = new SubSink();
 	private submitUrl = '/games';
 	gameTypes!: string[];
-	gameTypeModel!: string;
-	isPasswordProtectedModel!: boolean;
+	isPasswordProtectedModel = false;
+	numPlayersOptions = [2, 3, 4, 5, 6, 7, 8];
 
 	@Output() addNewGame = new EventEmitter<GameDTO>();
 
@@ -31,7 +25,6 @@ export class NewGameFormComponent implements OnInit, OnDestroy {
 
 	ngOnInit(): void {
 		this.gameTypes = enumToArray(GameTypes);
-		this.gameTypeModel = this.gameTypes[0];
 	}
 
 	onSubmit(form: NgForm): void {

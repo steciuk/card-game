@@ -1,11 +1,7 @@
 import { Server, Socket } from 'socket.io';
 
 import { CardId } from '../gameStore/deck/Card';
-import {
-	ActionsDTO,
-	InitialMakaoGameStateForPlayerDTO,
-	MakaoGame
-} from '../gameStore/makao/MakaoGame';
+import { ActionsDTO, InitialMakaoGameStateForPlayerDTO, MakaoGame } from '../gameStore/makao/MakaoGame';
 import { MakaoPlayer } from '../gameStore/makao/MakaoPlayer';
 import { GameTypes } from '../GameTypes';
 import { SOCKET_GAME_EVENTS } from './SocketEvents';
@@ -42,6 +38,9 @@ export class MakaoHandler extends GameHandler {
 					return callback({ success: false, error: 'Cannot play that card' });
 
 				player.deck.remove(cardId);
+				if (player.deck.getNumOfCardsInDeck() <= 0)
+					return this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.GAME_FINISHED, game.id);
+
 				const playedCard = game.playCard(cardId);
 
 				const cardPlayedDTO: CardPlayedDTO = {
@@ -65,6 +64,9 @@ export class MakaoHandler extends GameHandler {
 					return callback({ success: false, error: 'Cannot play that card' });
 
 				player.deck.remove(playedCardId);
+				if (player.deck.getNumOfCardsInDeck() <= 0)
+					return this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.GAME_FINISHED, game.id);
+
 				const playedCard = game.playCard(playedCardId, chosenCardId);
 
 				const cardPlayedDTO: CardPlayedDTO = {

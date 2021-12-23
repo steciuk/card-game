@@ -31,7 +31,7 @@
 				class="form-select form-control"
 				id="gameType"
 				required
-				[(ngModel)]="gameTypeModel"
+				[(ngModel)]="gameTypes[0]"
 				name="gameType"
 			>
 				<option *ngFor="let gameTypeValue of gameTypes" [ngValue]="gameTypeValue">
@@ -41,13 +41,25 @@
 		</div>
 		<div>
 			<label for="maxPlayers">Max players</label>
-			<input
+			<select
+				class="form-select form-control"
+				id="maxPlayers"
+				required
+				[(ngModel)]="numPlayersOptions[0]"
+				name="maxPlayers"
+			>
+				<option *ngFor="let numPlayers of numPlayersOptions" [ngValue]="numPlayers">
+					{{ numPlayers }}
+				</option>
+			</select>
+			<!-- <input
 				id="maxPlayers"
 				class="form-control"
 				type="number"
 				required
 				min="2"
 				max="8"
+				step="1"
 				ngModel
 				name="maxPlayers"
 				#maxPlayers="ngModel"
@@ -56,7 +68,7 @@
 				<div *ngIf="maxPlayers.errors?.required">Max players required</div>
 				<div *ngIf="maxPlayers.errors?.min">Min {{ maxPlayers.errors?.min.min }} players</div>
 				<div *ngIf="maxPlayers.errors?.max">Max {{ maxPlayers.errors?.max.max }} players</div>
-			</div>
+			</div> -->
 		</div>
 		<!-- TODO: implement toggle instead checkbox-->
 		<div class="form-check form-switch">
