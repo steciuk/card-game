@@ -1,4 +1,3 @@
-/* eslint-disable no-mixed-spaces-and-tabs */
 import cors from 'cors';
 import express, { json } from 'express';
 import { connect } from 'mongoose';
@@ -52,18 +51,11 @@ export class App {
 			console.log(`App running!`);
 		});
 
-		const io =
-			process.env.PROD_MODE === 'true'
-				? new Server(listener, {
-						cors: {
-							origin: ['https://card-io-client.herokuapp.com'],
-						},
-				  })
-				: new Server(listener, {
-						cors: {
-							origin: [`http://localhost:${process.env.CLIENT_PORT}`],
-						},
-				  });
+		const io = new Server(listener, {
+			cors: {
+				origin: [process.env.CLIENT_URL as string],
+			},
+		});
 
 		new MakaoHandler(io);
 	}

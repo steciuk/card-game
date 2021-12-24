@@ -10,11 +10,11 @@ export class UserDTO {
 	@MinLength(6)
 	@MaxLength(20)
 	@Matches(ALPHANUMERIC_UNDERSCORE_REGEX)
-	username: string;
+	username!: string;
 
 	@IsString()
 	@MinLength(6)
 	@MaxLength(20)
 	@Matches(ALPHANUMERIC_SPECIAL_REGEX)
-	password: string;
+	password!: string;
 }

@@ -26,7 +26,7 @@ export class MakaoGame extends Game {
 	protected playersInGame = new Map<string, MakaoPlayer>();
 	private readonly deck = new Deck(DECK_TYPE.FULL);
 	private readonly discarded = new Deck(DECK_TYPE.FULL);
-	playersInOrder: MakaoPlayer[];
+	playersInOrder: MakaoPlayer[] = [];
 	private currentPlayerNumber = 0;
 
 	isCardPlayedThisTurn = false;

@@ -19,7 +19,7 @@ export abstract class Game {
 	// VARIABLES
 	gameState = GAME_STATE.NOT_STARTED;
 	protected abstract playersInGame: Map<string, Player>;
-	private removeFromGameStoreTimeout: NodeJS.Timeout;
+	private removeFromGameStoreTimeout?: NodeJS.Timeout;
 
 	get numPlayersInGame(): number {
 		return this.playersInGame.size;
@@ -72,7 +72,7 @@ export abstract class Game {
 	}
 
 	protected stopRemoveFromGameStoreTimeout(): void {
-		clearTimeout(this.removeFromGameStoreTimeout);
+		if (this.removeFromGameStoreTimeout) clearTimeout(this.removeFromGameStoreTimeout);
 	}
 }
 
