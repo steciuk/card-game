@@ -27,8 +27,11 @@ export class App {
 
 		const mongoURI = `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}${MONGO_PATH}`;
 		connect(mongoURI)
-			.then(() => console.log('MongoDB Connected!'))
-			.catch((error: Error) => elog(error));
+			.then(() => console.log('MongoDB connected!'))
+			.catch((error: Error) => {
+				elog(error);
+				process.exit(1);
+			});
 	}
 
 	private initializeMiddlewares(): void {

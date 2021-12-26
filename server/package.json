@@ -6,10 +6,11 @@
 	"scripts": {
 		"clean": "rimraf dist/*",
 		"tsc": "tsc",
-		"gen-keys": "node dist/keys/GenerateKeyPair.js",
-		"build": "npm-run-all clean tsc gen-keys",
+		"gen-keys-prod": "node dist/keys/GenerateKeyPair.js",
+		"build": "npm-run-all clean tsc gen-keys-prod",
 		"start": "node dist/server.js",
 		"prod": "npm-run-all build start",
+		"gen-keys-dev": "ts-node src/keys/GenerateKeyPair.ts",
 		"dev": "nodemon --watch src --exec ts-node ./src/server.ts"
 	},
 	"engines": {
