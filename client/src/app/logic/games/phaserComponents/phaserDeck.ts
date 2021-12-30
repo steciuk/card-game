@@ -1,4 +1,4 @@
-import { BaseScene } from '../../scenes/baseScene';
+import { BaseScene } from '../scenes/baseScene';
 import { PhaserCard } from './phaserCard';
 
 export class PhaserDeck {

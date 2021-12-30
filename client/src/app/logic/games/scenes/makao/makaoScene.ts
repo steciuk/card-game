@@ -2,11 +2,11 @@ import { SocketService } from 'src/app/services/socket.service';
 
 import { HEX_COLORS_STRING } from '../../phaserComponents/HexColors';
 import { PhaserButton } from '../../phaserComponents/phaserButton';
-import { PhaserCard } from '../../phaserComponents/phaserDeck/phaserCard';
-import { PhaserClickableDeck } from '../../phaserComponents/phaserDeck/phaserClickableDeck';
-import { PhaserDeck } from '../../phaserComponents/phaserDeck/phaserDeck';
-import { PhaserPlayableDeck } from '../../phaserComponents/phaserDeck/phaserPlayableDeck';
+import { PhaserCard } from '../../phaserComponents/phaserCard';
+import { PhaserClickableDeck } from '../../phaserComponents/phaserClickableDeck';
+import { PhaserDeck } from '../../phaserComponents/phaserDeck';
 import { PhaserDropZone } from '../../phaserComponents/phaserDropZone';
+import { PhaserPlayableDeck } from '../../phaserComponents/phaserPlayableDeck';
 import { PhaserTurnArrow } from '../../phaserComponents/phaserTurnArrow';
 import { SOCKET_GAME_EVENTS } from '../../socketEvents/socketEvents';
 import { BaseScene } from '../baseScene';

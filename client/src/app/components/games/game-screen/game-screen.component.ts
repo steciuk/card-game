@@ -71,7 +71,7 @@ export class GameScreenComponent implements OnInit, OnDestroy {
 				//TODO: Some custom error types
 				this.isWrongPassword = true;
 			}
-			console.log('err', error);
+			console.error(error);
 		});
 
 		this.gameSetup = new GameSetup(this.socketService, GAME_CONFIG.MAKAO);
