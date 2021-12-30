@@ -1,5 +1,5 @@
 import { chooseRandomArrayElement, shuffleArray } from '../../../utils/Tools';
-import { GameTypes } from '../../GameTypes';
+import { GAME_TYPE } from '../../GameTypes';
 import { Card, CardId, Colors } from '../deck/Card';
 import { Deck, DECK_TYPE } from '../deck/Deck';
 import { Game, GAME_STATE } from '../Game';
@@ -36,7 +36,7 @@ export class MakaoGame extends Game {
 	changedCard: CardId | null = null;
 
 	constructor(
-		gameType: GameTypes,
+		gameType: GAME_TYPE,
 		owner: { id: string; username: string },
 		maxPlayers: number,
 		roomName: string,

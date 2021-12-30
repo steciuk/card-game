@@ -2,7 +2,10 @@ import { Server, Socket } from 'socket.io';
 import { ExtendedError, Namespace } from 'socket.io/dist/namespace';
 
 import { HttpError } from '../../errors/httpErrors/HttpError';
-import { DB_RESOURCES, ResourceNotFoundError } from '../../errors/httpErrors/ResourceNotFoundError';
+import {
+	DB_RESOURCES,
+	ResourceNotFoundError
+} from '../../errors/httpErrors/ResourceNotFoundError';
 import { SocketBadConnectionError } from '../../errors/socketErrors/SocketBadConnectionError';
 import { SocketGameAlreadyStartedError } from '../../errors/socketErrors/SocketGameAlreadyStartedError';
 import { SocketRoomFullError } from '../../errors/socketErrors/SocketRoomFullError';
@@ -16,10 +19,14 @@ import { Game, GAME_STATE } from '../gameStore/Game';
 import { GamesStore } from '../gameStore/GamesStore';
 import { Player, PlayerDTO } from '../gameStore/Player';
 import { PlayerFactory } from '../gameStore/PlayerFactory';
-import { GameTypes } from '../GameTypes';
-import { BUILD_IN_SOCKET_GAME_EVENTS, SOCKET_EVENT, SOCKET_GAME_EVENTS } from './SocketEvents';
+import { GAME_TYPE } from '../GameTypes';
+import {
+	BUILD_IN_SOCKET_GAME_EVENTS,
+	SOCKET_EVENT,
+	SOCKET_GAME_EVENTS
+} from './SocketEvents';
 
-export abstract class GameHandler {
+export abstract class SocketHandler {
 	protected static connectedUsers = new Set<string>();
 	protected static io: Server;
 	private static isIoSet = false;
@@ -27,30 +34,33 @@ export abstract class GameHandler {
 	protected namespace: Namespace;
 	protected abstract onConnection(socket: Socket, game: Game, player: Player): void;
 
-	constructor(io: Server, namespaceName: GameTypes) {
+	constructor(io: Server, namespaceName: GAME_TYPE) {
 		// TODO:forbid creating two same namespaces
-		if (!GameHandler.isIoSet) {
-			GameHandler.io = io;
-			GameHandler.isIoSet = true;
+		if (!SocketHandler.isIoSet) {
+			SocketHandler.io = io;
+			SocketHandler.isIoSet = true;
 		}
 
 		const namespace = '/' + namespaceName;
-		GameHandler.initializeIo(namespace);
-		this.namespace = GameHandler.io.of(namespace);
+		SocketHandler.initializeIo(namespace);
+		this.namespace = SocketHandler.io.of(namespace);
+		this.registerListeners();
 	}
 
-	protected registerListeners(): void {
+	private registerListeners(): void {
 		this.namespace.on(BUILD_IN_SOCKET_GAME_EVENTS.CONNECTION, (socket: Socket) => {
-			const { game, player } = this.registerBaseListeners(socket);
-			this.onConnection(socket, game, player);
+			const gameAndPlayer = this.registerBaseListeners(socket);
+			if (!gameAndPlayer) return;
+			this.onConnection(socket, gameAndPlayer.game, gameAndPlayer.player);
 		});
 	}
 
-	private registerBaseListeners(socket: Socket): { game: Game; player: Player } {
+	private registerBaseListeners(socket: Socket): { game: Game; player: Player } | undefined {
 		if (!socket.handshake.query.gameId || !socket?.middlewareData?.jwt?.sub) {
 			const error = new SocketBadConnectionError();
+			elog(error);
 			socket.disconnect();
-			throw error; //TODO: return
+			return;
 		}
 		llog(`Socket ${socket.id} connected`);
 		const gameId = socket.handshake.query.gameId as string;
@@ -70,7 +80,7 @@ export abstract class GameHandler {
 		});
 
 		socket.on(BUILD_IN_SOCKET_GAME_EVENTS.DISCONNECT, (reason) => {
-			GameHandler.connectedUsers.delete(userId);
+			SocketHandler.connectedUsers.delete(userId);
 			game.disconnectPlayer(player);
 
 			if (game.gameState === GAME_STATE.FINISHED)
@@ -95,7 +105,7 @@ export abstract class GameHandler {
 	}
 
 	private static initializeIo(namespace: string): void {
-		GameHandler.io
+		SocketHandler.io
 			.of(namespace)
 			.use(this.addMiddlewareDataProperty)
 			.use(this.verifyJwt)
@@ -127,7 +137,8 @@ export abstract class GameHandler {
 		const gameId = socket.handshake.query.gameId as string;
 		const userId = socket.middlewareData.jwt.sub as string;
 
-		if (GameHandler.connectedUsers.has(userId)) return next(new SocketUserAlreadyConnectedError(userId));
+		if (SocketHandler.connectedUsers.has(userId))
+			return next(new SocketUserAlreadyConnectedError(userId));
 
 		try {
 			const user = await UserModel.findById(userId);
@@ -146,7 +157,7 @@ export abstract class GameHandler {
 
 			if (game.isRoomFull()) return next(new SocketRoomFullError());
 
-			GameHandler.connectedUsers.add(userId);
+			SocketHandler.connectedUsers.add(userId);
 
 			const newPlayer = PlayerFactory.createPlayerObject(
 				game.gameType,

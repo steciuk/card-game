@@ -1,16 +1,19 @@
 import { Server, Socket } from 'socket.io';
 
 import { CardId } from '../gameStore/deck/Card';
-import { ActionsDTO, InitialMakaoGameStateForPlayerDTO, MakaoGame } from '../gameStore/makao/MakaoGame';
+import {
+	ActionsDTO,
+	InitialMakaoGameStateForPlayerDTO,
+	MakaoGame
+} from '../gameStore/makao/MakaoGame';
 import { MakaoPlayer } from '../gameStore/makao/MakaoPlayer';
-import { GameTypes } from '../GameTypes';
+import { GAME_TYPE } from '../GameTypes';
 import { SOCKET_GAME_EVENTS } from './SocketEvents';
-import { GameHandler } from './SocketHandler';
+import { SocketHandler } from './SocketHandler';
 
-export class MakaoHandler extends GameHandler {
+export class MakaoHandler extends SocketHandler {
 	constructor(io: Server) {
-		super(io, GameTypes.MAKAO);
-		this.registerListeners();
+		super(io, GAME_TYPE.MAKAO);
 	}
 
 	protected onConnection(socket: Socket, game: MakaoGame, player: MakaoPlayer): void {

@@ -1,9 +1,9 @@
 import { Document, model, ObjectId, Schema } from 'mongoose';
 
-import { GameTypes } from '../game/GameTypes';
+import { GAME_TYPE } from '../game/GameTypes';
 
 export interface GameDocument extends Document {
-	gameType: GameTypes;
+	gameType: GAME_TYPE;
 	ownerId: ObjectId;
 	maxPlayers: number;
 	roomName: string;
@@ -15,7 +15,7 @@ export interface GameDocument extends Document {
 const gameSchema = new Schema<GameDocument>({
 	gameType: {
 		type: String,
-		enum: Object.values(GameTypes),
+		enum: Object.values(GAME_TYPE),
 		required: true,
 	},
 	ownerId: {

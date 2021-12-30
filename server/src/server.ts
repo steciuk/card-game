@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 
 import { App } from './App';
-import { GameController } from './controllers/GameController';
-import { UserController } from './controllers/UserController';
+import { GameController } from './routers/GameRouter';
+import { UserController } from './routers/UserRouter';
 import { validateEnv } from './utils/EnvValidator';
 
 dotenv.config();

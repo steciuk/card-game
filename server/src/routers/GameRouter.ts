@@ -14,9 +14,9 @@ import { validationMiddleware } from '../middlewares/ValidationMiddleware';
 import { GameModel } from '../models/GameModel';
 import { UserModel } from '../models/UserModel';
 import { AccessDatabaseFromMiddleware } from '../utils/decorators/DatabaseOperationsHandler';
-import { Controller } from './Controller';
+import { ExpressRouter } from './ExpressRouter';
 
-export class GameController extends Controller {
+export class GameController extends ExpressRouter {
 	path = '/games';
 
 	constructor() {

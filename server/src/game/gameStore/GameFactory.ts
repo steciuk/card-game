@@ -1,11 +1,11 @@
 import { BadRequestError } from '../../errors/httpErrors/BadRequestError';
-import { GameTypes } from '../GameTypes';
+import { GAME_TYPE } from '../GameTypes';
 import { Game } from './Game';
 import { MakaoGame } from './makao/MakaoGame';
 
 export class GameFactory {
 	static createGameObject(
-		gameType: GameTypes,
+		gameType: GAME_TYPE,
 		owner: { id: string; username: string },
 		maxPlayers: number,
 		roomName: string,
@@ -14,7 +14,7 @@ export class GameFactory {
 		id: string,
 		password?: string
 	): Game {
-		if (gameType === GameTypes.MAKAO)
+		if (gameType === GAME_TYPE.MAKAO)
 			return new MakaoGame(
 				gameType,
 				owner,

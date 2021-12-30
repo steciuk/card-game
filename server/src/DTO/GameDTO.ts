@@ -1,7 +1,6 @@
 import {
 	IsEnum,
 	IsInt,
-	IsNumber,
 	IsOptional,
 	IsString,
 	Matches,
@@ -15,13 +14,12 @@ import {
 	ALPHANUMERIC_SPECIAL_REGEX,
 	ALPHANUMERIC_UNDERSCORE_REGEX
 } from '../Const';
-import { GameTypes } from '../game/GameTypes';
+import { GAME_TYPE } from '../game/GameTypes';
 
 export class GameDTO {
-	@IsEnum(GameTypes)
-	gameType!: GameTypes;
+	@IsEnum(GAME_TYPE)
+	gameType!: GAME_TYPE;
 
-	@IsNumber()
 	@IsInt()
 	@Min(2)
 	@Max(8)

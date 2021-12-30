@@ -13,9 +13,9 @@ import {
 	validatePassword
 } from '../utils/authorization/Password';
 import { AccessDatabaseFromMiddleware } from '../utils/decorators/DatabaseOperationsHandler';
-import { Controller } from './Controller';
+import { ExpressRouter } from './ExpressRouter';
 
-export class UserController extends Controller {
+export class UserController extends ExpressRouter {
 	path = '/users';
 
 	constructor() {

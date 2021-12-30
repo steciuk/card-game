@@ -1,10 +1,10 @@
 import { Game } from '../game/gameStore/Game';
-import { GameTypes } from '../game/GameTypes';
+import { GAME_TYPE } from '../game/GameTypes';
 import { UserResponseDTO } from './UserResponseDTO';
 
 export class GameResponseDTO {
 	constructor(
-		private gameType: GameTypes,
+		private gameType: GAME_TYPE,
 		private owner: UserResponseDTO,
 		private maxPlayers: number,
 		private roomName: string,

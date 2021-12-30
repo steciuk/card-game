@@ -3,15 +3,15 @@ import express, { json } from 'express';
 import { connect } from 'mongoose';
 import { Server } from 'socket.io';
 
-import { Controller } from './controllers/Controller';
 import { MakaoHandler } from './game/handlers/MakaoHandler';
 import { errorMiddleware } from './middlewares/ErrorMiddleware';
+import { ExpressRouter } from './routers/ExpressRouter';
 import { elog } from './utils/Logger';
 
 export class App {
 	app: express.Application;
 
-	constructor(controllers: Controller[]) {
+	constructor(controllers: ExpressRouter[]) {
 		this.app = express();
 
 		this.connectToDatabase();
@@ -36,10 +36,10 @@ export class App {
 
 	private initializeMiddlewares(): void {
 		this.app.use(json());
-		this.app.use(cors());
+		this.app.use(cors({ origin: process.env.CLIENT_URL }));
 	}
 
-	private initializeControllers(controllers: Controller[]): void {
+	private initializeControllers(controllers: ExpressRouter[]): void {
 		controllers.forEach((controller) => {
 			this.app.use(controller.path, controller.router);
 		});

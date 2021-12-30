@@ -1,11 +1,11 @@
-import { GameTypes } from '../GameTypes';
+import { GAME_TYPE } from '../GameTypes';
 import { GamesStore } from './GamesStore';
 import { Player, PlayerDTO } from './Player';
 
 export abstract class Game {
 	// CONSTANTS
 	constructor(
-		public readonly gameType: GameTypes,
+		public readonly gameType: GAME_TYPE,
 		public readonly owner: { id: string; username: string },
 		public readonly maxPlayers: number,
 		public readonly roomName: string,

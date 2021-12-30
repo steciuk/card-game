@@ -1,3 +1,3 @@
-export enum GameTypes {
+export enum GAME_TYPE {
 	MAKAO = 'MAKAO',
 }
