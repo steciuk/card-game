@@ -7,7 +7,6 @@ import { NotLoggedInError } from '../errors/notLoggedInError';
 import { GameTypes } from '../logic/games/scenes/gamesSetup';
 import { SOCKET_EVENTS } from '../logic/games/socketEvents/socketEvents';
 
-//TODO: remove console.logs
 @Injectable({
 	providedIn: 'root',
 })
