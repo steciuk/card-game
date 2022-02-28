@@ -16,17 +16,24 @@ export class AuthFormComponent implements OnInit, OnDestroy {
 	private subs = new SubSink();
 	@Input() submitUrl!: string;
 
+	areCredentialsInvalid = false;
+	isUsernameTaken = false;
+
 	constructor(private http: HttpService, private authService: AuthService, private router: Router) {}
 
 	ngOnInit(): void {}
 
 	onSubmit(form: NgForm): void {
+		this.areCredentialsInvalid = false;
+		this.isUsernameTaken = false;
 		this.subs.sink = this.http.post<LoginDTO>(this.submitUrl, form.value).subscribe(
 			(response) => {
 				this.authService.setLocalStorage(response);
 				this.router.navigateByUrl('/games');
 			},
 			(error) => {
+				if (error.status === 409) this.isUsernameTaken = true;
+				else if (error.status === 401) this.areCredentialsInvalid = true;
 				console.log(error);
 			},
 			() => {}
