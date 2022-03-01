@@ -46,12 +46,24 @@ export class MakaoHandler extends SocketHandler {
 
 				const playedCard = game.playCard(cardId);
 
+				const numCardsToTake = game.getNumCardsToTake();
+				const requests = game.getRequestedShapesForConnectedPlayers();
+
 				const cardPlayedDTO: CardPlayedDTO = {
 					playerId: player.id,
 					cardId: playedCard,
+					numCardsToTake: numCardsToTake,
+					requests: requests,
 				};
+
 				socket.to(game.id).emit(SOCKET_GAME_EVENTS.CARD_PLAYED, cardPlayedDTO);
-				callback({ success: true, actions: game.getActionsForPlayerDTO(player), cardId: playedCard });
+				callback({
+					success: true,
+					actions: game.getActionsForPlayerDTO(player),
+					cardId: playedCard,
+					numCardsToTake: numCardsToTake,
+					requests: requests,
+				});
 			}
 		);
 
@@ -72,15 +84,23 @@ export class MakaoHandler extends SocketHandler {
 
 				const playedCard = game.playCard(playedCardId, chosenCardId);
 
+				const numCardsToTake = game.getNumCardsToTake();
+				const requests = game.getRequestedShapesForConnectedPlayers();
+
 				const cardPlayedDTO: CardPlayedDTO = {
 					playerId: player.id,
 					cardId: playedCard,
+					numCardsToTake: numCardsToTake,
+					requests: requests,
 				};
+
 				socket.to(game.id).emit(SOCKET_GAME_EVENTS.CARD_PLAYED, cardPlayedDTO);
 				callback({
 					success: true,
 					actions: game.getActionsForPlayerDTO(player),
 					cardId: playedCard,
+					numCardsToTake: numCardsToTake,
+					requests: requests,
 				});
 			}
 		);
@@ -93,11 +113,16 @@ export class MakaoHandler extends SocketHandler {
 
 				const { cardIds, refilled } = game.takeCard(player);
 
+				const numCardsToTake = game.getNumCardsToTake();
+				const requests = game.getRequestedShapesForConnectedPlayers();
+
 				const cardsTakenDTO: CardsTakenDTO = {
 					playerId: player.id,
 					numCards: cardIds.length,
 					deckRefilled: refilled,
 					numCardsInRefilled: game.numCardsInDeck,
+					numCardsToTake: numCardsToTake,
+					requests: requests,
 				};
 				socket.to(game.id).emit(SOCKET_GAME_EVENTS.CARDS_TAKEN, cardsTakenDTO);
 				callback({
@@ -106,6 +131,8 @@ export class MakaoHandler extends SocketHandler {
 					actions: game.getActionsForPlayerDTO(player),
 					deckRefilled: refilled,
 					numCardsInRefilled: game.numCardsInDeck,
+					numCardsToTake: numCardsToTake,
+					requests: requests,
 				});
 			}
 		);
@@ -145,33 +172,40 @@ type FailureResponseDTO = {
 	error: string;
 };
 
+type AttacksStateDTO = {
+	requests: Map<string, string | null> | null;
+	numCardsToTake: number;
+};
+
 type TurnFinishedResponseDTO = SuccessResponseDTO & {
 	playerId: string;
 	actions: ActionsDTO | null;
 };
 
-type CardPlayedResponseDTO = SuccessResponseDTO & {
-	cardId: CardId;
-	actions: ActionsDTO | null;
-};
+type CardPlayedResponseDTO = SuccessResponseDTO &
+	AttacksStateDTO & {
+		cardId: CardId;
+		actions: ActionsDTO | null;
+	};
 
-type CardsTakenResponseDTO = SuccessResponseDTO & {
-	cardIds: CardId[];
-	deckRefilled: boolean;
-	numCardsInRefilled: number;
-	actions: ActionsDTO | null;
-};
+type CardsTakenResponseDTO = SuccessResponseDTO &
+	AttacksStateDTO & {
+		cardIds: CardId[];
+		deckRefilled: boolean;
+		numCardsInRefilled: number;
+		actions: ActionsDTO | null;
+	};
 
 type TurnFinishedDTO = {
 	playerId: string;
 };
 
-type CardPlayedDTO = {
+type CardPlayedDTO = AttacksStateDTO & {
 	playerId: string;
 	cardId: CardId;
 };
 
-type CardsTakenDTO = {
+type CardsTakenDTO = AttacksStateDTO & {
 	playerId: string;
 	numCards: number;
 	deckRefilled: boolean;

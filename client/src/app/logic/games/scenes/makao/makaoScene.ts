@@ -308,33 +308,40 @@ type FailureResponseDTO = {
 	error: string;
 };
 
+type AttacksStateDTO = {
+	requests: Map<string, string | null> | null;
+	numCardsToTake: number;
+};
+
 type TurnFinishedResponseDTO = SuccessResponseDTO & {
 	playerId: string;
 	actions: ActionsDTO | null;
 };
 
-type CardPlayedResponseDTO = SuccessResponseDTO & {
-	actions: ActionsDTO | null;
-	cardId: string;
-};
+type CardPlayedResponseDTO = SuccessResponseDTO &
+	AttacksStateDTO & {
+		actions: ActionsDTO | null;
+		cardId: string;
+	};
 
-type CardsTakenResponseDTO = SuccessResponseDTO & {
-	cardIds: string[];
-	deckRefilled: boolean;
-	numCardsInRefilled: number;
-	actions: ActionsDTO | null;
-};
+type CardsTakenResponseDTO = SuccessResponseDTO &
+	AttacksStateDTO & {
+		cardIds: string[];
+		deckRefilled: boolean;
+		numCardsInRefilled: number;
+		actions: ActionsDTO | null;
+	};
 
 type TurnFinishedDTO = {
 	playerId: string;
 };
 
-type CardPlayedDTO = {
+type CardPlayedDTO = AttacksStateDTO & {
 	playerId: string;
 	cardId: string;
 };
 
-type CardsTakenDTO = {
+type CardsTakenDTO = AttacksStateDTO & {
 	playerId: string;
 	numCards: number;
 	deckRefilled: boolean;

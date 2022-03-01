@@ -29,11 +29,11 @@ export class MakaoGame extends Game {
 	playersInOrder: MakaoPlayer[] = [];
 	private currentPlayerNumber = 0;
 
-	isCardPlayedThisTurn = false;
-	isCardTakenThisTurn = false;
-	attack: AttackType | null = null;
-	attackCount = 0;
-	changedCard: CardId | null = null;
+	private isCardPlayedThisTurn = false;
+	private isCardTakenThisTurn = false;
+	private attack: AttackType | null = null;
+	private attackCount = 0;
+	private changedCard: CardId | null = null;
 
 	constructor(
 		gameType: GAME_TYPE,
@@ -260,6 +260,21 @@ export class MakaoGame extends Game {
 			cardsPlayerCanPlay: this.cardsPlayerCanPlay(player),
 			canPlayerFinishTurn: this.canPlayerFinishTurn(player),
 		};
+	}
+
+	getNumCardsToTake(): number {
+		return this.attack === null || this.attack === AttackType.FOUR ? 0 : this.attackCount;
+	}
+
+	getRequestedShapesForConnectedPlayers(): Map<string, string | null> {
+		const requestedShapesForConnectedPlayers = new Map<string, string | null>();
+		this.playersInGame.forEach((player) => {
+			player.requestedCardToPlay
+				? requestedShapesForConnectedPlayers.set(player.id, player.requestedCardToPlay[0])
+				: requestedShapesForConnectedPlayers.set(player.id, null);
+		});
+
+		return requestedShapesForConnectedPlayers;
 	}
 }
 
