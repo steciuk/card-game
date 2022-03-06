@@ -266,7 +266,7 @@ export class MakaoGame extends Game {
 		return this.attack === null || this.attack === AttackType.FOUR ? 0 : this.attackCount;
 	}
 
-	getRequestedShapesForConnectedPlayers(): Map<string, string | null> {
+	getRequestedShapesForConnectedPlayers(): { [key: string]: string | null } {
 		const requestedShapesForConnectedPlayers = new Map<string, string | null>();
 		this.playersInGame.forEach((player) => {
 			player.requestedCardToPlay
@@ -274,18 +274,20 @@ export class MakaoGame extends Game {
 				: requestedShapesForConnectedPlayers.set(player.id, null);
 		});
 
-		return requestedShapesForConnectedPlayers;
+		return Object.fromEntries(requestedShapesForConnectedPlayers);
 	}
 }
 
-export class InitialMakaoGameStateForPlayerDTO {
+export class InitialMakaoGameStateForPlayerDTO implements AttacksStateDTO {
 	private constructor(
 		private thisMakaoPlayer: ThisMakaoPlayerDTO,
 		private currentPlayerId: string,
 		private makaoPlayersInOrder: OtherMakaoPlayerDTO[],
 		private numberOfCardsInDeck: number,
 		private startingCardId: CardId,
-		private thisPlayerActions: ActionsDTO
+		private thisPlayerActions: ActionsDTO,
+		public requests: { [key: string]: string | null },
+		public numCardsToTake: number
 	) {}
 
 	static fromMakaoGameAndPlayer(
@@ -300,7 +302,9 @@ export class InitialMakaoGameStateForPlayerDTO {
 				.map((makaoPlayer: MakaoPlayer) => OtherMakaoPlayerDTO.fromMakaoPlayer(makaoPlayer)),
 			makaoGame.numCardsInDeck,
 			makaoGame.topCard,
-			makaoGame.getActionsForPlayerDTO(makaoPlayer)
+			makaoGame.getActionsForPlayerDTO(makaoPlayer),
+			makaoGame.getRequestedShapesForConnectedPlayers(),
+			makaoGame.getNumCardsToTake()
 		);
 	}
 }
@@ -309,4 +313,9 @@ export type ActionsDTO = {
 	canPlayerTakeCard: boolean;
 	cardsPlayerCanPlay: CardId[];
 	canPlayerFinishTurn: boolean;
+};
+
+export type AttacksStateDTO = {
+	requests: { [key: string]: string | null };
+	numCardsToTake: number;
 };

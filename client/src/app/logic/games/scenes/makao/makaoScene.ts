@@ -6,6 +6,7 @@ import { PhaserCard } from '../../phaserComponents/phaserCard';
 import { PhaserClickableDeck } from '../../phaserComponents/phaserClickableDeck';
 import { PhaserDeck } from '../../phaserComponents/phaserDeck';
 import { PhaserDropZone } from '../../phaserComponents/phaserDropZone';
+import { PhaserInfoZone } from '../../phaserComponents/phaserInfoZone';
 import { PhaserPlayableDeck } from '../../phaserComponents/phaserPlayableDeck';
 import { PhaserTurnArrow } from '../../phaserComponents/phaserTurnArrow';
 import { SOCKET_GAME_EVENTS } from '../../socketEvents/socketEvents';
@@ -19,6 +20,7 @@ const SCENE_CONFIG = {
 	MIN_CARD_HEIGHT: 100,
 	THIS_PLAYER_DECK_PART_OF_SCREEN_WIDTH: 0.8,
 	DROP_ZONE_PERCENTAGE_OF_SCREEN: 0.3,
+	INFO_ZONE_PERCENTAGE_OF_SCREEN: 0.1,
 };
 
 export class MakaoScene extends BaseScene {
@@ -33,6 +35,8 @@ export class MakaoScene extends BaseScene {
 	deck!: PhaserClickableDeck;
 	turnArrow!: PhaserTurnArrow;
 	finishTurnButton!: PhaserButton;
+	cardsToTakeInfoZone!: PhaserInfoZone;
+	requestsInfoZone!: PhaserInfoZone;
 
 	isSceneStarted = false;
 
@@ -57,13 +61,28 @@ export class MakaoScene extends BaseScene {
 	}
 
 	create(): void {
-		this.add.text(0, 0, 'Makao');
 		new PhaserDropZone(
 			this,
 			this.midPoint.x,
 			this.midPoint.y,
 			this.smallerScreenDimension * SCENE_CONFIG.DROP_ZONE_PERCENTAGE_OF_SCREEN,
 			this.smallerScreenDimension * SCENE_CONFIG.DROP_ZONE_PERCENTAGE_OF_SCREEN
+		);
+
+		this.cardsToTakeInfoZone = new PhaserInfoZone(
+			this,
+			this.midPoint.x + (this.smallerScreenDimension * SCENE_CONFIG.DROP_ZONE_PERCENTAGE_OF_SCREEN) / 2,
+			this.midPoint.y - (this.smallerScreenDimension * SCENE_CONFIG.DROP_ZONE_PERCENTAGE_OF_SCREEN) / 2,
+			this.smallerScreenDimension * SCENE_CONFIG.INFO_ZONE_PERCENTAGE_OF_SCREEN,
+			'To take'
+		);
+
+		this.requestsInfoZone = new PhaserInfoZone(
+			this,
+			this.midPoint.x + (this.smallerScreenDimension * SCENE_CONFIG.DROP_ZONE_PERCENTAGE_OF_SCREEN) / 2,
+			this.midPoint.y + (this.smallerScreenDimension * SCENE_CONFIG.DROP_ZONE_PERCENTAGE_OF_SCREEN) / 2,
+			this.smallerScreenDimension * SCENE_CONFIG.INFO_ZONE_PERCENTAGE_OF_SCREEN,
+			'Requested'
 		);
 
 		this.discarded = new PhaserDeck(
@@ -129,6 +148,7 @@ export class MakaoScene extends BaseScene {
 
 					this.thisPlayer.deck.addCards(cardTakenResponseDTO.cardIds);
 					this.updateTurnBasedInteractiveElements(cardTakenResponseDTO.actions);
+					this.setAttacksStateInfo(cardTakenResponseDTO);
 				}
 			);
 		});
@@ -146,6 +166,7 @@ export class MakaoScene extends BaseScene {
 			(cardPlayedDTO: CardPlayedDTO) => {
 				this.players.get(cardPlayedDTO.playerId)?.deck.destroyNumLastCards(1);
 				this.discarded.addCards(cardPlayedDTO.cardId, true);
+				this.setAttacksStateInfo(cardPlayedDTO);
 			}
 		);
 
@@ -153,6 +174,7 @@ export class MakaoScene extends BaseScene {
 			SOCKET_GAME_EVENTS.CARDS_TAKEN,
 			(cardsTakenDTO: CardsTakenDTO) => {
 				this.players.get(cardsTakenDTO.playerId)?.deck.addCards('RB', false, cardsTakenDTO.numCards);
+				this.setAttacksStateInfo(cardsTakenDTO);
 
 				if (!cardsTakenDTO.deckRefilled) return this.deck.destroyNumLastCards(cardsTakenDTO.numCards);
 				this.discarded.destroyAllButNumLastCards(1);
@@ -242,6 +264,7 @@ export class MakaoScene extends BaseScene {
 
 		this.updateTurnBasedInteractiveElements(makaoGameStateForPlayer.thisPlayerActions);
 		this.updateTurnArrow(makaoGameStateForPlayer.currentPlayerId);
+		this.setAttacksStateInfo(makaoGameStateForPlayer);
 	}
 
 	private updateTurnArrow(playerId: string): void {
@@ -260,6 +283,13 @@ export class MakaoScene extends BaseScene {
 		return playerId === this.thisPlayer.id
 			? this.thisPlayer
 			: (this.players.get(playerId) as MakaoPlayer);
+	}
+
+	setAttacksStateInfo(attacksState: AttacksStateDTO): void {
+		this.cardsToTakeInfoZone.setInfo(attacksState.numCardsToTake);
+		const requestedShape = attacksState.requests[this.thisPlayer.id];
+		if (requestedShape) this.requestsInfoZone.setInfo(requestedShape);
+		else this.requestsInfoZone.setInfo();
 	}
 
 	chooseCard = (playedCard: PhaserCard, playedDeck: PhaserPlayableDeck, cards: string[]): void => {
@@ -284,6 +314,7 @@ export class MakaoScene extends BaseScene {
 								playedDeck.alignCards();
 								this.discarded.addCards(response.cardId, true);
 								this.updateTurnBasedInteractiveElements(response.actions);
+								this.setAttacksStateInfo(response);
 							} else {
 								playedCard.x = playedCard.input.dragStartX;
 								playedCard.y = playedCard.input.dragStartY;
@@ -309,7 +340,7 @@ type FailureResponseDTO = {
 };
 
 type AttacksStateDTO = {
-	requests: Map<string, string | null> | null;
+	requests: { [key: string]: string | null };
 	numCardsToTake: number;
 };
 
@@ -366,7 +397,7 @@ type ThisMakaoPlayerDTO = {
 	cardIds: string[];
 };
 
-type InitialMakaoGameStateForPlayerDTO = {
+type InitialMakaoGameStateForPlayerDTO = AttacksStateDTO & {
 	thisMakaoPlayer: ThisMakaoPlayerDTO;
 	currentPlayerId: string;
 	makaoPlayersInOrder: OtherMakaoPlayerDTO[];
@@ -421,6 +452,7 @@ class ThisMakaoPlayer extends MakaoPlayer {
 									deck.alignCards();
 									scene.discarded.addCards(response.cardId, true);
 									scene.updateTurnBasedInteractiveElements(response.actions);
+									scene.setAttacksStateInfo(response);
 								} else {
 									card.x = card.input.dragStartX;
 									card.y = card.input.dragStartY;

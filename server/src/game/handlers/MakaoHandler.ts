@@ -3,6 +3,7 @@ import { Server, Socket } from 'socket.io';
 import { CardId } from '../gameStore/deck/Card';
 import {
 	ActionsDTO,
+	AttacksStateDTO,
 	InitialMakaoGameStateForPlayerDTO,
 	MakaoGame
 } from '../gameStore/makao/MakaoGame';
@@ -170,11 +171,6 @@ type SuccessResponseDTO = {
 type FailureResponseDTO = {
 	success: false;
 	error: string;
-};
-
-type AttacksStateDTO = {
-	requests: Map<string, string | null> | null;
-	numCardsToTake: number;
 };
 
 type TurnFinishedResponseDTO = SuccessResponseDTO & {
