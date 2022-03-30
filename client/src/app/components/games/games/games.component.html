@@ -1,4 +1,4 @@
-<div *ngIf="authService.isLoggedIn()">
+<div *ngIf="authService.getLoggedUsername$() | async; else notLoggedIn">
 	<app-new-game-form (addNewGame)="addNewGame($event)"></app-new-game-form>
 	<hr />
 	<button type="button" class="btn" (click)="refreshGames()">
@@ -11,6 +11,6 @@
 </div>
 
 <!-- TODO: use variable in component so method is not called twice -->
-<div *ngIf="!authService.isLoggedIn()">
-	<h3>You are not logged in</h3>
-</div>
+<ng-template #notLoggedIn>
+	<h3>You are not logged in!</h3>
+</ng-template>

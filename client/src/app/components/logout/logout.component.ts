@@ -9,13 +9,15 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 })
 export class LogoutComponent implements OnInit, OnDestroy {
 	private subs = new SubSink();
-	username = '';
+	textToDisplay = '';
 
 	constructor(private authService: AuthService) {}
 
 	ngOnInit(): void {
-		this.subs.sink = this.authService.getUsername$().subscribe(
-			(username) => (this.username = username),
+		this.subs.sink = this.authService.getLoggedUsername$().subscribe(
+			(username) => {
+				this.textToDisplay = username ? `Logged as: ${username}` : 'Not logged';
+			},
 			(error) => console.error(error),
 			() => {}
 		);
