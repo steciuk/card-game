@@ -16,7 +16,7 @@ const routes: Routes = [
 	{ path: 'games', component: GamesComponent },
 	{ path: 'games/makao/:id', component: GameScreenComponent },
 	{ path: '404', component: NotFoundComponent },
-	{ path: '**', redirectTo: '/' },
+	{ path: '**', redirectTo: '/404' },
 ];
 
 @NgModule({

@@ -1,7 +1,7 @@
 <form #form="ngForm" (ngSubmit)="onSubmit(form)">
-	<div class="alert alert-danger" *ngIf="areCredentialsInvalid">Incorrect username or password</div>
-	<div class="alert alert-danger" *ngIf="isUsernameTaken">User with that username already exists</div>
-	<div class="form-group">
+	<div *ngIf="areCredentialsInvalid">Incorrect username or password</div>
+	<div *ngIf="isUsernameTaken">User with that username already exists</div>
+	<div>
 		<label for="username">Username</label>
 		<input
 			id="username"
@@ -15,7 +15,7 @@
 			name="username"
 			#username="ngModel"
 		/>
-		<div class="alert alert-danger" *ngIf="username.touched && !username.valid">
+		<div *ngIf="username.touched && !username.valid">
 			<div *ngIf="username.errors?.required">Username required</div>
 			<div *ngIf="username.errors?.minlength">
 				Min {{ username.errors?.minlength.requiredLength }} characters
@@ -38,7 +38,7 @@
 			name="password"
 			#password="ngModel"
 		/>
-		<div class="alert alert-danger" *ngIf="password.touched && !password.valid">
+		<div *ngIf="password.touched && !password.valid">
 			<div *ngIf="password.errors?.required">Password required</div>
 			<div *ngIf="password.errors?.minlength">
 				Min {{ password.errors?.minlength.requiredLength }} characters
@@ -49,5 +49,5 @@
 			<div *ngIf="password.errors?.pattern">Only alphanumeric and !@#$%^&* allowed</div>
 		</div>
 	</div>
-	<button class="btn btn-primary" type="submit" [disabled]="form.invalid">Submit</button>
+	<button type="submit" [disabled]="form.invalid">Submit</button>
 </form>

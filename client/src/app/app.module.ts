@@ -13,13 +13,14 @@ import { GameCardComponent } from './components/games/game-card/game-card.compon
 import { GameScreenComponent } from './components/games/game-screen/game-screen.component';
 import { GamesComponent } from './components/games/games/games.component';
 import { NewGameFormComponent } from './components/games/new-game-form/new-game-form.component';
+import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import { LogoutComponent } from './components/logout/logout.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { RegisterComponent } from './components/register/register.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { AuthService } from './services/auth.service';
-import { HomeComponent } from './components/home/home.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
 
 @NgModule({
 	declarations: [
@@ -33,7 +34,8 @@ import { HomeComponent } from './components/home/home.component';
 		GameCardComponent,
 		NewGameFormComponent,
 		NotFoundComponent,
-  HomeComponent,
+		HomeComponent,
+  NavbarComponent,
 	],
 	imports: [BrowserModule, AppRoutingModule, PhaserModule, FormsModule, HttpClientModule, LogMonitorModule],
 	providers: [AuthService, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],

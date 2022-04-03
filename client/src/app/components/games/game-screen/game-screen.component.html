@@ -1,6 +1,6 @@
 <div *ngIf="isPasswordProtected && !isRenderGame">
 	<form #form="ngForm" (ngSubmit)="onSubmit(form)">
-		<div class="alert alert-danger" *ngIf="isWrongPassword">Incorrect password</div>
+		<div *ngIf="isWrongPassword">Incorrect password</div>
 		<label for="password">Password</label>
 		<input
 			id="password"
@@ -14,7 +14,7 @@
 			name="password"
 			#password="ngModel"
 		/>
-		<div class="alert alert-danger" *ngIf="password.touched && !password.valid">
+		<div *ngIf="password.touched && !password.valid">
 			<div *ngIf="password.errors?.required">Password required</div>
 			<div *ngIf="password.errors?.minlength">
 				Min {{ password.errors?.minlength.requiredLength }} characters
@@ -24,7 +24,7 @@
 			</div>
 			<div *ngIf="password.errors?.pattern">Only alphanumeric and !@#$%^&* allowed</div>
 		</div>
-		<button class="btn btn-primary" type="submit" [disabled]="form.invalid">Submit</button>
+		<button type="submit" [disabled]="form.invalid">Submit</button>
 	</form>
 </div>
 <div *ngIf="isRenderGame">
