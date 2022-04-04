@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { Route } from '../app-routing.module';
 import { LoginDTO, ParsedJwtPayload } from '../logic/DTO/loginDTO';
 
 @Injectable({
@@ -45,7 +46,7 @@ export class AuthService {
 		localStorage.removeItem(LocalStorageItems.EXPIRES_ON);
 
 		this.loggedUser$.next(null);
-		this.router.navigateByUrl('/login');
+		this.router.navigateByUrl(`/${Route.HOME}`);
 	}
 
 	getLoggedUsername$(): Observable<string | null> {

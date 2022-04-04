@@ -1,0 +1,32 @@
+.home-container {
+	text-align: center;
+}
+
+section {
+	padding: 5rem 2rem;
+}
+
+.left-col {
+	.subhead {
+		text-transform: uppercase;
+		font-weight: bold;
+		color: var(--gray);
+		letter-spacing: 0.3rem;
+	}
+
+	.head {
+		font-size: 2.5rem;
+		line-height: 2.5rem;
+		margin-top: 0.2rem;
+	}
+
+	.hero-cta {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		a.link {
+			margin-left: 1.5rem;
+		}
+	}
+}

@@ -1,13 +1,16 @@
 <div class="nav-container">
-	<a routerLink="/" class="logo">Card<span>Game</span></a>
+	<div routerLink="/" class="logo">
+		<app-logo></app-logo>
+	</div>
 	<nav>
 		<ul>
-			<li><a class="nav-item" routerLink="/login">Login</a></li>
-			<li><a class="nav-item" routerLink="/register">Register</a></li>
-			<li><a class="nav-item" routerLink="/games">Games</a></li>
-			<li>
-				<app-logout></app-logout>
-			</li>
+			<li><a routerLink="/login">Login</a></li>
+			<li><a routerLink="/register">Register</a></li>
+			<li><a routerLink="/games">Games</a></li>
 		</ul>
 	</nav>
+	<div class="right-panel">
+		<i class="bi bi-list burger"></i>
+		<app-logout></app-logout>
+	</div>
 </div>

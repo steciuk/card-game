@@ -16,11 +16,13 @@ import { NewGameFormComponent } from './components/games/new-game-form/new-game-
 import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
 import { LogoutComponent } from './components/logout/logout.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { RegisterComponent } from './components/register/register.component';
+import { LogoComponent } from './components/utils/logo/logo.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { AuthService } from './services/auth.service';
-import { NavbarComponent } from './components/navbar/navbar.component';
+import { ButtonComponent } from './components/utils/button/button.component';
 
 @NgModule({
 	declarations: [
@@ -35,7 +37,9 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 		NewGameFormComponent,
 		NotFoundComponent,
 		HomeComponent,
-  NavbarComponent,
+		NavbarComponent,
+		LogoComponent,
+  ButtonComponent,
 	],
 	imports: [BrowserModule, AppRoutingModule, PhaserModule, FormsModule, HttpClientModule, LogMonitorModule],
 	providers: [AuthService, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],

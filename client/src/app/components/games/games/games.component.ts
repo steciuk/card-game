@@ -21,6 +21,8 @@ export class GamesComponent implements OnInit, OnDestroy {
 		this.refreshGames();
 	}
 
+	private observeLoggedIn(): void {}
+
 	addNewGame(game: GameDTO): void {
 		this.router.navigateByUrl(`games/makao/${game.id}`);
 	}
