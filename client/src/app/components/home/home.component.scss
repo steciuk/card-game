@@ -1,18 +1,14 @@
 .home-container {
+	position: relative;
 	text-align: center;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	height: 100%;
 }
 
 section {
 	padding: 5rem 2rem;
-}
-
-.hero {
-	.hero-image {
-		display: block;
-	}
 }
 
 .left-col {
@@ -28,6 +24,7 @@ section {
 		line-height: 2.5rem;
 		margin-top: 0.2rem;
 		max-width: 614px;
+		min-width: 614px;
 	}
 
 	.hero-cta {
@@ -35,8 +32,56 @@ section {
 		justify-content: center;
 		align-items: center;
 
-		a.link {
+		.interactive {
+			z-index: 1;
+		}
+
+		.link {
 			margin-left: 1.5rem;
 		}
+	}
+}
+
+.perspective {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	display: grid;
+	grid-template: repeat(10, 1fr) / repeat(10, 1fr);
+
+	.cell {
+		width: 100%;
+		height: 100%;
+	}
+}
+
+@for $i from 0 to 10 {
+	.cell:nth-child(10n + #{$i + 1}):hover ~ .content {
+		--positionX: #{$i};
+	}
+	.cell:nth-child(n + #{10 * $i + 1}):nth-child(-n + #{10 * ($i + 1)}):hover ~ .content {
+		--positionY: #{$i};
+	}
+}
+
+.content {
+	--positionX: 5.5;
+	--positionY: 5.5;
+
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: -1;
+
+	.suite {
+		position: absolute;
+		display: block;
+		width: 200px;
+		transform: perspective(400px) rotateY(calc((var(--positionX) - 5.5) * 5deg))
+			rotateX(calc((var(--positionY) - 5.5) * 5deg));
+		transition: all 0.3s;
 	}
 }

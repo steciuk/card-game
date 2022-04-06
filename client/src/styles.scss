@@ -11,6 +11,7 @@
 	--red: #ff0000;
 	--black: #000000;
 
+	--light-blue: #a7bef1;
 	--blue: #2b63db;
 	--dark-blue: rgb(10, 1, 145);
 }
@@ -25,9 +26,14 @@
 	font-family: 'Poppins';
 }
 
+html {
+	height: 100%;
+}
+
 body {
 	margin: 0;
 	background-color: var(--light-gray);
+	height: 100%;
 }
 
 a {
