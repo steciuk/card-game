@@ -80,6 +80,9 @@ section {
 		position: absolute;
 		display: block;
 		width: 200px;
+		filter: drop-shadow(
+			calc((var(--positionX) -5.5) * 1px) calc((var(--positionY) -5.5) * 1px) 8px var(--darker-gray)
+		);
 		transform: perspective(400px) rotateY(calc((var(--positionX) - 5.5) * 5deg))
 			rotateX(calc((var(--positionY) - 5.5) * 5deg));
 		transition: all 0.3s;
