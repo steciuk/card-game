@@ -1,9 +1,18 @@
 .home-container {
 	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 section {
 	padding: 5rem 2rem;
+}
+
+.hero {
+	.hero-image {
+		display: block;
+	}
 }
 
 .left-col {
@@ -18,6 +27,7 @@ section {
 		font-size: 2.5rem;
 		line-height: 2.5rem;
 		margin-top: 0.2rem;
+		max-width: 614px;
 	}
 
 	.hero-cta {
