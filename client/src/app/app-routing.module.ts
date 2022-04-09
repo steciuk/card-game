@@ -8,7 +8,7 @@ import { LoginComponent } from './components/login/login.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { RegisterComponent } from './components/register/register.component';
 
-export enum Route {
+export enum BaseRoute {
 	HOME = '',
 	LOGIN = 'login',
 	REGISTER = 'register',
@@ -16,11 +16,11 @@ export enum Route {
 }
 
 const routes: Routes = [
-	{ path: Route.HOME, component: HomeComponent },
-	{ path: Route.LOGIN, component: LoginComponent },
-	{ path: Route.REGISTER, component: RegisterComponent },
+	{ path: BaseRoute.HOME, component: HomeComponent },
+	{ path: BaseRoute.LOGIN, component: LoginComponent },
+	{ path: BaseRoute.REGISTER, component: RegisterComponent },
 	// TODO: implement as child routes
-	{ path: Route.GAMES, component: GamesComponent },
+	{ path: BaseRoute.GAMES, component: GamesComponent },
 	{ path: 'games/makao/:id', component: GameScreenComponent },
 	{ path: '404', component: NotFoundComponent },
 	{ path: '**', redirectTo: '/404' },

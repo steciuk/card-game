@@ -10,16 +10,51 @@
 	}
 
 	nav {
-		// display: none;
-	}
-
-	.right-panel {
+		flex-grow: 1;
 		display: flex;
-		align-items: center;
 
-		.burger {
-			font-size: 2rem;
-			cursor: pointer;
+		.nav {
+			margin: 0 auto;
+			flex-shrink: 1;
+			display: flex;
+			justify-content: space-evenly;
+
+			.nav-item {
+				display: block;
+				font-size: 1.1rem;
+				font-weight: 300;
+				width: 110px;
+				position: relative;
+
+				a {
+					position: relative;
+					display: block;
+					text-align: center;
+					z-index: 1;
+				}
+
+				.indicator {
+					position: absolute;
+					transform-origin: bottom;
+					left: 50%;
+					width: 95%;
+					height: 0;
+					transform: translate(-50%, 50px);
+					background: var(--background);
+					border-top-left-radius: 1rem;
+					border-top-right-radius: 1rem;
+					transition: all 0.5s ease;
+				}
+
+				&--active {
+					font-weight: bold;
+
+					.indicator {
+						height: 62px;
+						transform: translate(-50%, -10px);
+					}
+				}
+			}
 		}
 	}
 }

@@ -3,14 +3,16 @@
 		<app-logo></app-logo>
 	</div>
 	<nav>
-		<ul>
-			<li><a routerLink="/login">Login</a></li>
-			<li><a routerLink="/register">Register</a></li>
-			<li><a routerLink="/games">Games</a></li>
+		<ul class="nav">
+			<li
+				class="nav-item"
+				*ngFor="let route of navRoutes; let i = index"
+				[ngClass]="{ 'nav-item--active': route === currentNavRoute }"
+			>
+				<div class="indicator"></div>
+				<a routerLink="{{ '/' + route }}">{{ navLabels[i] }}</a>
+			</li>
 		</ul>
 	</nav>
-	<div class="right-panel">
-		<i class="bi bi-list burger"></i>
-		<app-logout></app-logout>
-	</div>
+	<app-logout></app-logout>
 </div>
