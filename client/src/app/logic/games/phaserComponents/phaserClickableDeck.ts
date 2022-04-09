@@ -12,7 +12,7 @@ export class PhaserClickableDeck extends PhaserDeck {
 		this.addToAdditionalContainer(this.clickZone);
 	}
 
-	addCards(
+	override addCards(
 		cardIds: string | string[],
 		randomizeCardsRotation?: boolean,
 		numberOfCards?: number

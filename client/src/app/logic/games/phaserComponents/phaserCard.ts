@@ -41,7 +41,7 @@ export class PhaserCard extends Phaser.GameObjects.Sprite {
 		}
 	}
 
-	destroy(): void {
+	override destroy(): void {
 		this.glowTween?.stop();
 		this.glowTween = undefined;
 		super.destroy();

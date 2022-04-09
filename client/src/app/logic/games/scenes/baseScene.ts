@@ -22,7 +22,7 @@ export abstract class BaseScene extends Phaser.Scene {
 	abstract init(): void;
 	abstract preload(): void;
 	abstract create(): void;
-	abstract update(): void;
+	abstract override update(): void;
 
 	setNextSceneKey(key: SCENE_KEYS): void {
 		this.nextSceneKey = key;

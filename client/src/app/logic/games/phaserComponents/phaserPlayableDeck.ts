@@ -9,7 +9,7 @@ export class PhaserPlayableDeck extends PhaserDeck {
 		super(scene, x, y, rotation, height, deckWidth);
 	}
 
-	addCards(
+	override addCards(
 		cardIds: string | string[],
 		randomizeCardsRotation?: boolean,
 		numberOfCards?: number
@@ -23,7 +23,7 @@ export class PhaserPlayableDeck extends PhaserDeck {
 		return this;
 	}
 
-	protected addCard(card: PhaserCard): void {
+	protected override addCard(card: PhaserCard): void {
 		super.addCard(card);
 
 		card.setInteractive({ draggable: true });
@@ -48,7 +48,7 @@ export class PhaserPlayableDeck extends PhaserDeck {
 		return this;
 	}
 
-	destroy(): void {
+	override destroy(): void {
 		super.destroy();
 	}
 }

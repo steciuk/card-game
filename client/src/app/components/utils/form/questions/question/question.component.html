@@ -1,0 +1,18 @@
+<div class="question" [formGroup]="formGroup">
+	<label [attr.for]="question.key">{{ question.label }}</label>
+
+	<ng-container [ngSwitch]="question.controlType">
+		<input
+			*ngSwitchCase="formControlType.TEXT"
+			type="text"
+			[formControlName]="question.key"
+			[id]="question.key"
+		/>
+	</ng-container>
+	<div class="error-box" *ngIf="isInvalidAndDirty()">
+		<ng-container *ngFor="let error of errors">
+			<p class="error" *ngIf="error"></p>
+			//TODO: finish
+		</ng-container>
+	</div>
+</div>

@@ -1,9 +1,8 @@
-import { LogMonitorModule } from 'ngx-log-monitor';
 import { PhaserModule } from 'phaser-component-library';
 
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -19,10 +18,12 @@ import { LogoutComponent } from './components/logout/logout.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { RegisterComponent } from './components/register/register.component';
+import { ButtonComponent } from './components/utils/button/button.component';
+import { FormComponent } from './components/utils/form/form.component';
 import { LogoComponent } from './components/utils/logo/logo.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { AuthService } from './services/auth.service';
-import { ButtonComponent } from './components/utils/button/button.component';
+import { QuestionComponent } from './components/utils/form/questions/question/question.component';
 
 @NgModule({
 	declarations: [
@@ -39,9 +40,18 @@ import { ButtonComponent } from './components/utils/button/button.component';
 		HomeComponent,
 		NavbarComponent,
 		LogoComponent,
-  ButtonComponent,
+		ButtonComponent,
+		FormComponent,
+  QuestionComponent,
 	],
-	imports: [BrowserModule, AppRoutingModule, PhaserModule, FormsModule, HttpClientModule, LogMonitorModule],
+	imports: [
+		BrowserModule,
+		AppRoutingModule,
+		PhaserModule,
+		FormsModule,
+		HttpClientModule,
+		ReactiveFormsModule,
+	],
 	providers: [AuthService, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
 	bootstrap: [AppComponent],
 })
