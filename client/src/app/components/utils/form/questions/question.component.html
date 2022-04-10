@@ -8,11 +8,18 @@
 			[formControlName]="question.key"
 			[id]="question.key"
 		/>
+		<input
+			*ngSwitchCase="formControlType.PASSWORD"
+			type="password"
+			[formControlName]="question.key"
+			[id]="question.key"
+		/>
 	</ng-container>
 	<div class="error-box" *ngIf="isInvalidAndDirty()">
-		<ng-container *ngFor="let error of errors">
-			<p class="error" *ngIf="error"></p>
-			//TODO: finish
+		<ng-container *ngFor="let errorKey of errorKeys">
+			<p class="error">
+				{{ question.validatorsMap.get(errorKey)?.errorDescription() }}
+			</p>
 		</ng-container>
 	</div>
 </div>

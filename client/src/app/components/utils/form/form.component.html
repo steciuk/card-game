@@ -1,1 +1,7 @@
-<div class="form" [formGroup]="formGroup"></div>
+<div class="form" [formGroup]="formGroup">
+	<app-question
+		*ngFor="let question of questions"
+		[question]="question"
+		[formGroup]="formGroup"
+	></app-question>
+</div>

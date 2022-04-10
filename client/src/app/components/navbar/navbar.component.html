@@ -9,7 +9,7 @@
 				*ngFor="let route of navRoutes; let i = index"
 				[ngClass]="{ 'nav-item--active': route === currentNavRoute }"
 			>
-				<div class="indicator"></div>
+				<div class="indicator" [ngClass]="{ 'no-animation': !selectedRoutes.has(route) }"></div>
 				<a routerLink="{{ '/' + route }}">{{ navLabels[i] }}</a>
 			</li>
 		</ul>
