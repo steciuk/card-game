@@ -16,6 +16,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 	navRoutes = [BaseRoute.LOGIN, BaseRoute.REGISTER, BaseRoute.GAMES];
 	navLabels = ['Login', 'Register', 'Games'];
 	currentNavRoute: string = BaseRoute.HOME;
+	selectedRoutes = new Set<string>();
 
 	constructor(private router: Router) {}
 
@@ -31,6 +32,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 			)
 			.subscribe((baseRoute) => {
 				this.currentNavRoute = baseRoute;
+				this.selectedRoutes.add(baseRoute);
 			});
 	}
 

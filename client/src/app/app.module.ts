@@ -20,10 +20,10 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 import { RegisterComponent } from './components/register/register.component';
 import { ButtonComponent } from './components/utils/button/button.component';
 import { FormComponent } from './components/utils/form/form.component';
+import { QuestionComponent } from './components/utils/form/questions/question.component';
 import { LogoComponent } from './components/utils/logo/logo.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { AuthService } from './services/auth.service';
-import { QuestionComponent } from './components/utils/form/questions/question/question.component';
 
 @NgModule({
 	declarations: [
@@ -42,7 +42,7 @@ import { QuestionComponent } from './components/utils/form/questions/question/qu
 		LogoComponent,
 		ButtonComponent,
 		FormComponent,
-  QuestionComponent,
+		QuestionComponent,
 	],
 	imports: [
 		BrowserModule,

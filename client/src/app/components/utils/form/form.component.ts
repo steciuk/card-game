@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 import { BaseQuestion } from './domain/baseQuestion';
 
@@ -10,10 +10,9 @@ import { BaseQuestion } from './domain/baseQuestion';
 })
 export class FormComponent implements OnInit {
 	@Input() questions!: BaseQuestion<unknown>[];
-
 	formGroup!: FormGroup;
 
-	constructor() {}
+	constructor(private readonly formBuilder: FormBuilder) {}
 
 	ngOnInit(): void {
 		const group: { [key: string]: FormControl } = {};
