@@ -1,25 +1,6 @@
 @import '~bootstrap-icons/font/bootstrap-icons.css';
-
-// fonts
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
-
-:root {
-	--white: #ffffff;
-	--lighter-gray: #f2f2f2;
-	--light-gray: #b1b1b1;
-	--gray: #808080;
-	--dark-gray: #444444;
-	--darker-gray: #222222;
-	--black: #000000;
-
-	--red: #ff0000;
-
-	--light-blue: #a7bef1;
-	--blue: #2b63db;
-	--dark-blue: rgb(10, 1, 145);
-
-	--background: var(--lighter-gray);
-}
+@import './colors.scss';
 
 *,
 *:before,

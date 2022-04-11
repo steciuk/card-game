@@ -9,9 +9,7 @@ export class MatchOtherInputValidator implements ValidatorObject {
 	constructor(otherInputKey: string) {
 		this.validateFn = (control: AbstractControl): ValidationErrors | null => {
 			const value = control.value;
-			console.log(value);
 			const otherValue = control.parent?.get(otherInputKey)?.value;
-			console.log(otherValue);
 			return value === otherValue ? null : { match: true };
 		};
 	}

@@ -1,24 +1,26 @@
 import { filter, map } from 'rxjs/operators';
 import { BaseRoute } from 'src/app/app-routing.module';
-import { SubSink } from 'subsink';
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Event, NavigationEnd, Router } from '@angular/router';
+
+import { Base } from '../base.component';
 
 @Component({
 	selector: 'app-navbar',
 	templateUrl: './navbar.component.html',
 	styleUrls: ['./navbar.component.scss'],
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NavbarComponent implements OnInit, OnDestroy {
-	private subs = new SubSink();
-
+export class NavbarComponent extends Base implements OnInit {
 	navRoutes = [BaseRoute.LOGIN, BaseRoute.REGISTER, BaseRoute.GAMES];
 	navLabels = ['Login', 'Register', 'Games'];
 	currentNavRoute: string = BaseRoute.HOME;
 	selectedRoutes = new Set<string>();
 
-	constructor(private router: Router) {}
+	constructor(private router: Router, private cdRef: ChangeDetectorRef) {
+		super();
+	}
 
 	ngOnInit(): void {
 		this.observeNavigation();
@@ -33,14 +35,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
 			.subscribe((baseRoute) => {
 				this.currentNavRoute = baseRoute;
 				this.selectedRoutes.add(baseRoute);
+				this.cdRef.detectChanges();
 			});
 	}
 
 	private isEventNavigationEnd(event: Event): event is NavigationEnd {
 		return event instanceof NavigationEnd;
-	}
-
-	ngOnDestroy(): void {
-		this.subs.unsubscribe();
 	}
 }

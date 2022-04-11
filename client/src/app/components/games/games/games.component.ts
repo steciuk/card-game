@@ -1,45 +1,42 @@
 import { GameDTO } from 'src/app/logic/DTO/gameDTO';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpService } from 'src/app/services/http.service';
-import { SubSink } from 'subsink';
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+
+import { Base } from '../../base.component';
 
 @Component({
 	selector: 'app-games',
 	templateUrl: './games.component.html',
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GamesComponent implements OnInit, OnDestroy {
-	private subs = new SubSink();
+export class GamesComponent extends Base implements OnInit, OnDestroy {
 	getUrl = '/games';
 	currentGames: GameDTO[] = [];
 
-	constructor(private http: HttpService, public authService: AuthService, private router: Router) {}
+	constructor(
+		private readonly http: HttpService,
+		public authService: AuthService,
+		private readonly router: Router,
+		private readonly cdRef: ChangeDetectorRef
+	) {
+		super();
+	}
 
 	ngOnInit(): void {
 		this.refreshGames();
 	}
 
-	private observeLoggedIn(): void {}
-
 	addNewGame(game: GameDTO): void {
 		this.router.navigateByUrl(`games/makao/${game.id}`);
 	}
 
-	ngOnDestroy(): void {
-		this.subs.unsubscribe();
-	}
-
 	refreshGames(): void {
-		this.subs.sink = this.http.get<GameDTO[]>(this.getUrl).subscribe(
-			(response) => {
-				this.currentGames = response;
-			},
-			(error) => {
-				console.log(error);
-			},
-			() => {}
-		);
+		this.subs.sink = this.http.get<GameDTO[]>(this.getUrl).subscribe((response) => {
+			this.currentGames = response;
+			this.cdRef.detectChanges();
+		});
 	}
 }

@@ -1,12 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
 	templateUrl: './login.component.html',
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
 	submitUrl = '/users/login';
-
-	constructor() {}
-
-	ngOnInit(): void {}
 }

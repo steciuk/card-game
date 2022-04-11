@@ -1,4 +1,5 @@
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
@@ -13,19 +14,39 @@ export class HttpService {
 	constructor(private http: HttpClient) {}
 
 	public get<T>(endPoint: string, options?: RequestOptions): Observable<T> {
-		return this.http.get<T>(this.baseUrl + endPoint, options);
+		return this.http.get<T>(this.baseUrl + endPoint, options).pipe(
+			catchError((err) => {
+				console.error(err);
+				return throwError(err);
+			})
+		);
 	}
 
 	public post<T>(endPoint: string, req: unknown, options?: RequestOptions): Observable<T> {
-		return this.http.post<T>(this.baseUrl + endPoint, req, options);
+		return this.http.post<T>(this.baseUrl + endPoint, req, options).pipe(
+			catchError((err) => {
+				console.error(err);
+				return throwError(err);
+			})
+		);
 	}
 
 	public put<T>(endPoint: string, req: unknown, options?: RequestOptions): Observable<T> {
-		return this.http.put<T>(this.baseUrl + endPoint, req, options);
+		return this.http.put<T>(this.baseUrl + endPoint, req, options).pipe(
+			catchError((err) => {
+				console.error(err);
+				return throwError(err);
+			})
+		);
 	}
 
 	public delete<T>(endPoint: string, options?: RequestOptions): Observable<T> {
-		return this.http.delete<T>(this.baseUrl + endPoint, options);
+		return this.http.delete<T>(this.baseUrl + endPoint, options).pipe(
+			catchError((err) => {
+				console.error(err);
+				return throwError(err);
+			})
+		);
 	}
 }
 

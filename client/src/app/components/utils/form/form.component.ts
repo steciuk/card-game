@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 import { BaseQuestion } from './domain/baseQuestion';
@@ -7,6 +7,7 @@ import { BaseQuestion } from './domain/baseQuestion';
 	selector: 'app-form',
 	templateUrl: './form.component.html',
 	styleUrls: ['./form.component.scss'],
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormComponent implements OnInit {
 	@Input() questions!: BaseQuestion<unknown>[];

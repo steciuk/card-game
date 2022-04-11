@@ -23,7 +23,6 @@ import { FormComponent } from './components/utils/form/form.component';
 import { QuestionComponent } from './components/utils/form/questions/question.component';
 import { LogoComponent } from './components/utils/logo/logo.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
-import { AuthService } from './services/auth.service';
 
 @NgModule({
 	declarations: [
@@ -52,7 +51,7 @@ import { AuthService } from './services/auth.service';
 		HttpClientModule,
 		ReactiveFormsModule,
 	],
-	providers: [AuthService, { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
+	providers: [{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
 	bootstrap: [AppComponent],
 })
 export class AppModule {}

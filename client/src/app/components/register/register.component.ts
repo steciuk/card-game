@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 import { PasswordQuestion } from '../utils/form/domain/question-types/passwordQuestion';
 import { TextQuestion } from '../utils/form/domain/question-types/textQuestion';
@@ -10,8 +10,9 @@ import { PatternValidator } from '../utils/form/infrastructure/validators/textVa
 
 @Component({
 	templateUrl: './register.component.html',
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent {
 	submitUrl = '/users/register';
 
 	questions = [
@@ -31,8 +32,4 @@ export class RegisterComponent implements OnInit {
 			new MatchOtherInputValidator('password'),
 		]),
 	];
-
-	constructor() {}
-
-	ngOnInit(): void {}
 }
