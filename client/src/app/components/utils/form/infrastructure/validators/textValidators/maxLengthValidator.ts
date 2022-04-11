@@ -1,9 +1,9 @@
 import { ValidatorFn, Validators } from '@angular/forms';
 
-import { TextValidatorObject } from '../validatorInterfaces';
+import { TextValidatorObject, ValidatorKey } from '../validatorInterfaces';
 
 export class MaxLengthValidator implements TextValidatorObject {
-	key = 'maxlength';
+	key = ValidatorKey.MAX_LENGTH;
 	validateFn: ValidatorFn;
 
 	constructor(private maxLength: number) {

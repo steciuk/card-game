@@ -1,10 +1,22 @@
+/* eslint-disable @typescript-eslint/no-empty-interface */
 import { ValidatorFn } from '@angular/forms';
 
+export enum ValidatorKey {
+	REQUIRED = 'required',
+	MIN = 'min',
+	MAX = 'max',
+	MIN_LENGTH = 'minlength',
+	MAX_LENGTH = 'maxlength',
+	PATTERN = 'pattern',
+	MATCH = 'match',
+}
+
 export interface ValidatorObject {
-	key: string;
+	key: ValidatorKey;
 	validateFn: ValidatorFn;
 	errorDescription: () => string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface TextValidatorObject extends ValidatorObject {}
+
+export interface NumberValidatorObject extends ValidatorObject {}

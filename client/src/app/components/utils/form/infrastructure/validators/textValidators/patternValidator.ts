@@ -1,9 +1,9 @@
 import { ValidatorFn, Validators } from '@angular/forms';
 
-import { TextValidatorObject } from '../validatorInterfaces';
+import { TextValidatorObject, ValidatorKey } from '../validatorInterfaces';
 
 export class PatternValidator implements TextValidatorObject {
-	key = 'pattern';
+	key = ValidatorKey.PATTERN;
 	validateFn: ValidatorFn;
 	description: string;
 
