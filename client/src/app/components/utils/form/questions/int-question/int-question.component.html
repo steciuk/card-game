@@ -1,0 +1,13 @@
+<div class="int-question-wrapper">
+	<i
+		class="bi bi-dash-square-fill"
+		[ngClass]="{ disabled: !decrementEnabled }"
+		(click)="decrementEnabled ? decrement() : ''"
+	></i>
+	<div class="value">{{ value }}</div>
+	<i
+		class="bi bi-plus-square-fill"
+		[ngClass]="{ disabled: !incrementEnabled }"
+		(click)="incrementEnabled ? increment() : ''"
+	></i>
+</div>

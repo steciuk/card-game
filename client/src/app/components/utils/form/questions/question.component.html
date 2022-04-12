@@ -14,6 +14,18 @@
 			[formControlName]="question.key"
 			[id]="question.key"
 		/>
+		<input
+			*ngSwitchCase="formControlType.NUMBER"
+			type="number"
+			[formControlName]="question.key"
+			[id]="question.key"
+		/>
+		<app-int-question
+			*ngSwitchCase="formControlType.INTEGER"
+			[formControlName]="question.key"
+			[id]="question.key"
+			[question]="question"
+		></app-int-question>
 	</ng-container>
 	<div class="error-box" *ngIf="isInvalidAndDirty()">
 		<ng-container *ngFor="let errorKey of errorKeys">

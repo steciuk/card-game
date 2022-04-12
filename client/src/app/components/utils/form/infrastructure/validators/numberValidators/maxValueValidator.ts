@@ -7,7 +7,7 @@ export class MaxValueValidator implements NumberValidatorObject {
 	validateFn: ValidatorFn;
 
 	constructor(private max: number) {
-		this.validateFn = Validators.min(max);
+		this.validateFn = Validators.max(max);
 	}
 
 	errorDescription(): string {

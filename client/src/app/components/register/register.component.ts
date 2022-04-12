@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
+import { IntegerQuestion } from '../utils/form/domain/question-types/integerQuestion';
 import { PasswordQuestion } from '../utils/form/domain/question-types/passwordQuestion';
 import { TextQuestion } from '../utils/form/domain/question-types/textQuestion';
 import { RequiredValidator } from '../utils/form/infrastructure/validators/requiredValidator';
@@ -31,5 +32,6 @@ export class RegisterComponent {
 		new PasswordQuestion('confirmPassword', 'Confirm Password', [
 			new MatchOtherInputValidator('password'),
 		]),
+		new IntegerQuestion('numPlayers', 'Number of Players', 2, 8),
 	];
 }

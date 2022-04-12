@@ -30,4 +30,5 @@ export enum FormControlType {
 	CHECKBOX = 'checkbox',
 	RADIO = 'radio',
 	NUMBER = 'number',
+	INTEGER = 'integer',
 }

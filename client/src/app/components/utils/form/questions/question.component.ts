@@ -1,7 +1,13 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	Input,
+	OnInit
+} from '@angular/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
 
 import { BaseQuestion, FormControlType } from '../domain/baseQuestion';
+import { IntegerQuestion } from '../domain/question-types/integerQuestion';
 
 @Component({
 	selector: 'app-question',
@@ -13,6 +19,7 @@ export class QuestionComponent implements OnInit {
 	formControlType = FormControlType;
 
 	@Input() question!: BaseQuestion<unknown>;
+
 	@Input() formGroup!: FormGroup;
 
 	formControl!: AbstractControl;
@@ -27,5 +34,9 @@ export class QuestionComponent implements OnInit {
 
 	get errorKeys(): string[] {
 		return this.formControl.errors ? Object.keys(this.formControl.errors) : [];
+	}
+
+	isInt(candidate: BaseQuestion<unknown>): candidate is IntegerQuestion {
+		return candidate instanceof IntegerQuestion;
 	}
 }

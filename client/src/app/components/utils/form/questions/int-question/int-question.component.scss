@@ -1,0 +1,18 @@
+.int-question-wrapper {
+	user-select: none;
+
+	.value {
+		display: inline-block;
+		width: 3ch;
+		text-align: center;
+	}
+
+	i {
+		color: var(--primary);
+		font-size: 1.2rem;
+
+		&.disabled {
+			color: var(--gray);
+		}
+	}
+}
