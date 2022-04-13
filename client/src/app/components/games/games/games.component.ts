@@ -2,17 +2,23 @@ import { GameDTO } from 'src/app/logic/DTO/gameDTO';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpService } from 'src/app/services/http.service';
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	ChangeDetectorRef,
+	Component,
+	OnDestroy,
+	OnInit
+} from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Base } from '../../base.component';
+import { BaseComponent } from '../../base.component';
 
 @Component({
 	selector: 'app-games',
 	templateUrl: './games.component.html',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GamesComponent extends Base implements OnInit, OnDestroy {
+export class GamesComponent extends BaseComponent implements OnInit, OnDestroy {
 	getUrl = '/games';
 	currentGames: GameDTO[] = [];
 

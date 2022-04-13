@@ -24,6 +24,7 @@ import { QuestionComponent } from './components/utils/form/questions/question.co
 import { LogoComponent } from './components/utils/logo/logo.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { IntQuestionComponent } from './components/utils/form/questions/int-question/int-question.component';
+import { SelectQuestionComponent } from './components/utils/form/questions/select-question/select-question.component';
 
 @NgModule({
 	declarations: [
@@ -44,6 +45,7 @@ import { IntQuestionComponent } from './components/utils/form/questions/int-ques
 		FormComponent,
 		QuestionComponent,
   IntQuestionComponent,
+  SelectQuestionComponent,
 	],
 	imports: [
 		BrowserModule,

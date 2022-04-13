@@ -6,11 +6,17 @@ import { BUILD_IN_SOCKET_GAME_EVENTS } from 'src/app/logic/games/socketEvents/so
 import { HttpService } from 'src/app/services/http.service';
 import { SocketService } from 'src/app/services/socket.service';
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	ChangeDetectorRef,
+	Component,
+	OnDestroy,
+	OnInit
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
-import { Base } from '../../base.component';
+import { BaseComponent } from '../../base.component';
 
 @Component({
 	selector: 'app-makao',
@@ -18,7 +24,7 @@ import { Base } from '../../base.component';
 	styleUrls: ['./game-screen.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GameScreenComponent extends Base implements OnInit, OnDestroy {
+export class GameScreenComponent extends BaseComponent implements OnInit, OnDestroy {
 	phaserConfig = PHASER_CONFIG;
 
 	phaser = Phaser;

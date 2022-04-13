@@ -6,7 +6,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 	template: '',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export abstract class Base implements OnDestroy {
+export abstract class BaseComponent implements OnDestroy {
 	protected subs = new SubSink();
 
 	ngOnDestroy(): REQUIRED_SUPER {

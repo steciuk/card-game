@@ -1,10 +1,15 @@
 import { filter, map } from 'rxjs/operators';
 import { BaseRoute } from 'src/app/app-routing.module';
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	ChangeDetectorRef,
+	Component,
+	OnInit
+} from '@angular/core';
 import { Event, NavigationEnd, Router } from '@angular/router';
 
-import { Base } from '../base.component';
+import { BaseComponent } from '../base.component';
 
 @Component({
 	selector: 'app-navbar',
@@ -12,7 +17,7 @@ import { Base } from '../base.component';
 	styleUrls: ['./navbar.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NavbarComponent extends Base implements OnInit {
+export class NavbarComponent extends BaseComponent implements OnInit {
 	navRoutes = [BaseRoute.LOGIN, BaseRoute.REGISTER, BaseRoute.GAMES];
 	navLabels = ['Login', 'Register', 'Games'];
 	currentNavRoute: string = BaseRoute.HOME;

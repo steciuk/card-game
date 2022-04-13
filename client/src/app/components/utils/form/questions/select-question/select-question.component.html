@@ -1,0 +1,5 @@
+<div class="select-question-wrapper" [formGroup]="formGroup">
+	<select [id]="_question.key" [formControlName]="_question.key">
+		<option *ngFor="let option of _question.options" [value]="option.value">{{ option.label }}</option>
+	</select>
+</div>

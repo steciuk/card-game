@@ -26,6 +26,11 @@
 			[id]="question.key"
 			[question]="question"
 		></app-int-question>
+		<app-select-question
+			*ngSwitchCase="formControlType.DROPDOWN"
+			[formGroup]="formGroup"
+			[question]="question"
+		></app-select-question>
 	</ng-container>
 	<div class="error-box" *ngIf="isInvalidAndDirty()">
 		<ng-container *ngFor="let errorKey of errorKeys">

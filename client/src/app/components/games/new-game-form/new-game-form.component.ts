@@ -3,10 +3,17 @@ import { GameTypes } from 'src/app/logic/games/scenes/gamesSetup';
 import { HttpService } from 'src/app/services/http.service';
 import { enumToArray } from 'src/app/utils';
 
-import { ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	EventEmitter,
+	OnDestroy,
+	OnInit,
+	Output
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
 
-import { Base } from '../../base.component';
+import { BaseComponent } from '../../base.component';
 
 @Component({
 	selector: 'app-new-game-form',
@@ -14,7 +21,7 @@ import { Base } from '../../base.component';
 	styleUrls: ['./new-game-form.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NewGameFormComponent extends Base implements OnInit, OnDestroy {
+export class NewGameFormComponent extends BaseComponent implements OnInit, OnDestroy {
 	private submitUrl = '/games';
 	gameTypes!: string[];
 	isPasswordProtectedModel = false;
