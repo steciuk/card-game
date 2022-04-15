@@ -1,11 +1,10 @@
 import { io, Socket } from 'socket.io-client';
+import { NotLoggedInError } from 'src/app/errors/notLoggedInError';
+import { GameTypes } from 'src/app/logic/games/scenes/gamesSetup';
+import { SOCKET_EVENTS } from 'src/app/logic/games/socketEvents/socketEvents';
 import { environment } from 'src/environments/environment';
 
 import { Injectable } from '@angular/core';
-
-import { NotLoggedInError } from '../errors/notLoggedInError';
-import { GameTypes } from '../logic/games/scenes/gamesSetup';
-import { SOCKET_EVENTS } from '../logic/games/socketEvents/socketEvents';
 
 @Injectable({
 	providedIn: 'root',

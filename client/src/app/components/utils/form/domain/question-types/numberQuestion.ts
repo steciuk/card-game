@@ -1,5 +1,8 @@
-import { NumberValidatorObject } from '../../infrastructure/validators/validatorInterfaces';
-import { BaseQuestion, FormControlType } from '../baseQuestion';
+import {
+	BaseQuestion,
+	FormControlType
+} from 'src/app/components/utils/form/domain/baseQuestion';
+import { NumberValidatorObject } from 'src/app/components/utils/form/infrastructure/validators/validatorInterfaces';
 
 export class NumberQuestion extends BaseQuestion<number> {
 	controlType = FormControlType.NUMBER;

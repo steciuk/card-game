@@ -1,3 +1,4 @@
+import { BaseComponent } from 'src/app/components/base.component';
 import { GameDTO } from 'src/app/logic/DTO/gameDTO';
 import { GameTypes } from 'src/app/logic/games/scenes/gamesSetup';
 import { HttpService } from 'src/app/services/http.service';
@@ -12,8 +13,6 @@ import {
 	Output
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
-
-import { BaseComponent } from '../../base.component';
 
 @Component({
 	selector: 'app-new-game-form',

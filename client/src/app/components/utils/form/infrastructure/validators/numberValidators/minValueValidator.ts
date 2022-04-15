@@ -1,6 +1,9 @@
-import { ValidatorFn, Validators } from '@angular/forms';
+import {
+	NumberValidatorObject,
+	ValidatorKey
+} from 'src/app/components/utils/form/infrastructure/validators/validatorInterfaces';
 
-import { NumberValidatorObject, ValidatorKey } from '../validatorInterfaces';
+import { ValidatorFn, Validators } from '@angular/forms';
 
 export class MinValueValidator implements NumberValidatorObject {
 	key = ValidatorKey.MIN;

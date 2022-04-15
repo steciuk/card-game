@@ -1,8 +1,8 @@
+import { BaseQuestion } from 'src/app/components/utils/form/domain/baseQuestion';
+import { SelectQuestion } from 'src/app/components/utils/form/domain/question-types/selectQuestion';
+
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-
-import { BaseQuestion } from '../../domain/baseQuestion';
-import { SelectQuestion } from '../../domain/question-types/selectQuestion';
 
 @Component({
 	selector: 'app-select-question',

@@ -1,4 +1,7 @@
-import { BaseQuestion, FormControlType } from '../baseQuestion';
+import {
+	BaseQuestion,
+	FormControlType
+} from 'src/app/components/utils/form/domain/baseQuestion';
 
 export class IntegerQuestion extends BaseQuestion<number> {
 	controlType = FormControlType.INTEGER;

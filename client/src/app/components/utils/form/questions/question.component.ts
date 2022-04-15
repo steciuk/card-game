@@ -1,13 +1,16 @@
 import {
+	BaseQuestion,
+	FormControlType
+} from 'src/app/components/utils/form/domain/baseQuestion';
+import { IntegerQuestion } from 'src/app/components/utils/form/domain/question-types/integerQuestion';
+
+import {
 	ChangeDetectionStrategy,
 	Component,
 	Input,
 	OnInit
 } from '@angular/core';
 import { AbstractControl, FormGroup } from '@angular/forms';
-
-import { BaseQuestion, FormControlType } from '../domain/baseQuestion';
-import { IntegerQuestion } from '../domain/question-types/integerQuestion';
 
 @Component({
 	selector: 'app-question',

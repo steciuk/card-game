@@ -1,5 +1,8 @@
-import { TextValidatorObject } from '../../infrastructure/validators/validatorInterfaces';
-import { BaseQuestion, FormControlType } from '../baseQuestion';
+import {
+	BaseQuestion,
+	FormControlType
+} from 'src/app/components/utils/form/domain/baseQuestion';
+import { TextValidatorObject } from 'src/app/components/utils/form/infrastructure/validators/validatorInterfaces';
 
 export class TextQuestion extends BaseQuestion<string> {
 	controlType = FormControlType.TEXT;

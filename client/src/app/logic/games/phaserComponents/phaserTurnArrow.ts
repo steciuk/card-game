@@ -1,4 +1,4 @@
-import { BaseScene } from '../scenes/baseScene';
+import { BaseScene } from 'src/app/logic/games/scenes/baseScene';
 
 export class PhaserTurnArrow {
 	private container: Phaser.GameObjects.Container;

@@ -1,5 +1,6 @@
 import { filter, map } from 'rxjs/operators';
 import { BaseRoute } from 'src/app/app-routing.module';
+import { BaseComponent } from 'src/app/components/base.component';
 
 import {
 	ChangeDetectionStrategy,
@@ -8,8 +9,6 @@ import {
 	OnInit
 } from '@angular/core';
 import { Event, NavigationEnd, Router } from '@angular/router';
-
-import { BaseComponent } from '../base.component';
 
 @Component({
 	selector: 'app-navbar',

@@ -1,5 +1,5 @@
-import { BaseScene } from '../scenes/baseScene';
-import { PhaserCard } from './phaserCard';
+import { PhaserCard } from 'src/app/logic/games/phaserComponents/phaserCard';
+import { BaseScene } from 'src/app/logic/games/scenes/baseScene';
 
 export class PhaserDeck {
 	protected cardsContainer: Phaser.GameObjects.Container;

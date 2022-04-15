@@ -1,8 +1,7 @@
+import { HEX_COLORS_STRING } from 'src/app/logic/games/phaserComponents/HexColors';
+import { BaseScene } from 'src/app/logic/games/scenes/baseScene';
+import { SCENE_KEYS } from 'src/app/logic/games/scenes/gamesSetup';
 import { SocketService } from 'src/app/services/socket.service';
-
-import { HEX_COLORS_STRING } from '../../phaserComponents/HexColors';
-import { BaseScene } from '../baseScene';
-import { SCENE_KEYS } from '../gamesSetup';
 
 export class EndScene extends BaseScene {
 	constructor(socketService: SocketService) {

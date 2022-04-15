@@ -1,10 +1,9 @@
 import { BehaviorSubject, Observable } from 'rxjs';
+import { BaseRoute } from 'src/app/app-routing.module';
+import { LoginDTO, ParsedJwtPayload } from 'src/app/logic/DTO/loginDTO';
 
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-
-import { BaseRoute } from '../app-routing.module';
-import { LoginDTO, ParsedJwtPayload } from '../logic/DTO/loginDTO';
 
 @Injectable({
 	providedIn: 'root',

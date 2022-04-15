@@ -1,5 +1,5 @@
-import { GameTypes } from '../games/scenes/gamesSetup';
-import { UserDTO } from './userDTO';
+import { UserDTO } from 'src/app/logic/DTO/userDTO';
+import { GameTypes } from 'src/app/logic/games/scenes/gamesSetup';
 
 export type GameDTO = {
 	gameType: GameTypes;

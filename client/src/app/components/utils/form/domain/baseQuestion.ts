@@ -1,6 +1,6 @@
-import { FormControl } from '@angular/forms';
+import { ValidatorObject } from 'src/app/components/utils/form/infrastructure/validators/validatorInterfaces';
 
-import { ValidatorObject } from '../infrastructure/validators/validatorInterfaces';
+import { FormControl } from '@angular/forms';
 
 export abstract class BaseQuestion<T> {
 	abstract controlType: FormControlType;

@@ -1,17 +1,16 @@
+import { HEX_COLORS_STRING } from 'src/app/logic/games/phaserComponents/HexColors';
+import { PhaserButton } from 'src/app/logic/games/phaserComponents/phaserButton';
+import { PhaserCard } from 'src/app/logic/games/phaserComponents/phaserCard';
+import { PhaserClickableDeck } from 'src/app/logic/games/phaserComponents/phaserClickableDeck';
+import { PhaserDeck } from 'src/app/logic/games/phaserComponents/phaserDeck';
+import { PhaserDropZone } from 'src/app/logic/games/phaserComponents/phaserDropZone';
+import { PhaserInfoZone } from 'src/app/logic/games/phaserComponents/phaserInfoZone';
+import { PhaserPlayableDeck } from 'src/app/logic/games/phaserComponents/phaserPlayableDeck';
+import { PhaserTurnArrow } from 'src/app/logic/games/phaserComponents/phaserTurnArrow';
+import { BaseScene } from 'src/app/logic/games/scenes/baseScene';
+import { SCENE_KEYS } from 'src/app/logic/games/scenes/gamesSetup';
+import { SOCKET_GAME_EVENTS } from 'src/app/logic/games/socketEvents/socketEvents';
 import { SocketService } from 'src/app/services/socket.service';
-
-import { HEX_COLORS_STRING } from '../../phaserComponents/HexColors';
-import { PhaserButton } from '../../phaserComponents/phaserButton';
-import { PhaserCard } from '../../phaserComponents/phaserCard';
-import { PhaserClickableDeck } from '../../phaserComponents/phaserClickableDeck';
-import { PhaserDeck } from '../../phaserComponents/phaserDeck';
-import { PhaserDropZone } from '../../phaserComponents/phaserDropZone';
-import { PhaserInfoZone } from '../../phaserComponents/phaserInfoZone';
-import { PhaserPlayableDeck } from '../../phaserComponents/phaserPlayableDeck';
-import { PhaserTurnArrow } from '../../phaserComponents/phaserTurnArrow';
-import { SOCKET_GAME_EVENTS } from '../../socketEvents/socketEvents';
-import { BaseScene } from '../baseScene';
-import { SCENE_KEYS } from '../gamesSetup';
 
 const SCENE_CONFIG = {
 	N_GON_RADIUS_PART_OF_GAME_SCREEN: 0.8,

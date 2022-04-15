@@ -1,10 +1,9 @@
+import { HEX_COLORS_STRING } from 'src/app/logic/games/phaserComponents/HexColors';
+import { PhaserButton } from 'src/app/logic/games/phaserComponents/phaserButton';
+import { BaseScene } from 'src/app/logic/games/scenes/baseScene';
+import { SCENE_KEYS } from 'src/app/logic/games/scenes/gamesSetup';
+import { SOCKET_GAME_EVENTS } from 'src/app/logic/games/socketEvents/socketEvents';
 import { SocketService } from 'src/app/services/socket.service';
-
-import { HEX_COLORS_STRING } from '../../phaserComponents/HexColors';
-import { PhaserButton } from '../../phaserComponents/phaserButton';
-import { SOCKET_GAME_EVENTS } from '../../socketEvents/socketEvents';
-import { BaseScene } from '../baseScene';
-import { SCENE_KEYS } from '../gamesSetup';
 
 export class LobbyScene extends BaseScene {
 	playersInLobby = new Map<string, LobbyPlayerDTO>();

@@ -1,3 +1,6 @@
+import { BaseQuestion } from 'src/app/components/utils/form/domain/baseQuestion';
+import { IntegerQuestion } from 'src/app/components/utils/form/domain/question-types/integerQuestion';
+
 import {
 	ChangeDetectionStrategy,
 	ChangeDetectorRef,
@@ -6,9 +9,6 @@ import {
 	OnInit
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-
-import { BaseQuestion } from '../../domain/baseQuestion';
-import { IntegerQuestion } from '../../domain/question-types/integerQuestion';
 
 @Component({
 	selector: 'app-int-question',

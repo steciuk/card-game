@@ -1,6 +1,9 @@
-import { ValidatorFn, Validators } from '@angular/forms';
+import {
+	TextValidatorObject,
+	ValidatorKey
+} from 'src/app/components/utils/form/infrastructure/validators/validatorInterfaces';
 
-import { TextValidatorObject, ValidatorKey } from '../validatorInterfaces';
+import { ValidatorFn, Validators } from '@angular/forms';
 
 export class MinLengthValidator implements TextValidatorObject {
 	key = ValidatorKey.MIN_LENGTH;

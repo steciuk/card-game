@@ -1,20 +1,19 @@
 import { BaseRoute } from 'src/app/app-routing.module';
+import { BaseComponent } from 'src/app/components/base.component';
+import { PasswordQuestion } from 'src/app/components/utils/form/domain/question-types/passwordQuestion';
+import { TextQuestion } from 'src/app/components/utils/form/domain/question-types/textQuestion';
+import { FormConfig } from 'src/app/components/utils/form/form.component';
+import { RequiredValidator } from 'src/app/components/utils/form/infrastructure/validators/requiredValidator';
+import { MatchOtherInputValidator } from 'src/app/components/utils/form/infrastructure/validators/textValidators/matchOtherInput';
+import { MaxLengthValidator } from 'src/app/components/utils/form/infrastructure/validators/textValidators/maxLengthValidator';
+import { MinLengthValidator } from 'src/app/components/utils/form/infrastructure/validators/textValidators/minLengthValidator';
+import { PatternValidator } from 'src/app/components/utils/form/infrastructure/validators/textValidators/patternValidator';
 import { LoginDTO } from 'src/app/logic/DTO/loginDTO';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpService } from 'src/app/services/http.service';
 
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Router } from '@angular/router';
-
-import { BaseComponent } from '../base.component';
-import { PasswordQuestion } from '../utils/form/domain/question-types/passwordQuestion';
-import { TextQuestion } from '../utils/form/domain/question-types/textQuestion';
-import { FormConfig } from '../utils/form/form.component';
-import { RequiredValidator } from '../utils/form/infrastructure/validators/requiredValidator';
-import { MatchOtherInputValidator } from '../utils/form/infrastructure/validators/textValidators/matchOtherInput';
-import { MaxLengthValidator } from '../utils/form/infrastructure/validators/textValidators/maxLengthValidator';
-import { MinLengthValidator } from '../utils/form/infrastructure/validators/textValidators/minLengthValidator';
-import { PatternValidator } from '../utils/form/infrastructure/validators/textValidators/patternValidator';
 
 @Component({
 	templateUrl: './register.component.html',

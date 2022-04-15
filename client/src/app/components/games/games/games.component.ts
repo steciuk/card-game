@@ -1,3 +1,4 @@
+import { BaseComponent } from 'src/app/components/base.component';
 import { GameDTO } from 'src/app/logic/DTO/gameDTO';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpService } from 'src/app/services/http.service';
@@ -10,8 +11,6 @@ import {
 	OnInit
 } from '@angular/core';
 import { Router } from '@angular/router';
-
-import { BaseComponent } from '../../base.component';
 
 @Component({
 	selector: 'app-games',

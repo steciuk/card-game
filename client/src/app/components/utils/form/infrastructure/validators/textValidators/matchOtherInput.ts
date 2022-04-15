@@ -1,6 +1,9 @@
-import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import {
+	ValidatorKey,
+	ValidatorObject
+} from 'src/app/components/utils/form/infrastructure/validators/validatorInterfaces';
 
-import { ValidatorKey, ValidatorObject } from '../validatorInterfaces';
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 export class MatchOtherInputValidator implements ValidatorObject {
 	key = ValidatorKey.MATCH;

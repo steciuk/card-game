@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { BaseComponent } from 'src/app/components/base.component';
 import { GameDTO } from 'src/app/logic/DTO/gameDTO';
 import { PHASER_CONFIG } from 'src/app/logic/games/phaserConfig';
 import { GAME_CONFIG, GameSetup } from 'src/app/logic/games/scenes/gamesSetup';
@@ -15,8 +16,6 @@ import {
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-
-import { BaseComponent } from '../../base.component';
 
 @Component({
 	selector: 'app-makao',

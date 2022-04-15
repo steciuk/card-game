@@ -1,6 +1,6 @@
-import { BaseScene } from '../scenes/baseScene';
-import { PhaserCard } from './phaserCard';
-import { PhaserDeck } from './phaserDeck';
+import { PhaserCard } from 'src/app/logic/games/phaserComponents/phaserCard';
+import { PhaserDeck } from 'src/app/logic/games/phaserComponents/phaserDeck';
+import { BaseScene } from 'src/app/logic/games/scenes/baseScene';
 
 export class PhaserPlayableDeck extends PhaserDeck {
 	events = new Map<string, CardEventCallback>();

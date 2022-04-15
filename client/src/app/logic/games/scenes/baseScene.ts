@@ -1,7 +1,6 @@
+import { SCENE_KEYS } from 'src/app/logic/games/scenes/gamesSetup';
+import { SOCKET_GAME_EVENTS } from 'src/app/logic/games/socketEvents/socketEvents';
 import { SocketService } from 'src/app/services/socket.service';
-
-import { SOCKET_GAME_EVENTS } from '../socketEvents/socketEvents';
-import { SCENE_KEYS } from './gamesSetup';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyCallback = (...args: any[]) => void;
