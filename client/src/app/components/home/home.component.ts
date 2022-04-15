@@ -1,4 +1,5 @@
 import { BaseRoute } from 'src/app/app-routing.module';
+import { AuthService } from 'src/app/services/auth.service';
 
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Router } from '@angular/router';
@@ -9,7 +10,7 @@ import { Router } from '@angular/router';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent {
-	constructor(private readonly router: Router) {}
+	constructor(private readonly router: Router, private readonly: AuthService) {}
 
 	redirectToGames(): void {
 		this.router.navigateByUrl(`/${BaseRoute.GAMES}`);

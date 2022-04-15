@@ -19,7 +19,7 @@ import { BaseComponent } from '../base.component';
 })
 export class NavbarComponent extends BaseComponent implements OnInit {
 	navRoutes = [BaseRoute.LOGIN, BaseRoute.REGISTER, BaseRoute.GAMES];
-	navLabels = ['Login', 'Register', 'Games'];
+	navLabels = ['Log in', 'Register', 'Games'];
 	currentNavRoute: string = BaseRoute.HOME;
 	selectedRoutes = new Set<string>();
 

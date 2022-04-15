@@ -18,6 +18,7 @@ import { PatternValidator } from '../utils/form/infrastructure/validators/textVa
 
 @Component({
 	templateUrl: './register.component.html',
+	styleUrls: ['./register.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterComponent extends BaseComponent {
@@ -62,8 +63,7 @@ export class RegisterComponent extends BaseComponent {
 				(error) => {
 					if (error.status === 409) console.error('Username taken');
 					console.log(error);
-				},
-				() => {}
+				}
 			);
 	}
 }

@@ -1,7 +1,7 @@
 <div class="question" [formGroup]="formGroup">
-	<label [attr.for]="question.key">{{ question.label }}</label>
+	<label class="label" [attr.for]="question.key">{{ question.label }}</label>
 
-	<ng-container [ngSwitch]="question.controlType">
+	<div class="input-container" [ngSwitch]="question.controlType">
 		<input
 			*ngSwitchCase="formControlType.TEXT"
 			type="text"
@@ -31,7 +31,7 @@
 			[formGroup]="formGroup"
 			[question]="question"
 		></app-select-question>
-	</ng-container>
+	</div>
 	<div class="error-box" *ngIf="isInvalidAndDirty()">
 		<ng-container *ngFor="let errorKey of errorKeys">
 			<p class="error">
