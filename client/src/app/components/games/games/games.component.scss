@@ -1,0 +1,38 @@
+.games-component {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	.buttons {
+		.btn {
+			display: inline-block;
+			margin: 1rem;
+		}
+	}
+
+	.games-container {
+		width: 100%;
+		padding: 1rem;
+
+		.table-header {
+			display: flex;
+			justify-content: space-around;
+			font-weight: bold;
+			text-transform: uppercase;
+			padding: 0.5rem;
+
+			div {
+				flex: 1;
+			}
+		}
+
+		.card {
+			display: block;
+			background: var(--desert-sand);
+
+			&:nth-child(2n) {
+				background: var(--lighter-desert-sand);
+			}
+		}
+	}
+}

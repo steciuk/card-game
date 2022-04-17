@@ -1,10 +1,15 @@
 <div class="games-component">
 	<div class="buttons">
-		<app-button [text]="'New room'" (btnClick)="onCreateGame()"></app-button>
-		<app-button [text]="'Refresh games'" (btnClick)="refreshGames()"></app-button>
+		<app-button class="btn" [text]="'New room'" (btnClick)="onCreateGame()"></app-button>
+		<app-button class="btn" [text]="'Refresh games'" (btnClick)="refreshGames()"></app-button>
 	</div>
-	<div>
-		<app-game-card class="btn btn-default" *ngFor="let game of currentGames" [game]="game">
-		</app-game-card>
+	<div class="games-container">
+		<div class="table-header">
+			<div class="name">Room name</div>
+			<div class="onwer">Owner</div>
+			<div class="type">Game type</div>
+			<div class="players">Players</div>
+		</div>
+		<app-game-card class="card" *ngFor="let game of currentGames" [game]="game"> </app-game-card>
 	</div>
 </div>

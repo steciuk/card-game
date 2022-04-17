@@ -1,9 +1,9 @@
-<button class="btn btn-default" (click)="connect()">
+<div class="card" (click)="connect()">
 	<div>
 		{{ game.roomName }}
 		<i *ngIf="game.isPasswordProtected" class="bi bi-lock-fill"></i>
 	</div>
-	<p>Created by: {{ game.owner.username }}</p>
-	<p>{{ game.gameType }}</p>
-	<p>Players: {{ game.numPlayersInGame }}/{{ game.maxPlayers }}</p>
-</button>
+	<div>{{ game.owner.username }}</div>
+	<div>{{ game.gameType }}</div>
+	<div>{{ game.numPlayersInGame }}/{{ game.maxPlayers }}</div>
+</div>

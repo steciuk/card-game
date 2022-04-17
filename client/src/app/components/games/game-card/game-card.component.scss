@@ -1,0 +1,15 @@
+.card {
+	display: flex;
+	justify-content: space-around;
+	padding: 0.5rem;
+	cursor: pointer;
+	transition: all 0.3s ease;
+
+	&:hover {
+		background: var(--artichoke);
+	}
+
+	div {
+		flex: 1;
+	}
+}

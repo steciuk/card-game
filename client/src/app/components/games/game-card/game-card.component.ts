@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 @Component({
 	selector: 'app-game-card',
 	templateUrl: './game-card.component.html',
+	styleUrls: ['./game-card.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GameCardComponent {
