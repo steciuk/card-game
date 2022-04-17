@@ -74,12 +74,12 @@ section {
 	height: 100%;
 	display: flex;
 	justify-content: center;
-	align-items: center;
 	z-index: -1;
 
 	.suite {
 		position: absolute;
-		display: block;
+		display: fixed;
+		top: 250px;
 		width: 200px;
 		filter: drop-shadow(
 			calc((var(--positionX) -5.5) * 1px) calc((var(--positionY) -5.5) * 1px) 8px var(--darker-gray)

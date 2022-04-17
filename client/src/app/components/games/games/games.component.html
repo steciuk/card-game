@@ -1,16 +1,10 @@
-<div *ngIf="authService.getLoggedUsername$() | async; else notLoggedIn">
-	<app-new-game-form (addNewGame)="addNewGame($event)"></app-new-game-form>
-	<hr />
-	<button type="button" class="btn" (click)="refreshGames()">
-		<i class="bi bi-arrow-clockwise"></i>Refresh
-	</button>
+<div class="games-component">
+	<div class="buttons">
+		<app-button [text]="'New room'" (btnClick)="onCreateGame()"></app-button>
+		<app-button [text]="'Refresh games'" (btnClick)="refreshGames()"></app-button>
+	</div>
 	<div>
 		<app-game-card class="btn btn-default" *ngFor="let game of currentGames" [game]="game">
 		</app-game-card>
 	</div>
 </div>
-
-<!-- TODO: use variable in component so method is not called twice -->
-<ng-template #notLoggedIn>
-	<h3>You are not logged in!</h3>
-</ng-template>

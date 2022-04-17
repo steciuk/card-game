@@ -10,6 +10,7 @@
 	i {
 		color: var(--primary);
 		font-size: 1.2rem;
+		cursor: pointer;
 
 		&.disabled {
 			color: var(--gray);

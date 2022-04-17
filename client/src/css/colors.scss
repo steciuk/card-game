@@ -13,8 +13,16 @@
 
 	--light-blue: #a7bef1;
 	--blue: #2b63db;
-	--dark-blue: rgb(10, 1, 145);
+	--dark-blue: #0a0191;
+
+	--antique-brass: #cb997eff;
+	--desert-sand: #ddbea9ff;
+	--champagne-pink: #ffe8d6ff;
+	--ash-gray: #b7b7a4ff;
+	--artichoke: #a5a58dff;
+	--ebony: #6b705cff;
 
 	--primary: var(--blue);
-	--background: var(--lighter-gray);
+	--accent: var(--desert-sand);
+	--background: var(--champagne-pink);
 }

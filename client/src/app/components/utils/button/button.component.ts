@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	EventEmitter,
+	Input,
+	Output
+} from '@angular/core';
 
 @Component({
 	selector: 'app-button',
@@ -9,7 +15,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 export class ButtonComponent {
 	@Input() text = '';
 	@Input() color = '0068B4';
-	@Input() type = 'button';
+	@Input() type: ButtonType = 'button';
 	@Output() btnClick = new EventEmitter();
 	@Input() isDisabled = false;
 
@@ -17,3 +23,5 @@ export class ButtonComponent {
 		this.btnClick.emit();
 	}
 }
+
+export type ButtonType = 'button' | 'reset' | 'submit';

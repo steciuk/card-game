@@ -1,3 +1,6 @@
+import { NewGameComponent } from 'src/app/components/games/new-game/new-game.component';
+import { AuthGuardService } from 'src/app/services/auth-guard.service';
+
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
@@ -20,7 +23,8 @@ const routes: Routes = [
 	{ path: BaseRoute.LOGIN, component: LoginComponent },
 	{ path: BaseRoute.REGISTER, component: RegisterComponent },
 	// TODO: implement as child routes
-	{ path: BaseRoute.GAMES, component: GamesComponent },
+	{ path: BaseRoute.GAMES, component: GamesComponent, canActivate: [AuthGuardService] },
+	{ path: 'games/new', component: NewGameComponent, canActivate: [AuthGuardService] },
 	{ path: 'games/makao/:id', component: GameScreenComponent },
 	{ path: '404', component: NotFoundComponent },
 	{ path: '**', redirectTo: '/404' },
