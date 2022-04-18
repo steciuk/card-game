@@ -24,7 +24,7 @@ export class AuthService {
 		const isTokenValid = !!expiresOn && !!token && !!username && Date.now() <= parseInt(expiresOn);
 		if (isTokenValid) {
 			this.loggedUser$.next(username);
-		} else this.logout();
+		} else this.logout(false);
 	}
 
 	//TODO: validate response from server: ResponseWithJWT
@@ -39,13 +39,13 @@ export class AuthService {
 		this.loggedUser$.next(username);
 	}
 
-	logout(): void {
+	logout(navigateToHome = true): void {
 		localStorage.removeItem(LocalStorageItems.USERNAME);
 		localStorage.removeItem(LocalStorageItems.TOKEN);
 		localStorage.removeItem(LocalStorageItems.EXPIRES_ON);
 
 		this.loggedUser$.next(null);
-		this.router.navigateByUrl(`/${BaseRoute.HOME}`);
+		if (navigateToHome) this.router.navigateByUrl(`/${BaseRoute.HOME}`);
 	}
 
 	getLoggedUsername$(): Observable<string | null> {

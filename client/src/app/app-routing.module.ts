@@ -23,9 +23,14 @@ const routes: Routes = [
 	{ path: BaseRoute.LOGIN, component: LoginComponent },
 	{ path: BaseRoute.REGISTER, component: RegisterComponent },
 	// TODO: implement as child routes
-	{ path: BaseRoute.GAMES, component: GamesComponent, canActivate: [AuthGuardService] },
+	{
+		path: BaseRoute.GAMES,
+		component: GamesComponent,
+		canActivate: [AuthGuardService],
+	},
 	{ path: 'games/new', component: NewGameComponent, canActivate: [AuthGuardService] },
-	{ path: 'games/makao/:id', component: GameScreenComponent },
+	{ path: 'games/makao/:id', component: GameScreenComponent, canActivate: [AuthGuardService] },
+
 	{ path: '404', component: NotFoundComponent },
 	{ path: '**', redirectTo: '/404' },
 ];

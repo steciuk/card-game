@@ -33,7 +33,7 @@ export class GamesComponent extends BaseComponent implements OnInit, OnDestroy {
 	}
 
 	onCreateGame(): void {
-		this.router.navigateByUrl(`games/new`);
+		this.router.navigate(['games', 'new']);
 	}
 
 	refreshGames(): void {
