@@ -34,6 +34,7 @@ export class GameScreenComponent extends BaseComponent implements OnInit, OnDest
 	isPasswordProtected = true;
 	isRenderGame = false;
 	isWrongPassword = false;
+	isGameDataFetched = false;
 
 	constructor(
 		private readonly route: ActivatedRoute,
@@ -55,6 +56,7 @@ export class GameScreenComponent extends BaseComponent implements OnInit, OnDest
 
 			this.subs.sink = this.http.get<GameDTO>(`/games/${this.gameId}`).subscribe((game: GameDTO) => {
 				this.game = game;
+				this.isGameDataFetched = true;
 
 				if (!this.game.isPasswordProtected) {
 					this.isPasswordProtected = false;
