@@ -42,7 +42,7 @@ export class NewGameComponent extends BaseComponent {
 			),
 			new IntegerQuestion('maxPlayers', 'Max players', 2, 8),
 			new PasswordQuestion('password', 'Password (optional)', [
-				new MinLengthValidator(6),
+				new MinLengthValidator(3),
 				new MaxLengthValidator(20),
 				new PatternValidator({ alpha: true, numeric: true, specialChars: '!@#$%^&*' }),
 			]),

@@ -1,5 +1,14 @@
 import Phaser from 'phaser';
 import { BaseComponent } from 'src/app/components/base.component';
+import { PasswordQuestion } from 'src/app/components/utils/form/domain/question-types/passwordQuestion';
+import {
+	FormComponent,
+	FormConfig
+} from 'src/app/components/utils/form/form.component';
+import { RequiredValidator } from 'src/app/components/utils/form/infrastructure/validators/requiredValidator';
+import { MaxLengthValidator } from 'src/app/components/utils/form/infrastructure/validators/textValidators/maxLengthValidator';
+import { MinLengthValidator } from 'src/app/components/utils/form/infrastructure/validators/textValidators/minLengthValidator';
+import { PatternValidator } from 'src/app/components/utils/form/infrastructure/validators/textValidators/patternValidator';
 import { GameDTO } from 'src/app/logic/DTO/gameDTO';
 import { PHASER_CONFIG } from 'src/app/logic/games/phaserConfig';
 import { GAME_CONFIG, GameSetup } from 'src/app/logic/games/scenes/gamesSetup';
@@ -12,9 +21,9 @@ import {
 	ChangeDetectorRef,
 	Component,
 	OnDestroy,
-	OnInit
+	OnInit,
+	ViewChild
 } from '@angular/core';
-import { NgForm } from '@angular/forms';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 @Component({
@@ -24,6 +33,8 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GameScreenComponent extends BaseComponent implements OnInit, OnDestroy {
+	@ViewChild('form') form!: FormComponent;
+
 	phaserConfig = PHASER_CONFIG;
 
 	phaser = Phaser;
@@ -31,10 +42,20 @@ export class GameScreenComponent extends BaseComponent implements OnInit, OnDest
 	private gameSetup!: GameSetup;
 
 	private game!: GameDTO;
-	isPasswordProtected = true;
+	needsPassword = false;
 	isRenderGame = false;
-	isWrongPassword = false;
-	isGameDataFetched = false;
+
+	formConfig: FormConfig = {
+		buttonText: 'Connect',
+		questions: [
+			new PasswordQuestion('password', 'Password', [
+				new RequiredValidator(),
+				new MinLengthValidator(3),
+				new MaxLengthValidator(20),
+				new PatternValidator({ alpha: true, numeric: true, specialChars: '!@#$%^&*' }),
+			]),
+		],
+	};
 
 	constructor(
 		private readonly route: ActivatedRoute,
@@ -57,18 +78,23 @@ export class GameScreenComponent extends BaseComponent implements OnInit, OnDest
 
 			const password: string | null = this.route.snapshot.queryParamMap.get('password');
 
-			this.subs.sink = this.http.get<GameDTO>(`/games/${this.gameId}`).subscribe((game: GameDTO) => {
-				this.game = game;
-				this.isGameDataFetched = true;
+			this.subs.sink = this.http.get<GameDTO>(`/games/${this.gameId}`).subscribe(
+				(game: GameDTO) => {
+					this.game = game;
+					this.needsPassword = this.game.isPasswordProtected;
 
-				if (!this.game.isPasswordProtected) {
-					this.isPasswordProtected = false;
-					this.connectToSocket();
-				} else if (password) {
-					this.connectToSocket(password);
+					if (!this.needsPassword) {
+						this.connectToSocket();
+					} else if (password) {
+						this.connectToSocket(password);
+					} else {
+						this.cdRef.detectChanges();
+					}
+				},
+				(error) => {
+					this.router.navigate(['games']);
 				}
-				this.cdRef.detectChanges();
-			});
+			);
 		});
 	}
 
@@ -83,8 +109,8 @@ export class GameScreenComponent extends BaseComponent implements OnInit, OnDest
 			this.socketService.disconnect();
 			if (error.message === 'Socket - Wrong room password') {
 				//TODO: Some custom error types
-				this.isWrongPassword = true;
-				this.cdRef.detectChanges();
+				// TODO: modal with error
+				this.form.reset();
 			}
 		});
 
@@ -92,8 +118,8 @@ export class GameScreenComponent extends BaseComponent implements OnInit, OnDest
 		this.socketService.connect();
 	}
 
-	onSubmit(form: NgForm): void {
-		this.connectToSocket(form.value.password);
+	onSubmit(value: { password: string }): void {
+		this.connectToSocket(value.password);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type

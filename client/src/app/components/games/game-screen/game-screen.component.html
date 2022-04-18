@@ -1,32 +1,6 @@
-<div class="game-screen-component" *ngIf="isGameDataFetched">
-	<div *ngIf="isPasswordProtected && !isRenderGame">
-		<form #form="ngForm" (ngSubmit)="onSubmit(form)">
-			<div *ngIf="isWrongPassword">Incorrect password</div>
-			<label for="password">Password</label>
-			<input
-				id="password"
-				class="form-control"
-				type="password"
-				required
-				minlength="3"
-				maxlength="20"
-				pattern="[a-zA-Z0-9!@#$%^&*]+"
-				ngModel
-				name="password"
-				#password="ngModel"
-			/>
-			<div *ngIf="password.touched && !password.valid">
-				<div *ngIf="password.errors?.required">Password required</div>
-				<div *ngIf="password.errors?.minlength">
-					Min {{ password.errors?.minlength.requiredLength }} characters
-				</div>
-				<div *ngIf="password.errors?.maxlength">
-					Max {{ password.errors?.maxlength.requiredLength }} characters
-				</div>
-				<div *ngIf="password.errors?.pattern">Only alphanumeric and !@#$%^&* allowed</div>
-			</div>
-			<button type="submit" [disabled]="form.invalid">Submit</button>
-		</form>
+<div class="game-screen-component">
+	<div *ngIf="needsPassword && !isRenderGame">
+		<app-form #form [formConfig]="formConfig" (submitEvent)="onSubmit($event)"></app-form>
 	</div>
 	<div *ngIf="isRenderGame">
 		<!-- TODO: game room logger: https://github.com/avatsaev/ngx-log-monitor -->

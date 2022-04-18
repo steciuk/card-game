@@ -40,6 +40,10 @@ export class FormComponent implements OnInit {
 	onSubmit(): void {
 		if (this.formGroup.valid) this.submitEvent.emit(this.formGroup.value);
 	}
+
+	reset(): void {
+		this.formGroup.reset();
+	}
 }
 
 export type FormConfig = {
