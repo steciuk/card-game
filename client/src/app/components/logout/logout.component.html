@@ -1,1 +1,7 @@
-<button class="btn" (click)="onLogout()">{{ textToDisplay }}</button>
+<app-button
+	class="btn"
+	[text]="'Log out'"
+	(btnClick)="onLogout()"
+	[isDisabled]="!isLoggedIn"
+	[size]="'s'"
+></app-button>

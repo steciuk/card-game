@@ -3,7 +3,7 @@
 		<app-button class="btn" [text]="'New room'" (btnClick)="onCreateGame()"></app-button>
 		<app-button class="btn" [text]="'Refresh games'" (btnClick)="refreshGames()"></app-button>
 	</div>
-	<div class="games-container">
+	<div class="games-container" *ngIf="currentGames.length">
 		<div class="table-header">
 			<div class="name">Room name</div>
 			<div class="onwer">Owner</div>

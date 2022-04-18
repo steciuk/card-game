@@ -18,10 +18,12 @@ export class ButtonComponent {
 	@Input() type: ButtonType = 'button';
 	@Output() btnClick = new EventEmitter();
 	@Input() isDisabled = false;
+	@Input() size: ButtonSize = 'm';
 
 	onClick(): void {
 		this.btnClick.emit();
 	}
 }
 
-export type ButtonType = 'button' | 'reset' | 'submit';
+type ButtonType = 'button' | 'reset' | 'submit';
+type ButtonSize = 's' | 'm' | 'l';

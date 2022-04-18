@@ -1,7 +1,13 @@
 import { AuthService } from 'src/app/services/auth.service';
 import { SubSink } from 'subsink';
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	ChangeDetectorRef,
+	Component,
+	OnDestroy,
+	OnInit
+} from '@angular/core';
 
 @Component({
 	selector: 'app-logout',
@@ -10,13 +16,20 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 })
 export class LogoutComponent implements OnInit, OnDestroy {
 	private subs = new SubSink();
-	textToDisplay = '';
+	username = '';
+	isLoggedIn = false;
 
 	constructor(private readonly authService: AuthService, private readonly cdRef: ChangeDetectorRef) {}
 
 	ngOnInit(): void {
 		this.subs.sink = this.authService.getLoggedUsername$().subscribe((username) => {
-			this.textToDisplay = username ? `Logged as: ${username}` : 'Not logged';
+			if (username) {
+				this.isLoggedIn = true;
+				this.username = username;
+			} else {
+				this.isLoggedIn = false;
+				this.username = '';
+			}
 			this.cdRef.detectChanges();
 		});
 	}
