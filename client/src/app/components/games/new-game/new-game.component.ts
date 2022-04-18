@@ -12,7 +12,7 @@ import { MaxLengthValidator } from 'src/app/components/utils/form/infrastructure
 import { MinLengthValidator } from 'src/app/components/utils/form/infrastructure/validators/textValidators/minLengthValidator';
 import { PatternValidator } from 'src/app/components/utils/form/infrastructure/validators/textValidators/patternValidator';
 import { GameDTO } from 'src/app/logic/DTO/gameDTO';
-import { GameTypes } from 'src/app/logic/games/scenes/gamesSetup';
+import { GameTypes } from 'src/app/logic/games/scenes/gameTypes';
 import { AuthService } from 'src/app/services/auth.service';
 import { HttpService } from 'src/app/services/http.service';
 import { enumToArray } from 'src/app/utils';

@@ -5,10 +5,6 @@ import { EndScene } from './end/endScene';
 import { LobbyScene } from './lobby/lobbyScene';
 import { MakaoScene } from './makao/makaoScene';
 
-export enum GameTypes {
-	MAKAO = 'MAKAO',
-}
-
 export class GAME_CONFIG {
 	static readonly MAKAO = new GAME_CONFIG([LobbyScene, MakaoScene, EndScene]);
 

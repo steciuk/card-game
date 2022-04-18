@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { NotLoggedInError } from 'src/app/errors/notLoggedInError';
-import { GameTypes } from 'src/app/logic/games/scenes/gamesSetup';
+import { GameTypes } from 'src/app/logic/games/scenes/gameTypes';
 import { SOCKET_EVENTS } from 'src/app/logic/games/socketEvents/socketEvents';
 import { environment } from 'src/environments/environment';
 

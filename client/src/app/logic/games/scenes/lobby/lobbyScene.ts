@@ -44,6 +44,7 @@ export class LobbyScene extends BaseScene {
 		});
 		this.usernames = [];
 		this.playersInLobbyAsArray.forEach((player, i) => {
+			console.log(player);
 			const username = this.add.text(20, 30 * (i + 1), player.username);
 			username.setFontSize(20).setPadding(5).setColor(HEX_COLORS_STRING.BLACK);
 			player.isReady
