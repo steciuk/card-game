@@ -78,9 +78,8 @@ section {
 
 	.suite {
 		position: absolute;
-		display: fixed;
-		top: 250px;
 		width: 200px;
+		top: 300px;
 		filter: drop-shadow(
 			calc((var(--positionX) -5.5) * 1px) calc((var(--positionY) -5.5) * 1px) 8px var(--darker-gray)
 		);
