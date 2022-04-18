@@ -1,10 +1,14 @@
 <div class="game-screen-component">
 	<div *ngIf="needsPassword && !isRenderGame">
-		<app-form #form [formConfig]="formConfig" (submitEvent)="onSubmit($event)"></app-form>
+		<app-form #form class="form" [formConfig]="formConfig" (submitEvent)="onSubmit($event)"></app-form>
 	</div>
-	<div *ngIf="isRenderGame">
-		<!-- TODO: game room logger: https://github.com/avatsaev/ngx-log-monitor -->
-		<!-- <div class="log-monitor-wrapper">
+	<div class="phaser" *ngIf="isRenderGame">
+		<phaser-component (gameReady)="onGameReady($event)" [gameConfig]="phaserConfig" [Phaser]="phaser">
+		</phaser-component>
+	</div>
+
+	<!-- TODO: game room logger: https://github.com/avatsaev/ngx-log-monitor -->
+	<!-- <div class="log-monitor-wrapper">
 		<log-monitor
 			[logStream]="(logStream$ | async)!"
 			theme="light"
@@ -13,9 +17,4 @@
 			[icons]="false"
 		></log-monitor>
 	</div> -->
-		<div>
-			<phaser-component (gameReady)="onGameReady($event)" [gameConfig]="phaserConfig" [Phaser]="phaser">
-			</phaser-component>
-		</div>
-	</div>
 </div>

@@ -48,7 +48,7 @@ export class GameScreenComponent extends BaseComponent implements OnInit, OnDest
 	formConfig: FormConfig = {
 		buttonText: 'Connect',
 		questions: [
-			new PasswordQuestion('password', 'Password', [
+			new PasswordQuestion('password', 'Room password', [
 				new RequiredValidator(),
 				new MinLengthValidator(3),
 				new MaxLengthValidator(20),
