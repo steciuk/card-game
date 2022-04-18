@@ -49,10 +49,13 @@ export class GameScreenComponent extends BaseComponent implements OnInit, OnDest
 	ngOnInit(): void {
 		this.subs.sink = this.route.paramMap.subscribe((params: ParamMap) => {
 			this.gameId = params.get('id') as string;
+
 			if (!this.gameId) {
 				this.router.navigateByUrl('/404');
 				return;
 			}
+
+			const password: string | null = this.route.snapshot.queryParamMap.get('password');
 
 			this.subs.sink = this.http.get<GameDTO>(`/games/${this.gameId}`).subscribe((game: GameDTO) => {
 				this.game = game;
@@ -61,8 +64,9 @@ export class GameScreenComponent extends BaseComponent implements OnInit, OnDest
 				if (!this.game.isPasswordProtected) {
 					this.isPasswordProtected = false;
 					this.connectToSocket();
+				} else if (password) {
+					this.connectToSocket(password);
 				}
-
 				this.cdRef.detectChanges();
 			});
 		});

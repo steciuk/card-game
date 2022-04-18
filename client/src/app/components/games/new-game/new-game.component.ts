@@ -63,10 +63,12 @@ export class NewGameComponent extends BaseComponent {
 		maxPlayers: number;
 		password?: string;
 	}): void {
-		if (value.password === '') delete value.password;
+		let queryParamObject: Record<string, never> | { password: string } = {};
+		if (!value.password) delete value.password;
+		else queryParamObject = { password: value.password };
 
 		this.subs.sink = this.http.post<GameDTO>('/games', value).subscribe((response) => {
-			this.router.navigateByUrl(`games/makao/${response.id}`);
+			this.router.navigate(['games', 'makao', response.id], { queryParams: queryParamObject });
 		});
 	}
 }
