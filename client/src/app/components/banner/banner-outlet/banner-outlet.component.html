@@ -1,0 +1,29 @@
+<div class="banner-outlet" [style.--fade-time]="bannerFadeAnimationTime + 's'">
+	<div
+		*ngFor="let banner of banners"
+		class="banner"
+		[attr.data-state]="banner.state"
+		(click)="closeBanner(banner.id)"
+	>
+		{{ banner.message }}
+	</div>
+</div>
+
+<!-- [style.--fade-time]="fadeTimeSeconds + 's'" -->
+
+<!-- <div class="banner-outlet">
+	<div
+		*ngFor="let banner of banners"
+		class="banner"
+		[ngClass]="{
+			animIn: banner.isIn,
+			animOut: banner.isOut,
+			animDown: banner.moveDown,
+			animUp: banner.moveUp
+		}"
+		(click)="closeBanner(banner.id)"
+		[style.--fade-time]="fadeTimeSeconds + 's'"
+	>
+		{{ banner.num }}
+	</div>
+</div> -->

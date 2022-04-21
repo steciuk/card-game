@@ -1,0 +1,89 @@
+:host {
+	display: block;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+$banner-width: 300px;
+$banner-margin: 16px;
+$banner-height: 100px;
+
+.banner-outlet {
+	overflow-x: hidden;
+	background: red;
+
+	.banner {
+		background: green;
+
+		position: relative;
+		width: $banner-width;
+		height: $banner-height;
+		margin-top: $banner-margin;
+		margin-right: $banner-margin;
+
+		&[data-state='in'] {
+			animation: banner-in 1s ease;
+		}
+
+		&[data-state='out'] {
+			animation: banner-out var(--fade-time) ease;
+		}
+	}
+}
+
+// .banner-outlet {
+// 	$banner-width: 300px;
+// 	$banner-margin: 16px;
+// 	$banner-height: 100px;
+
+// 	overflow-x: hidden;
+// 	background: red;
+
+// 	.banner {
+// 		background: green;
+
+// 		position: relative;
+// 		width: $banner-width;
+// 		height: $banner-height;
+// 		margin-top: $banner-margin;
+// 		margin-right: $banner-margin;
+// 		// transition: all 0.5s ease;
+
+// 		&.animIn {
+// 			animation: banner-in 1s ease;
+// 		}
+
+// 		&.animOut {
+// 			animation: banner-out var(--fade-time) ease;
+// 		}
+
+// 		&.animDown {
+// 			animation: banner-down var(--fade-time) ease;
+// 		}
+
+// 		&.animUp {
+// 			animation: banner-up var(--fade-time) ease;
+// 		}
+// 	}
+// }
+
+@keyframes banner-in {
+	0% {
+		left: $banner-width + 100px;
+	}
+
+	100% {
+		left: 0px;
+	}
+}
+
+@keyframes banner-out {
+	0% {
+		left: 0px;
+	}
+
+	100% {
+		left: $banner-width + 100px;
+	}
+}

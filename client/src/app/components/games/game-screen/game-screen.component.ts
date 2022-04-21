@@ -20,7 +20,6 @@ import {
 	ChangeDetectionStrategy,
 	ChangeDetectorRef,
 	Component,
-	OnDestroy,
 	OnInit,
 	ViewChild
 } from '@angular/core';
@@ -32,7 +31,7 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 	styleUrls: ['./game-screen.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GameScreenComponent extends BaseComponent implements OnInit, OnDestroy {
+export class GameScreenComponent extends BaseComponent implements OnInit {
 	@ViewChild('form') form!: FormComponent;
 
 	phaserConfig = PHASER_CONFIG;
@@ -91,7 +90,7 @@ export class GameScreenComponent extends BaseComponent implements OnInit, OnDest
 						this.cdRef.detectChanges();
 					}
 				},
-				(error) => {
+				(_error) => {
 					this.router.navigate(['games']);
 				}
 			);
@@ -122,10 +121,8 @@ export class GameScreenComponent extends BaseComponent implements OnInit, OnDest
 		this.connectToSocket(value.password);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-	override ngOnDestroy() {
+	override finalize(): void {
 		this.socketService.disconnect();
-		return super.ngOnDestroy();
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

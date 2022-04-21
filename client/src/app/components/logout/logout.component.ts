@@ -1,5 +1,5 @@
+import { BaseComponent } from 'src/app/components/base.component';
 import { AuthService } from 'src/app/services/auth.service';
-import { SubSink } from 'subsink';
 
 import {
 	ChangeDetectionStrategy,
@@ -14,12 +14,13 @@ import {
 	templateUrl: './logout.component.html',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LogoutComponent implements OnInit, OnDestroy {
-	private subs = new SubSink();
+export class LogoutComponent extends BaseComponent implements OnInit, OnDestroy {
 	username = '';
 	isLoggedIn = false;
 
-	constructor(private readonly authService: AuthService, private readonly cdRef: ChangeDetectorRef) {}
+	constructor(private readonly authService: AuthService, private readonly cdRef: ChangeDetectorRef) {
+		super();
+	}
 
 	ngOnInit(): void {
 		this.subs.sink = this.authService.getLoggedUsername$().subscribe((username) => {
@@ -36,9 +37,5 @@ export class LogoutComponent implements OnInit, OnDestroy {
 
 	onLogout(): void {
 		this.authService.logout();
-	}
-
-	ngOnDestroy(): void {
-		this.subs.unsubscribe();
 	}
 }

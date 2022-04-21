@@ -7,6 +7,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { BannerOutletComponent } from './components/banner/banner-outlet/banner-outlet.component';
 import { GameCardComponent } from './components/games/game-card/game-card.component';
 import { GameScreenComponent } from './components/games/game-screen/game-screen.component';
 import { GamesComponent } from './components/games/games/games.component';
@@ -24,6 +25,7 @@ import { QuestionComponent } from './components/utils/form/questions/question.co
 import { SelectQuestionComponent } from './components/utils/form/questions/select-question/select-question.component';
 import { LogoComponent } from './components/utils/logo/logo.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { BannerComponent } from './components/banner/banner/banner.component';
 
 @NgModule({
 	declarations: [
@@ -44,6 +46,8 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
 		IntQuestionComponent,
 		SelectQuestionComponent,
 		NewGameComponent,
+		BannerOutletComponent,
+  BannerComponent,
 	],
 	imports: [
 		BrowserModule,
