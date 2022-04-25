@@ -1,6 +1,8 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { BaseRoute } from 'src/app/app-routing.module';
+import { InfoBanner } from 'src/app/components/banner/domain/bannerConfig';
 import { LoginDTO, ParsedJwtPayload } from 'src/app/logic/DTO/loginDTO';
+import { BannerService } from 'src/app/services/banner.service';
 
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -11,7 +13,7 @@ import { Router } from '@angular/router';
 export class AuthService {
 	private loggedUser$: BehaviorSubject<string | null>;
 
-	constructor(private router: Router) {
+	constructor(private readonly router: Router, private readonly bannerService: BannerService) {
 		this.loggedUser$ = new BehaviorSubject<string | null>(null);
 		this.init();
 	}
@@ -24,7 +26,7 @@ export class AuthService {
 		const isTokenValid = !!expiresOn && !!token && !!username && Date.now() <= parseInt(expiresOn);
 		if (isTokenValid) {
 			this.loggedUser$.next(username);
-		} else this.logout(false);
+		} else this.clearLocalStorage();
 	}
 
 	//TODO: validate response from server: ResponseWithJWT
@@ -39,17 +41,22 @@ export class AuthService {
 		this.loggedUser$.next(username);
 	}
 
-	logout(navigateToHome = true): void {
+	logout(): void {
+		this.clearLocalStorage();
+		this.bannerService.showBanner(new InfoBanner('You are logged out'));
+		this.router.navigateByUrl(`/${BaseRoute.HOME}`);
+	}
+
+	getLoggedUsername$(): Observable<string | null> {
+		return this.loggedUser$.asObservable();
+	}
+
+	private clearLocalStorage(): void {
 		localStorage.removeItem(LocalStorageItems.USERNAME);
 		localStorage.removeItem(LocalStorageItems.TOKEN);
 		localStorage.removeItem(LocalStorageItems.EXPIRES_ON);
 
 		this.loggedUser$.next(null);
-		if (navigateToHome) this.router.navigateByUrl(`/${BaseRoute.HOME}`);
-	}
-
-	getLoggedUsername$(): Observable<string | null> {
-		return this.loggedUser$.asObservable();
 	}
 
 	private getDecodedJwtPayload(token: string): ParsedJwtPayload {

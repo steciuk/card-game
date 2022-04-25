@@ -1,5 +1,6 @@
 import {
 	ChangeDetectionStrategy,
+	ChangeDetectorRef,
 	Component,
 	EventEmitter,
 	Input,
@@ -22,7 +23,7 @@ export class FormComponent implements OnInit {
 	@Output() submitEvent: EventEmitter<any> = new EventEmitter();
 	formGroup!: FormGroup;
 
-	constructor() {}
+	constructor(private readonly cdRef: ChangeDetectorRef) {}
 
 	ngOnInit(): void {
 		const group: { [key: string]: FormControl } = {};
@@ -43,6 +44,7 @@ export class FormComponent implements OnInit {
 
 	reset(): void {
 		this.formGroup.reset();
+		this.cdRef.detectChanges();
 	}
 }
 

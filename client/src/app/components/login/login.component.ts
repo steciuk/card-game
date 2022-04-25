@@ -1,9 +1,15 @@
 import { BaseRoute } from 'src/app/app-routing.module';
-import { ErrorBanner } from 'src/app/components/banner/domain/bannerConfig';
+import {
+	ErrorBanner,
+	InfoBanner
+} from 'src/app/components/banner/domain/bannerConfig';
 import { BaseComponent } from 'src/app/components/base.component';
 import { PasswordQuestion } from 'src/app/components/utils/form/domain/question-types/passwordQuestion';
 import { TextQuestion } from 'src/app/components/utils/form/domain/question-types/textQuestion';
-import { FormConfig } from 'src/app/components/utils/form/form.component';
+import {
+	FormComponent,
+	FormConfig
+} from 'src/app/components/utils/form/form.component';
 import { RequiredValidator } from 'src/app/components/utils/form/infrastructure/validators/requiredValidator';
 import { MaxLengthValidator } from 'src/app/components/utils/form/infrastructure/validators/textValidators/maxLengthValidator';
 import { MinLengthValidator } from 'src/app/components/utils/form/infrastructure/validators/textValidators/minLengthValidator';
@@ -13,7 +19,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { BannerService } from 'src/app/services/banner.service';
 import { HttpService } from 'src/app/services/http.service';
 
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -40,6 +46,8 @@ export class LoginComponent extends BaseComponent {
 		],
 	};
 
+	@ViewChild('form') form!: FormComponent;
+
 	constructor(
 		private readonly http: HttpService,
 		private readonly authService: AuthService,
@@ -54,10 +62,12 @@ export class LoginComponent extends BaseComponent {
 			.post<LoginDTO>('/users/login', { username: value.username, password: value.password })
 			.subscribe(
 				(response) => {
+					this.bannerService.showBanner(new InfoBanner('You are logged in'));
 					this.authService.setLocalStorage(response);
 					this.router.navigateByUrl(`/${BaseRoute.GAMES}`);
 				},
 				(error) => {
+					this.form.reset();
 					switch (error.status) {
 						case 401:
 							this.bannerService.showBanner(new ErrorBanner('Invalid credentials'));

@@ -1,3 +1,4 @@
+import { InfoBanner } from 'src/app/components/banner/domain/bannerConfig';
 import { BaseComponent } from 'src/app/components/base.component';
 import { IntegerQuestion } from 'src/app/components/utils/form/domain/question-types/integerQuestion';
 import { PasswordQuestion } from 'src/app/components/utils/form/domain/question-types/passwordQuestion';
@@ -14,6 +15,7 @@ import { PatternValidator } from 'src/app/components/utils/form/infrastructure/v
 import { GameDTO } from 'src/app/logic/DTO/gameDTO';
 import { GameTypes } from 'src/app/logic/games/scenes/gameTypes';
 import { AuthService } from 'src/app/services/auth.service';
+import { BannerService } from 'src/app/services/banner.service';
 import { HttpService } from 'src/app/services/http.service';
 import { enumToArray } from 'src/app/utils';
 
@@ -52,7 +54,8 @@ export class NewGameComponent extends BaseComponent {
 	constructor(
 		private readonly http: HttpService,
 		public authService: AuthService,
-		private readonly router: Router
+		private readonly router: Router,
+		private readonly bannerService: BannerService
 	) {
 		super();
 	}
@@ -68,6 +71,7 @@ export class NewGameComponent extends BaseComponent {
 		else queryParamObject = { password: value.password };
 
 		this.subs.sink = this.http.post<GameDTO>('/games', value).subscribe((response) => {
+			this.bannerService.showBanner(new InfoBanner('New room created'));
 			this.router.navigate(['games', 'makao', response.id], { queryParams: queryParamObject });
 		});
 	}
