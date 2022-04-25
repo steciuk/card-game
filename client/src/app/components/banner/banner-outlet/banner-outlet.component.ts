@@ -1,4 +1,7 @@
-import { Banner } from 'src/app/components/banner/domain/bannerConfig';
+import {
+	Banner,
+	BannerType
+} from 'src/app/components/banner/domain/bannerConfig';
 import { BaseComponent } from 'src/app/components/base.component';
 import { BannerService } from 'src/app/services/banner.service';
 
@@ -17,6 +20,7 @@ import {
 })
 export class BannerOutletComponent extends BaseComponent implements OnInit {
 	bannerFadeAnimationTime = 0.5;
+	BannerType = BannerType;
 
 	banners: BannerWithId[] = [];
 	private bannerId = 0;
@@ -31,12 +35,12 @@ export class BannerOutletComponent extends BaseComponent implements OnInit {
 
 	private observeBanners(): void {
 		this.subs.sink = this.bannerService.getBanner$().subscribe((banner: Banner) => {
-			this.banners.unshift({ ...banner, id: this.bannerId, state: 'in' });
+			const bannerId = this.bannerId;
+			this.banners.unshift({ ...banner, id: bannerId, state: 'in' });
 			this.cdRef.detectChanges();
 
-			// FIXME: auto-close
 			if (banner.showFor > 0) {
-				setTimeout(() => this.closeBanner(this.bannerId), banner.showFor * 1000);
+				setTimeout(() => this.closeBanner(bannerId), banner.showFor * 1000);
 			}
 			this.bannerId++;
 		});

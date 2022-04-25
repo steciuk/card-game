@@ -19,4 +19,8 @@ export class WarningBanner extends Banner {
 
 export class ErrorBanner extends Banner {
 	bannerType = BannerType.ERROR;
+
+	static forUnknownError(errorCode?: number): ErrorBanner {
+		return new ErrorBanner(`${errorCode}: Something went wrong.`);
+	}
 }

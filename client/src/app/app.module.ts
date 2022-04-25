@@ -25,7 +25,6 @@ import { QuestionComponent } from './components/utils/form/questions/question.co
 import { SelectQuestionComponent } from './components/utils/form/questions/select-question/select-question.component';
 import { LogoComponent } from './components/utils/logo/logo.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
-import { BannerComponent } from './components/banner/banner/banner.component';
 
 @NgModule({
 	declarations: [
@@ -47,7 +46,6 @@ import { BannerComponent } from './components/banner/banner/banner.component';
 		SelectQuestionComponent,
 		NewGameComponent,
 		BannerOutletComponent,
-  BannerComponent,
 	],
 	imports: [
 		BrowserModule,

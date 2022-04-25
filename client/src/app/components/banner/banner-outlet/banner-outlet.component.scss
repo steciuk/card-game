@@ -11,66 +11,69 @@ $banner-height: 100px;
 
 .banner-outlet {
 	overflow-x: hidden;
-	background: red;
 
 	.banner {
-		background: green;
-
 		position: relative;
 		width: $banner-width;
 		height: $banner-height;
 		margin-top: $banner-margin;
-		margin-right: $banner-margin;
+		padding: 1rem;
+
+		border-top-left-radius: 1rem;
+		border-bottom-left-radius: 1rem;
+
+		text-align: center;
+		user-select: none;
+
+		cursor: pointer;
+		transition: filter 0.2s ease;
+
+		&.info {
+			background: var(--light-blue);
+		}
+
+		&.warn {
+			background: var(--light-yellow);
+		}
+
+		&.error {
+			background: var(--light-red);
+		}
+
+		&:hover {
+			filter: brightness(85%);
+
+			.close {
+				opacity: 1;
+			}
+		}
 
 		&[data-state='in'] {
-			animation: banner-in 1s ease;
+			animation: banner-in 0.7s ease;
 		}
 
 		&[data-state='out'] {
-			animation: banner-out var(--fade-time) ease;
+			animation: banner-out var(--fade-time) ease forwards;
+		}
+
+		.close {
+			position: absolute;
+			left: 1rem;
+			top: 50%;
+			transform: translateY(-50%);
+			opacity: 0;
+
+			font-size: 2rem;
+			font-weight: bold;
+
+			transition: opacity 0.2s ease;
 		}
 	}
 }
 
-// .banner-outlet {
-// 	$banner-width: 300px;
-// 	$banner-margin: 16px;
-// 	$banner-height: 100px;
-
-// 	overflow-x: hidden;
-// 	background: red;
-
-// 	.banner {
-// 		background: green;
-
-// 		position: relative;
-// 		width: $banner-width;
-// 		height: $banner-height;
-// 		margin-top: $banner-margin;
-// 		margin-right: $banner-margin;
-// 		// transition: all 0.5s ease;
-
-// 		&.animIn {
-// 			animation: banner-in 1s ease;
-// 		}
-
-// 		&.animOut {
-// 			animation: banner-out var(--fade-time) ease;
-// 		}
-
-// 		&.animDown {
-// 			animation: banner-down var(--fade-time) ease;
-// 		}
-
-// 		&.animUp {
-// 			animation: banner-up var(--fade-time) ease;
-// 		}
-// 	}
-// }
-
 @keyframes banner-in {
 	0% {
-		left: $banner-width + 100px;
+		left: $banner-width;
 	}
 
 	100% {
@@ -84,6 +87,6 @@ $banner-height: 100px;
 	}
 
 	100% {
-		left: $banner-width + 100px;
+		left: $banner-width;
 	}
 }

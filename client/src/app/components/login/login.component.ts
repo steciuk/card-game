@@ -58,8 +58,14 @@ export class LoginComponent extends BaseComponent {
 					this.router.navigateByUrl(`/${BaseRoute.GAMES}`);
 				},
 				(error) => {
-					if (error.status === 401)
-						this.bannerService.showBanner(new ErrorBanner('Invalid credentials'));
+					switch (error.status) {
+						case 401:
+							this.bannerService.showBanner(new ErrorBanner('Invalid credentials'));
+							break;
+
+						default:
+							this.bannerService.showBanner(ErrorBanner.forUnknownError(error.status));
+					}
 				}
 			);
 	}
