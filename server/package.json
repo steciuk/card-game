@@ -11,7 +11,7 @@
 		"start": "node dist/server.js",
 		"prod": "npm-run-all build start",
 		"gen-keys-dev": "npx ts-node src/keys/GenerateKeyPair.ts",
-		"dev": "nodemon --watch src --exec npx ts-node ./src/server.ts"
+		"dev": "nodemon --delay 100 --watch src --exec npx ts-node ./src/server.ts"
 	},
 	"engines": {
 		"node": "14.17.5",

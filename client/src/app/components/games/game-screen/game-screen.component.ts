@@ -22,6 +22,7 @@ import {
 	ChangeDetectionStrategy,
 	ChangeDetectorRef,
 	Component,
+	NgZone,
 	OnInit,
 	ViewChild
 } from '@angular/core';
@@ -34,7 +35,7 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GameScreenComponent extends BaseComponent implements OnInit {
-	@ViewChild('form') form!: FormComponent;
+	@ViewChild('form') form?: FormComponent;
 
 	phaserConfig = PHASER_CONFIG;
 
@@ -64,7 +65,8 @@ export class GameScreenComponent extends BaseComponent implements OnInit {
 		private readonly router: Router,
 		private readonly socketService: SocketService,
 		private readonly cdRef: ChangeDetectorRef,
-		private readonly bannerService: BannerService
+		private readonly bannerService: BannerService,
+		private readonly ngZone: NgZone
 	) {
 		super();
 	}
@@ -93,7 +95,9 @@ export class GameScreenComponent extends BaseComponent implements OnInit {
 						this.cdRef.detectChanges();
 					}
 				},
-				(_error) => {
+				(error) => {
+					if (error.status === 404)
+						this.bannerService.showBanner(new ErrorBanner('Game no longer exists'));
 					this.router.navigate(['games']);
 				}
 			);
@@ -107,14 +111,24 @@ export class GameScreenComponent extends BaseComponent implements OnInit {
 			this.cdRef.detectChanges();
 		});
 
-		this.socketService.registerSocketListener(BUILD_IN_SOCKET_GAME_EVENTS.CONNECT_ERROR, (error) => {
-			this.socketService.disconnect();
-			if (error.message === 'Socket - Wrong room password') {
-				//TODO: Some custom error types
-				this.bannerService.showBanner(new ErrorBanner('Incorrect room password'));
-				this.form.reset();
+		this.socketService.registerSocketListener(
+			BUILD_IN_SOCKET_GAME_EVENTS.CONNECT_ERROR,
+			(error: { data: { status: number; message: string } }) => {
+				const data = error.data;
+
+				this.socketService.disconnect();
+				this.bannerService.showBanner(new ErrorBanner(data.message));
+
+				if (data.status !== 499) {
+					this.ngZone.run(() => {
+						this.router.navigate(['games']);
+					});
+					return;
+				}
+
+				if (this.form) this.form.reset();
 			}
-		});
+		);
 
 		this.gameSetup = new GameSetup(this.socketService, GAME_CONFIG.MAKAO);
 		this.socketService.connect();

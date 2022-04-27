@@ -2,12 +2,9 @@ import { Server, Socket } from 'socket.io';
 import { ExtendedError, Namespace } from 'socket.io/dist/namespace';
 
 import { HttpError } from '../../errors/httpErrors/HttpError';
-import {
-	DB_RESOURCES,
-	ResourceNotFoundError
-} from '../../errors/httpErrors/ResourceNotFoundError';
 import { SocketBadConnectionError } from '../../errors/socketErrors/SocketBadConnectionError';
 import { SocketGameAlreadyStartedError } from '../../errors/socketErrors/SocketGameAlreadyStartedError';
+import { SocketGameNotExistError } from '../../errors/socketErrors/SocketGameNotExist';
 import { SocketRoomFullError } from '../../errors/socketErrors/SocketRoomFullError';
 import { SocketUnauthorizedError } from '../../errors/socketErrors/SocketUnauthorizedError';
 import { SocketUserAlreadyConnectedError } from '../../errors/socketErrors/SocketUserAlreadyConnectedError';
@@ -125,7 +122,6 @@ export abstract class SocketHandler {
 			socket.middlewareData.jwt = jwt;
 			next();
 		} catch (error) {
-			elog(error);
 			return next(new SocketUnauthorizedError());
 		}
 	};
@@ -137,15 +133,14 @@ export abstract class SocketHandler {
 		const gameId = socket.handshake.query.gameId as string;
 		const userId = socket.middlewareData.jwt.sub as string;
 
-		if (SocketHandler.connectedUsers.has(userId))
-			return next(new SocketUserAlreadyConnectedError(userId));
+		if (SocketHandler.connectedUsers.has(userId)) return next(new SocketUserAlreadyConnectedError());
 
 		try {
 			const user = await UserModel.findById(userId);
-			if (!user) return next(new ResourceNotFoundError(DB_RESOURCES.USER, userId));
+			if (!user) return next(new SocketBadConnectionError());
 
 			const game = GamesStore.Instance.getGame(gameId);
-			if (!game) return next(new ResourceNotFoundError(DB_RESOURCES.GAME, gameId)); // TODO: change since not using db anymore
+			if (!game) return next(new SocketGameNotExistError());
 
 			if (game.gameState !== GAME_STATE.NOT_STARTED) next(new SocketGameAlreadyStartedError());
 
@@ -188,4 +183,5 @@ export abstract class SocketHandler {
 	}
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type SocketNextFunction = (err?: ExtendedError | undefined) => void;

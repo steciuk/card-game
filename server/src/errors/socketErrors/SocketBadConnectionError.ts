@@ -2,6 +2,6 @@ import { SocketError } from './SocketError';
 
 export class SocketBadConnectionError extends SocketError {
 	constructor() {
-		super('Bad connection');
+		super(400, 'Bad connection');
 	}
 }

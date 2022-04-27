@@ -1,8 +1,11 @@
 import { elog } from '../../utils/Logger';
 
-export class SocketError extends Error {
-	constructor(message?: string) {
-		super(message ? `Socket - ${message}` : 'Socket - Something gone wrong');
+export abstract class SocketError extends Error {
+	data: { status: number; message: string };
+
+	constructor(private status: number = 500, message = 'Something went wrong') {
+		super(message);
+		this.data = { status: status, message: message };
 		elog(this);
 	}
 }
