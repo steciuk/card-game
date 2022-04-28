@@ -6,6 +6,7 @@
 		"start": "node server.js",
 		"build": "ng build",
 		"watch": "ng build --watch --configuration development",
+		"firebase": "ng build && firebase deploy",
 		"dev": "ng serve --watch",
 		"lint": "npx eslint src/**/*.ts"
 	},
