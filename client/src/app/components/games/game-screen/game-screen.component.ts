@@ -120,9 +120,7 @@ export class GameScreenComponent extends BaseComponent implements OnInit {
 				this.bannerService.showBanner(new ErrorBanner(data.message));
 
 				if (data.status !== 499) {
-					this.ngZone.run(() => {
-						this.router.navigate(['games']);
-					});
+					this.ngZone.run(() => this.router.navigate(['games']));
 					return;
 				}
 

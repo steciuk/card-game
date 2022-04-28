@@ -1,6 +1,9 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { BaseRoute } from 'src/app/app-routing.module';
-import { InfoBanner } from 'src/app/components/banner/domain/bannerConfig';
+import {
+	InfoBanner,
+	WarningBanner
+} from 'src/app/components/banner/domain/bannerConfig';
 import { LoginDTO, ParsedJwtPayload } from 'src/app/logic/DTO/loginDTO';
 import { BannerService } from 'src/app/services/banner.service';
 
@@ -23,7 +26,8 @@ export class AuthService {
 		const token = localStorage.getItem(LocalStorageItems.TOKEN);
 		const expiresOn = localStorage.getItem(LocalStorageItems.EXPIRES_ON);
 
-		const isTokenValid = !!expiresOn && !!token && !!username && Date.now() <= parseInt(expiresOn);
+		const isTokenValid =
+			!!expiresOn && !!token && !!username && this.epochInSeconds <= parseInt(expiresOn);
 		if (isTokenValid) {
 			this.loggedUser$.next(username);
 		} else this.clearLocalStorage();
@@ -36,7 +40,7 @@ export class AuthService {
 
 		localStorage.setItem(LocalStorageItems.USERNAME, username);
 		localStorage.setItem(LocalStorageItems.TOKEN, response.token);
-		localStorage.setItem(LocalStorageItems.EXPIRES_ON, (jwtPayload.iat + jwtPayload.exp).toString());
+		localStorage.setItem(LocalStorageItems.EXPIRES_ON, jwtPayload.exp.toString());
 
 		this.loggedUser$.next(username);
 	}
@@ -44,7 +48,13 @@ export class AuthService {
 	logout(): void {
 		this.clearLocalStorage();
 		this.bannerService.showBanner(new InfoBanner('You are logged out'));
-		this.router.navigateByUrl(`/${BaseRoute.HOME}`);
+		this.router.navigate([BaseRoute.HOME]);
+	}
+
+	sessionExpired(): void {
+		this.clearLocalStorage();
+		this.bannerService.showBanner(new WarningBanner('Your session has expired. Please log in again'));
+		this.router.navigate([BaseRoute.LOGIN]);
 	}
 
 	getLoggedUsername$(): Observable<string | null> {
@@ -61,6 +71,10 @@ export class AuthService {
 
 	private getDecodedJwtPayload(token: string): ParsedJwtPayload {
 		return JSON.parse(atob(token.split(' ')[1].split('.')[1]));
+	}
+
+	private get epochInSeconds(): number {
+		return Math.round(Date.now() / 1000);
 	}
 }
 

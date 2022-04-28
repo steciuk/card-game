@@ -1,5 +1,6 @@
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { AuthService } from 'src/app/services/auth.service';
 import { environment } from 'src/environments/environment';
 
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
@@ -11,13 +12,12 @@ import { Injectable } from '@angular/core';
 export class HttpService {
 	private baseUrl = environment.serverUrl;
 
-	constructor(private http: HttpClient) {}
+	constructor(private readonly http: HttpClient, private readonly authService: AuthService) {}
 
 	public get<T>(endPoint: string, options?: RequestOptions): Observable<T> {
 		return this.http.get<T>(this.baseUrl + endPoint, options).pipe(
 			catchError((err) => {
-				console.error(err);
-				return throwError(err);
+				return this.handleError(err);
 			})
 		);
 	}
@@ -25,8 +25,7 @@ export class HttpService {
 	public post<T>(endPoint: string, req: unknown, options?: RequestOptions): Observable<T> {
 		return this.http.post<T>(this.baseUrl + endPoint, req, options).pipe(
 			catchError((err) => {
-				console.error(err);
-				return throwError(err);
+				return this.handleError(err);
 			})
 		);
 	}
@@ -34,8 +33,7 @@ export class HttpService {
 	public put<T>(endPoint: string, req: unknown, options?: RequestOptions): Observable<T> {
 		return this.http.put<T>(this.baseUrl + endPoint, req, options).pipe(
 			catchError((err) => {
-				console.error(err);
-				return throwError(err);
+				return this.handleError(err);
 			})
 		);
 	}
@@ -43,12 +41,25 @@ export class HttpService {
 	public delete<T>(endPoint: string, options?: RequestOptions): Observable<T> {
 		return this.http.delete<T>(this.baseUrl + endPoint, options).pipe(
 			catchError((err) => {
-				console.error(err);
-				return throwError(err);
+				return this.handleError(err);
 			})
 		);
 	}
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	private handleError(err: any): Observable<never> {
+		if (err.status === 440) {
+			this.authService.sessionExpired();
+		}
+
+		return throwError(err);
+	}
 }
+
+export type HttpError = {
+	status: number;
+	message: string;
+};
 
 interface RequestOptions {
 	headers?: HttpHeaders;

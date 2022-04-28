@@ -7,10 +7,11 @@ import { SocketGameAlreadyStartedError } from '../../errors/socketErrors/SocketG
 import { SocketGameNotExistError } from '../../errors/socketErrors/SocketGameNotExist';
 import { SocketRoomFullError } from '../../errors/socketErrors/SocketRoomFullError';
 import { SocketUnauthorizedError } from '../../errors/socketErrors/SocketUnauthorizedError';
+import { SocketSessionExpiredError } from '../../errors/socketErrors/SocketUnauthorizedError copy';
 import { SocketUserAlreadyConnectedError } from '../../errors/socketErrors/SocketUserAlreadyConnectedError';
 import { SocketWrongRoomPasswordError } from '../../errors/socketErrors/SocketWrongRoomPasswordError';
 import { UserModel } from '../../models/UserModel';
-import { validateJWT } from '../../utils/authorization/Jwt';
+import { JwtValidationError, validateJWT } from '../../utils/authorization/Jwt';
 import { elog, llog } from '../../utils/Logger';
 import { Game, GAME_STATE } from '../gameStore/Game';
 import { GamesStore } from '../gameStore/GamesStore';
@@ -117,11 +118,14 @@ export abstract class SocketHandler {
 	private static verifyJwt = (socket: Socket, next: SocketNextFunction): void => {
 		if (!socket.handshake.query.token) return next(new SocketUnauthorizedError());
 
-		try {
-			const jwt = validateJWT(socket.handshake.query.token as string);
-			socket.middlewareData.jwt = jwt;
-			next();
-		} catch (error) {
+		const validationResult = validateJWT(socket.handshake.query.token as string);
+		if (validationResult.success) {
+			socket.middlewareData.jwt = validationResult.payload;
+			return next();
+		} else if (validationResult.error === JwtValidationError.EXPIRED) {
+			elog(validationResult.error);
+			return next(new SocketSessionExpiredError());
+		} else {
 			return next(new SocketUnauthorizedError());
 		}
 	};

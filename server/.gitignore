@@ -3,3 +3,4 @@
 /src/temp
 .env
 *.pem
+nodemon.json

@@ -17,13 +17,13 @@ try {
 
 export function issueJWT(user: UserDocument): string {
 	const expiresIn = 86400; // 24h
-	const issuedAt = Date.now();
-	const expires = issuedAt + expiresIn;
+	const issuedAt = Math.round(Date.now() / 1000);
+	const expiresOn = issuedAt + expiresIn;
 
 	const payload = {
 		sub: user.id,
 		iat: issuedAt,
-		exp: expires,
+		exp: expiresOn,
 	};
 
 	const signedToken = sign(payload, PRIVATE_KEY, {
@@ -33,8 +33,36 @@ export function issueJWT(user: UserDocument): string {
 	return 'Bearer ' + signedToken;
 }
 // throws an error
-export function validateJWT(jwt: string): JwtPayload {
+export function validateJWT(jwt: string): JwtValidationSuccess | JwtValidationFailure {
 	const token = jwt.split(' ')[1];
-	const jwtPayload = verify(token, PUBLIC_KEY, { algorithms: ['RS256'] });
-	return jwtPayload as JwtPayload;
+	try {
+		const jwtPayload = verify(token, PUBLIC_KEY, { algorithms: ['RS256'] });
+		return { success: true, payload: jwtPayload as JwtPayload };
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} catch (error: any) {
+		if (error?.message) {
+			if (error.message === JwtValidationError.EXPIRED)
+				return { success: false, error: JwtValidationError.EXPIRED };
+			if (error.message === JwtValidationError.EXPIRED)
+				return { success: false, error: JwtValidationError.INVALID };
+		}
+
+		return { success: false, error: JwtValidationError.UNKNOWN };
+	}
+}
+
+interface JwtValidationSuccess {
+	success: true;
+	payload: JwtPayload;
+}
+
+interface JwtValidationFailure {
+	success: false;
+	error: JwtValidationError;
+}
+
+export enum JwtValidationError {
+	EXPIRED = 'jwt expired',
+	INVALID = 'invalid token',
+	UNKNOWN = 'unknown',
 }
