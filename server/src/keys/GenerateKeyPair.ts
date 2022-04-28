@@ -1,11 +1,13 @@
 import { generateKeyPairSync } from 'crypto';
-import { writeFileSync } from 'fs';
+import { existsSync, writeFileSync } from 'fs';
 
 import { PRIVATE_KEY_PATH, PUBLIC_KEY_PATH } from '../Const';
 
 generateKeyPair();
 
 function generateKeyPair(): void {
+	if (existsSync(PUBLIC_KEY_PATH) && existsSync(PRIVATE_KEY_PATH)) return;
+
 	const keyPair = generateKeyPairSync('rsa', {
 		modulusLength: 4096,
 		publicKeyEncoding: {
