@@ -1,5 +1,8 @@
 import Phaser from 'phaser';
-import { ErrorBanner } from 'src/app/components/banner/domain/bannerConfig';
+import {
+	ErrorBanner,
+	InfoBanner
+} from 'src/app/components/banner/domain/bannerConfig';
 import { BaseComponent } from 'src/app/components/base.component';
 import { PasswordQuestion } from 'src/app/components/utils/form/domain/question-types/passwordQuestion';
 import {
@@ -107,6 +110,7 @@ export class GameScreenComponent extends BaseComponent implements OnInit {
 	private connectToSocket(password?: string): void {
 		this.socketService.create(this.gameId, this.game.gameType, password);
 		this.socketService.registerSocketListener(BUILD_IN_SOCKET_GAME_EVENTS.CONNECT, () => {
+			this.bannerService.showBanner(new InfoBanner('Connected to the game room'));
 			this.isRenderGame = true;
 			this.cdRef.detectChanges();
 		});

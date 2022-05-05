@@ -17,7 +17,6 @@ const SCENE_CONFIG = {
 	DECK_PART_OF_N_GON_SIDE: 0.8,
 	BASE_CARD_HEIGHT: 200,
 	MIN_CARD_HEIGHT: 100,
-	THIS_PLAYER_DECK_PART_OF_SCREEN_WIDTH: 0.8,
 	DROP_ZONE_PERCENTAGE_OF_SCREEN: 0.3,
 	INFO_ZONE_PERCENTAGE_OF_SCREEN: 0.1,
 };
@@ -95,8 +94,8 @@ export class MakaoScene extends BaseScene {
 
 		this.deck = new PhaserClickableDeck(
 			this,
-			this.midPoint.x,
-			this.yRelative(0.65),
+			this.xRelative(0.9),
+			this.yRelative(0.9),
 			0,
 			SCENE_CONFIG.BASE_CARD_HEIGHT,
 			0
@@ -106,8 +105,8 @@ export class MakaoScene extends BaseScene {
 
 		this.finishTurnButton = new PhaserButton(
 			this,
-			this.xRelative(0.1),
-			this.yRelative(0.75),
+			this.xRelative(0.5),
+			this.yRelative(0.95),
 			'Finish turn',
 			() => {
 				this.socketService.emitSocketEvent(
@@ -254,11 +253,11 @@ export class MakaoScene extends BaseScene {
 		this.thisPlayer = new ThisMakaoPlayer(
 			makaoGameStateForPlayer.thisMakaoPlayer,
 			this,
-			this.xRelative(0.5),
+			this.xRelative(0.4),
 			this.yRelative(0.9),
 			0,
 			SCENE_CONFIG.BASE_CARD_HEIGHT,
-			this.width * SCENE_CONFIG.THIS_PLAYER_DECK_PART_OF_SCREEN_WIDTH
+			this.width * 0.8
 		);
 
 		this.updateTurnBasedInteractiveElements(makaoGameStateForPlayer.thisPlayerActions);
@@ -485,7 +484,7 @@ class OtherMakaoPlayer extends MakaoPlayer {
 			.addToAdditionalContainer(
 				// TODO: magic numbers, do cleaner
 				scene.add
-					.text(0, -100 - cardsScale / 10, otherMakaoPlayerDTO.username, {
+					.text(0, -cardsScale / 2 - 10, otherMakaoPlayerDTO.username, {
 						color: HEX_COLORS_STRING.BLACK,
 					})
 					.setOrigin(0.5)

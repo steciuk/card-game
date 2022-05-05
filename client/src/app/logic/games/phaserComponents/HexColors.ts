@@ -9,6 +9,7 @@ export enum HEX_COLORS_STRING {
 	BLACK = '#000000',
 	GRAY = '#b8b8b8',
 	PALE_GREEN = '#baffe6',
+	EBONY = '#6b705c',
 }
 
 export enum HEX_COLORS_NUMBER {
@@ -22,4 +23,5 @@ export enum HEX_COLORS_NUMBER {
 	BLACK = 0x000000,
 	GRAY = 0xb8b8b8,
 	PALE_GREEN = 0xbaffe6,
+	EBONY = 0x6b705c,
 }

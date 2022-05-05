@@ -10,6 +10,8 @@ export class PhaserClickableDeck extends PhaserDeck {
 		this.clickZone = scene.add.zone(0, 0, 130, 200); //TODO: cards size - magic numbers!
 		this.clickZone.setInteractive();
 		this.addToAdditionalContainer(this.clickZone);
+		this.cardsContainer.setDepth(1);
+		this.additionalContainer.setDepth(1);
 	}
 
 	override addCards(

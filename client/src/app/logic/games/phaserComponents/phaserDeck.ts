@@ -3,8 +3,7 @@ import { BaseScene } from 'src/app/logic/games/scenes/baseScene';
 
 export class PhaserDeck {
 	protected cardsContainer: Phaser.GameObjects.Container;
-	private additionalContainer: Phaser.GameObjects.Container;
-	protected cardsLine: Phaser.Geom.Line;
+	protected additionalContainer: Phaser.GameObjects.Container;
 
 	constructor(
 		protected scene: BaseScene,
@@ -12,11 +11,10 @@ export class PhaserDeck {
 		y: number,
 		rotation: number,
 		protected height: number,
-		deckWidth: number
+		protected deckWidth: number
 	) {
 		this.cardsContainer = scene.add.container(x, y).setRotation(rotation);
 		this.additionalContainer = scene.add.container(x, y).setRotation(rotation);
-		this.cardsLine = new Phaser.Geom.Line(-deckWidth / 2, 0, deckWidth / 2, 0);
 	}
 
 	destroyNumLastCards(num: number): void {
@@ -57,7 +55,15 @@ export class PhaserDeck {
 	}
 
 	alignCards(): void {
-		Phaser.Actions.PlaceOnLine(this.cardsContainer.getAll(), this.cardsLine);
+		const cards = this.getAllCards();
+		const numCards = cards.length;
+		if (numCards === 1) cards[0].setX(0);
+		else {
+			const distanceBetweenCards = this.deckWidth / (numCards + 1);
+			cards.forEach((card, i) => {
+				card.setX((i + 1) * distanceBetweenCards - this.deckWidth / 2);
+			});
+		}
 	}
 
 	protected getAllCards(): PhaserCard[] {

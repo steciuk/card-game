@@ -9,12 +9,11 @@
 
 	.phaser {
 		margin-top: 20px;
-		border: 5px var(--accent);
-		border-style: solid;
 
 		phaser-component {
-			height: 1000px;
 			display: block;
+			outline: 5px var(--accent);
+			outline-style: solid;
 		}
 	}
 }

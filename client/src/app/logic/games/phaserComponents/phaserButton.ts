@@ -10,6 +10,7 @@ export class PhaserButton {
 			.setOrigin(0.5)
 			.setPadding(10)
 			.setStyle({ backgroundColor: HEX_COLORS_STRING.GREEN })
+			.setDepth(1)
 			.setInteractive({ useHandCursor: true })
 			.on('pointerup', callback)
 			.on('pointerover', () => this.button.setStyle({ backgroundColor: HEX_COLORS_STRING.DARK_GREEN }))

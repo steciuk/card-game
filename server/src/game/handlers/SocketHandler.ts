@@ -146,7 +146,7 @@ export abstract class SocketHandler {
 			const game = GamesStore.Instance.getGame(gameId);
 			if (!game) return next(new SocketGameNotExistError());
 
-			if (game.gameState !== GAME_STATE.NOT_STARTED) next(new SocketGameAlreadyStartedError());
+			if (game.gameState !== GAME_STATE.NOT_STARTED) return next(new SocketGameAlreadyStartedError());
 
 			if (game.isPasswordProtected) {
 				const password = socket.handshake.query.password;
