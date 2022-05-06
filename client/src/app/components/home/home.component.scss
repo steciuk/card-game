@@ -1,4 +1,9 @@
 // TODO: fix animations (remove "all") because flashing on firebase
+:host {
+	display: flex;
+	flex-grow: 1;
+	min-height: 100%;
+}
 
 .home-container {
 	position: relative;
@@ -6,7 +11,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	height: 100%;
+	flex-grow: 1;
 }
 
 section {
