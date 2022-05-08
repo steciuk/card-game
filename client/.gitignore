@@ -45,6 +45,5 @@ testem.log
 Thumbs.db
 
 # Own
-/src/temp*
 *.log
 /.firebase
