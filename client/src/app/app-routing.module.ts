@@ -22,7 +22,6 @@ const routes: Routes = [
 	{ path: BaseRoute.HOME, component: HomeComponent },
 	{ path: BaseRoute.LOGIN, component: LoginComponent },
 	{ path: BaseRoute.REGISTER, component: RegisterComponent },
-	// TODO: implement as child routes
 	{
 		path: BaseRoute.GAMES,
 		component: GamesComponent,
