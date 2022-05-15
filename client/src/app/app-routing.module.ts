@@ -22,13 +22,10 @@ const routes: Routes = [
 	{ path: BaseRoute.HOME, component: HomeComponent },
 	{ path: BaseRoute.LOGIN, component: LoginComponent },
 	{ path: BaseRoute.REGISTER, component: RegisterComponent },
-	{
-		path: BaseRoute.GAMES,
-		component: GamesComponent,
-		canActivate: [AuthGuardService],
-	},
-	{ path: 'games/new', component: NewGameComponent, canActivate: [AuthGuardService] },
-	{ path: 'games/makao/:id', component: GameScreenComponent, canActivate: [AuthGuardService] },
+
+	{ path: BaseRoute.GAMES, component: GamesComponent, canActivate: [AuthGuardService] },
+	{ path: `${BaseRoute.GAMES}/new`, component: NewGameComponent, canActivate: [AuthGuardService] },
+	{ path: `${BaseRoute.GAMES}/makao/:id`, component: GameScreenComponent, canActivate: [AuthGuardService] },
 
 	{ path: '404', component: NotFoundComponent },
 	{ path: '**', redirectTo: '/404' },

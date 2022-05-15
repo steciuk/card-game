@@ -20,7 +20,6 @@ export class AuthGuardService implements CanActivate, OnDestroy {
 	private subs = new SubSink();
 	private isLoggedIn = false;
 
-	// TODO: session expired
 	constructor(
 		private readonly authService: AuthService,
 		private readonly router: Router,
