@@ -14,17 +14,16 @@ import { Router } from '@angular/router';
 	providedIn: 'root',
 })
 export class AuthService {
-	private loggedUser$: BehaviorSubject<string | null>;
+	private loggedUser$ = new BehaviorSubject<string | null>(null);
 
 	constructor(private readonly router: Router, private readonly bannerService: BannerService) {
-		this.loggedUser$ = new BehaviorSubject<string | null>(null);
 		this.init();
 	}
 
 	private init(): void {
-		const username = localStorage.getItem(LocalStorageItems.USERNAME);
-		const token = localStorage.getItem(LocalStorageItems.TOKEN);
-		const expiresOn = localStorage.getItem(LocalStorageItems.EXPIRES_ON);
+		const username = localStorage.getItem(LocalStorageItem.USERNAME);
+		const token = localStorage.getItem(LocalStorageItem.TOKEN);
+		const expiresOn = localStorage.getItem(LocalStorageItem.EXPIRES_ON);
 
 		const isTokenValid =
 			!!expiresOn && !!token && !!username && this.epochInSeconds <= parseInt(expiresOn);
@@ -38,9 +37,9 @@ export class AuthService {
 		const jwtPayload = this.getDecodedJwtPayload(response.token);
 		const username = response.user.username;
 
-		localStorage.setItem(LocalStorageItems.USERNAME, username);
-		localStorage.setItem(LocalStorageItems.TOKEN, response.token);
-		localStorage.setItem(LocalStorageItems.EXPIRES_ON, jwtPayload.exp.toString());
+		localStorage.setItem(LocalStorageItem.USERNAME, username);
+		localStorage.setItem(LocalStorageItem.TOKEN, response.token);
+		localStorage.setItem(LocalStorageItem.EXPIRES_ON, jwtPayload.exp.toString());
 
 		this.loggedUser$.next(username);
 	}
@@ -62,9 +61,9 @@ export class AuthService {
 	}
 
 	private clearLocalStorage(): void {
-		localStorage.removeItem(LocalStorageItems.USERNAME);
-		localStorage.removeItem(LocalStorageItems.TOKEN);
-		localStorage.removeItem(LocalStorageItems.EXPIRES_ON);
+		localStorage.removeItem(LocalStorageItem.USERNAME);
+		localStorage.removeItem(LocalStorageItem.TOKEN);
+		localStorage.removeItem(LocalStorageItem.EXPIRES_ON);
 
 		this.loggedUser$.next(null);
 	}
@@ -78,7 +77,7 @@ export class AuthService {
 	}
 }
 
-enum LocalStorageItems {
+export enum LocalStorageItem {
 	USERNAME = 'username',
 	TOKEN = 'token',
 	EXPIRES_ON = 'expiresOn',

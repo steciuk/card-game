@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+import { LocalStorageItem } from 'src/app/services/auth.service';
 
 import {
 	HttpEvent,
@@ -13,7 +14,7 @@ export class AuthInterceptor implements HttpInterceptor {
 	constructor() {}
 
 	intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-		const token = localStorage.getItem('token');
+		const token = localStorage.getItem(LocalStorageItem.TOKEN);
 		if (token) {
 			const requestWithAuthHeader = request.clone({
 				headers: request.headers.set('Authorization', token).set('Content-type', 'application/json'),

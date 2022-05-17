@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client';
-import { NotLoggedInError } from 'src/app/errors/notLoggedInError';
 import { GameTypes } from 'src/app/logic/games/scenes/gameTypes';
 import { SOCKET_EVENTS } from 'src/app/logic/games/socketEvents/socketEvents';
+import { LocalStorageItem } from 'src/app/services/auth.service';
 import { environment } from 'src/environments/environment';
 
 import { Injectable } from '@angular/core';
@@ -16,10 +16,8 @@ export class SocketService {
 	constructor() {}
 
 	create(gameId: string, gameType: GameTypes, password?: string): void {
-		this.unregisterAllSocketListeners();
 		this.disconnect();
-		const token = localStorage.getItem('token');
-		if (!token) throw new NotLoggedInError('no token found');
+		const token = localStorage.getItem(LocalStorageItem.TOKEN) || '';
 
 		let query = {};
 		if (password) query = { token: token, gameId: gameId, password: password };
@@ -46,7 +44,7 @@ export class SocketService {
 		this.socket.removeAllListeners();
 	}
 	unregisterSocketListener(event: SOCKET_EVENTS, callback: AnyCallback): void {
-		if (!this.socket) return console.error('Socket not created');
+		if (!this.socket) return;
 		this.socket.off(event, callback);
 	}
 
@@ -59,6 +57,7 @@ export class SocketService {
 
 	disconnect(): void {
 		if (!this.socket) return;
+		this.socket.removeAllListeners();
 		this.socket.disconnect();
 		console.log('disconnected');
 	}
