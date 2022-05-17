@@ -9,8 +9,6 @@ import { Injectable } from '@angular/core';
 export class BannerService {
 	private readonly banners$ = new ReplaySubject<Banner>();
 
-	constructor() {}
-
 	showBanner(banner: Banner): void {
 		this.banners$.next(banner);
 	}

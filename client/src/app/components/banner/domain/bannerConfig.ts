@@ -5,7 +5,7 @@ export enum BannerType {
 }
 
 export abstract class Banner {
-	abstract bannerType: BannerType;
+	abstract readonly bannerType: BannerType;
 	constructor(public readonly message: string, public readonly showFor: number = 3) {}
 }
 

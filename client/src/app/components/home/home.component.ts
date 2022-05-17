@@ -11,6 +11,8 @@ import { Router } from '@angular/router';
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent extends BaseComponent implements OnInit {
+	arrayForCellsCreation = Array(100).fill(0);
+
 	private isLoggedIn = false;
 
 	constructor(private readonly router: Router, private readonly authService: AuthService) {
