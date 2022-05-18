@@ -37,7 +37,7 @@ export class NewGameComponent extends BaseComponent {
 				new MaxLengthValidator(20),
 				new PatternValidator({ alpha: true, numeric: true, specialChars: '_' }),
 			]),
-			new SelectQuestion(
+			new SelectQuestion<string>(
 				'gameType',
 				'Game type',
 				enumToArray(GameTypes).map((gameType) => new SelectQuestionOption(gameType, gameType))

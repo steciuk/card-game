@@ -5,7 +5,7 @@ import {
 import { TextValidatorObject } from 'src/app/components/utils/form/infrastructure/validators/validatorInterfaces';
 
 export class TextQuestion extends BaseQuestion<string> {
-	controlType = FormControlType.TEXT;
+	readonly controlType = FormControlType.TEXT;
 
 	constructor(key: string, label: string, validators: TextValidatorObject[] = [], value = '') {
 		super(key, label, validators, value);

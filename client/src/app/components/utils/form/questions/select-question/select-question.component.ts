@@ -12,9 +12,9 @@ import { FormGroup } from '@angular/forms';
 })
 export class SelectQuestionComponent {
 	@Input() set question(question: BaseQuestion<unknown>) {
-		this._question = question as SelectQuestion;
+		this._question = question as SelectQuestion<unknown>;
 	}
-	_question!: SelectQuestion;
+	_question!: SelectQuestion<unknown>;
 
 	@Input() formGroup!: FormGroup;
 }

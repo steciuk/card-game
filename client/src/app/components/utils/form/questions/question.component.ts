@@ -2,7 +2,6 @@ import {
 	BaseQuestion,
 	FormControlType
 } from 'src/app/components/utils/form/domain/baseQuestion';
-import { IntegerQuestion } from 'src/app/components/utils/form/domain/question-types/integerQuestion';
 
 import {
 	ChangeDetectionStrategy,
@@ -37,9 +36,5 @@ export class QuestionComponent implements OnInit {
 
 	get errorKeys(): string[] {
 		return this.formControl.errors ? Object.keys(this.formControl.errors) : [];
-	}
-
-	isInt(candidate: BaseQuestion<unknown>): candidate is IntegerQuestion {
-		return candidate instanceof IntegerQuestion;
 	}
 }

@@ -3,7 +3,7 @@ import { ValidatorObject } from 'src/app/components/utils/form/infrastructure/va
 import { FormControl } from '@angular/forms';
 
 export abstract class BaseQuestion<T> {
-	abstract controlType: FormControlType;
+	abstract readonly controlType: FormControlType;
 	validatorsMap: Map<string, ValidatorObject> = new Map<string, ValidatorObject>();
 
 	constructor(
@@ -27,8 +27,6 @@ export enum FormControlType {
 	TEXT = 'text',
 	PASSWORD = 'password',
 	DROPDOWN = 'dropdown',
-	CHECKBOX = 'checkbox',
-	RADIO = 'radio',
 	NUMBER = 'number',
 	INTEGER = 'integer',
 }
