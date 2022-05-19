@@ -54,13 +54,11 @@ export class IntQuestionComponent implements OnInit, ControlValueAccessor {
 		this.checkButtonsEnabled();
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	registerOnChange(onChange: any): void {
+	registerOnChange(onChange: (value: number) => void): void {
 		this.onChange = onChange;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	registerOnTouched(onTouched: any): void {
+	registerOnTouched(onTouched: () => void): void {
 		this.onTouched = onTouched;
 	}
 
