@@ -9,8 +9,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BannerOutletComponent } from './components/banner/banner-outlet/banner-outlet.component';
 import { GameCardComponent } from './components/games/game-card/game-card.component';
-import { GameScreenComponent } from './components/games/game-screen/game-screen.component';
 import { GamesComponent } from './components/games/games/games.component';
+import { MakaoComponent } from './components/games/makao/makao.component';
 import { NewGameComponent } from './components/games/new-game/new-game.component';
 import { HomeComponent } from './components/home/home.component';
 import { LoginComponent } from './components/login/login.component';
@@ -32,7 +32,7 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
 		LoginComponent,
 		RegisterComponent,
 		LogoutComponent,
-		GameScreenComponent,
+		MakaoComponent,
 		GamesComponent,
 		GameCardComponent,
 		NotFoundComponent,

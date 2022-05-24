@@ -15,6 +15,6 @@ export class GameCardComponent {
 	constructor(private router: Router) {}
 
 	connect(): void {
-		this.router.navigateByUrl(`games/makao/${this.game.id}`);
+		this.router.navigate(['games', this.game.gameType.toLowerCase(), this.game.id]);
 	}
 }

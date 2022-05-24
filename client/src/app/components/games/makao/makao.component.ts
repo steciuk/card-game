@@ -33,11 +33,11 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 
 @Component({
 	selector: 'app-makao',
-	templateUrl: './game-screen.component.html',
-	styleUrls: ['./game-screen.component.scss'],
+	templateUrl: './makao.component.html',
+	styleUrls: ['./makao.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GameScreenComponent extends BaseComponent implements OnInit {
+export class MakaoComponent extends BaseComponent implements OnInit {
 	@ViewChild('form') form?: FormComponent;
 
 	phaserConfig = PHASER_CONFIG;

@@ -72,7 +72,9 @@ export class NewGameComponent extends BaseComponent {
 
 		this.subs.sink = this.http.post<GameDTO>('/games', value).subscribe((response) => {
 			this.bannerService.showBanner(new InfoBanner('New room created'));
-			this.router.navigate(['games', 'makao', response.id], { queryParams: queryParamObject });
+			this.router.navigate(['games', response.gameType.toLowerCase(), response.id], {
+				queryParams: queryParamObject,
+			});
 		});
 	}
 }
