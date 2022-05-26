@@ -4,8 +4,7 @@ import { SocketService } from 'src/app/services/socket.service';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyCallback = (...args: any[]) => void;
-//TODO: restrict so key is mandatory
-type PhaserConfig = Phaser.Types.Scenes.SettingsConfig;
+type PhaserConfig = Partial<Phaser.Types.Scenes.SettingsConfig> & { key: string };
 
 export abstract class BaseScene extends Phaser.Scene {
 	protected registeredEvents = new Map<SOCKET_GAME_EVENTS, AnyCallback>();
@@ -15,7 +14,6 @@ export abstract class BaseScene extends Phaser.Scene {
 	constructor(public socketService: SocketService, config: PhaserConfig) {
 		super(config);
 		this.key = config.key as SCENE_KEYS;
-		this.registerBaseListeners();
 	}
 
 	abstract init(): void;
@@ -86,17 +84,5 @@ export abstract class BaseScene extends Phaser.Scene {
 
 	protected get height(): number {
 		return this.sys.game.canvas.height;
-	}
-
-	private registerBaseListeners(): void {
-		// this.socketService.registerSocketListener(SOCKET_GAME_EVENTS.PLAYER_CONNECTED, (player: Player) => {
-		// 	console.log(`player connected: ${player.id}`);
-		// });
-		// this.socketService.registerSocketListener(
-		// 	SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED,
-		// 	(playerId: string) => {
-		// 		console.log(`player disconnected: ${playerId}`);
-		// 	}
-		// );
 	}
 }

@@ -56,13 +56,10 @@ export class LobbyScene extends BaseScene {
 	private updateStartButton(): void {
 		if (
 			this.playersInLobby.size >= 2 &&
-			(this.isOwner ||
-				this.playersInLobbyAsArray.every((player) => {
-					return player.isReady;
-				}))
-		)
+			(this.isOwner || this.playersInLobbyAsArray.every((player) => player.isReady))
+		) {
 			this.startBtn.enable(true);
-		else this.startBtn.enable(false);
+		} else this.startBtn.enable(false);
 	}
 
 	private registerListeners(): void {
