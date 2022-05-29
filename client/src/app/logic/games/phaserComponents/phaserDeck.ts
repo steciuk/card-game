@@ -17,6 +17,22 @@ export class PhaserDeck {
 		this.additionalContainer = scene.add.container(x, y).setRotation(rotation);
 	}
 
+	addCards(cardIds: string | string[], randomizeCardsRotation = false, numberOfCards = 1): PhaserDeck {
+		let cardIdsToDraw: string[] = [];
+		Array.isArray(cardIds)
+			? (cardIdsToDraw = cardIds)
+			: (cardIdsToDraw = Array(numberOfCards).fill(cardIds));
+
+		cardIdsToDraw.forEach((cardId) => {
+			const card = new PhaserCard(this.scene, 0, 0, cardId, this.height);
+			if (randomizeCardsRotation) card.randomizeAngle();
+			this.addCard(card);
+		});
+
+		this.alignCards();
+		return this;
+	}
+
 	destroyNumLastCards(num: number): void {
 		for (let i = 0; i < num; i++) {
 			const card = this.cardsContainer.last;
@@ -32,22 +48,6 @@ export class PhaserDeck {
 			if (card) card.destroy();
 		}
 		this.alignCards();
-	}
-
-	addCards(cardIds: string | string[], randomizeCardsRotation = false, numberOfCards = 1): PhaserDeck {
-		let cardIdsToDraw: string[] = [];
-		Array.isArray(cardIds)
-			? (cardIdsToDraw = cardIds)
-			: (cardIdsToDraw = Array(numberOfCards).fill(cardIds));
-
-		cardIdsToDraw.forEach((cardId) => {
-			const card = new PhaserCard(this.scene, 0, 0, cardId, this.height);
-			if (randomizeCardsRotation) card.randomizeAngle();
-			this.addCard(card);
-		});
-
-		this.alignCards();
-		return this;
 	}
 
 	protected addCard(card: PhaserCard): void {

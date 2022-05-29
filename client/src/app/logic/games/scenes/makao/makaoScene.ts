@@ -49,7 +49,7 @@ export class MakaoScene extends BaseScene {
 		this.shiftedPlayersIdsInOrder = [];
 		this.players = new Map<string, OtherMakaoPlayer>();
 		this.numberOfPlayers = 0;
-		this.midPoint = { x: this.xRelative(0.5), y: this.smallerScreenDimension / 2 };
+		this.midPoint = { x: this.xRelative(0.5), y: this.yRelative(0.5) };
 	}
 
 	preload(): void {
@@ -119,7 +119,7 @@ export class MakaoScene extends BaseScene {
 					}
 				);
 			}
-		).enable(false);
+		).setEnabled(false);
 
 		this.socketService.emitSocketEvent(
 			SOCKET_GAME_EVENTS.GET_GAME_STATE,
@@ -131,7 +131,7 @@ export class MakaoScene extends BaseScene {
 	}
 
 	private afterCreate(): void {
-		this.deck.addEvent('pointerup', () => {
+		this.deck.onPointerUp(() => {
 			this.socketService.emitSocketEvent(
 				SOCKET_GAME_EVENTS.CARDS_TAKEN,
 				(cardTakenResponseDTO: CardsTakenResponseDTO | FailureResponseDTO) => {
@@ -192,9 +192,12 @@ export class MakaoScene extends BaseScene {
 			this.updateTurnBasedInteractiveElements(actionsDTO);
 		});
 
-		this.registerSocketListenerForScene(SOCKET_GAME_EVENTS.GAME_FINISHED, () => {
-			this.nextScene();
-		});
+		this.registerSocketListenerForScene(
+			SOCKET_GAME_EVENTS.GAME_FINISHED,
+			(gameFinishedDTO: GameFinishedDTO) => {
+				this.nextScene(gameFinishedDTO.winnerUsername);
+			}
+		);
 	}
 
 	private updateGameState(makaoGameStateForPlayer: InitialMakaoGameStateForPlayerDTO): void {
@@ -266,12 +269,12 @@ export class MakaoScene extends BaseScene {
 	}
 
 	private updateTurnArrow(playerId: string): void {
-		this.turnArrow.updateRotation(this.getPlayer(playerId).rotation);
+		this.turnArrow.setRotation(this.getPlayer(playerId).rotation);
 	}
 
 	updateTurnBasedInteractiveElements(actionsDto: ActionsDTO | null): void {
-		this.finishTurnButton.enable(!!actionsDto?.canPlayerFinishTurn);
-		this.deck.enable(!!actionsDto?.canPlayerTakeCard);
+		this.finishTurnButton.setEnabled(!!actionsDto?.canPlayerFinishTurn);
+		this.deck.setEnable(!!actionsDto?.canPlayerTakeCard);
 
 		if (!actionsDto) this.thisPlayer.deck.enableOnlyGivenCards([]);
 		else this.thisPlayer.deck.enableOnlyGivenCards(actionsDto.cardsPlayerCanPlay);
@@ -383,6 +386,10 @@ type ActionsDTO = {
 	canPlayerFinishTurn: boolean;
 };
 
+type GameFinishedDTO = {
+	winnerUsername: string;
+};
+
 type OtherMakaoPlayerDTO = {
 	id: string;
 	username: string;
@@ -482,7 +489,6 @@ class OtherMakaoPlayer extends MakaoPlayer {
 		this.deck = new PhaserDeck(scene, x, y, rotation, cardsScale, deckWidth)
 			.addCards('RB', false, otherMakaoPlayerDTO.numCards)
 			.addToAdditionalContainer(
-				// TODO: magic numbers, do cleaner
 				scene.add
 					.text(0, -cardsScale / 2 - 10, otherMakaoPlayerDTO.username, {
 						color: HEX_COLORS_STRING.BLACK,

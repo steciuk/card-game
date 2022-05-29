@@ -42,8 +42,15 @@ export class MakaoHandler extends SocketHandler {
 					return callback({ success: false, error: 'Cannot play that card' });
 
 				player.deck.remove(cardId);
-				if (player.deck.getNumOfCardsInDeck() <= 0)
-					return this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.GAME_FINISHED, game.id);
+				if (player.deck.getNumOfCardsInDeck() <= 0) {
+					const gameFinishedDTO: GameFinishedDTO = { winnerUsername: player.username };
+					return this.emitToRoomAndSender(
+						socket,
+						SOCKET_GAME_EVENTS.GAME_FINISHED,
+						game.id,
+						gameFinishedDTO
+					);
+				}
 
 				const playedCard = game.playCard(cardId);
 
@@ -80,8 +87,15 @@ export class MakaoHandler extends SocketHandler {
 					return callback({ success: false, error: 'Cannot play that card' });
 
 				player.deck.remove(playedCardId);
-				if (player.deck.getNumOfCardsInDeck() <= 0)
-					return this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.GAME_FINISHED, game.id);
+				if (player.deck.getNumOfCardsInDeck() <= 0) {
+					const gameFinishedDTO: GameFinishedDTO = { winnerUsername: player.username };
+					return this.emitToRoomAndSender(
+						socket,
+						SOCKET_GAME_EVENTS.GAME_FINISHED,
+						game.id,
+						gameFinishedDTO
+					);
+				}
 
 				const playedCard = game.playCard(playedCardId, chosenCardId);
 
@@ -206,4 +220,8 @@ type CardsTakenDTO = AttacksStateDTO & {
 	numCards: number;
 	deckRefilled: boolean;
 	numCardsInRefilled: number;
+};
+
+type GameFinishedDTO = {
+	winnerUsername: string;
 };

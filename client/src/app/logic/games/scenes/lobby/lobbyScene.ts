@@ -32,7 +32,7 @@ export class LobbyScene extends BaseScene {
 				//TODO: standardize callback responses
 				console.log(messageToLog);
 			});
-		}).enable(false);
+		}).setEnabled(false);
 		this.updateStartButton();
 	}
 
@@ -58,8 +58,8 @@ export class LobbyScene extends BaseScene {
 			this.playersInLobby.size >= 2 &&
 			(this.isOwner || this.playersInLobbyAsArray.every((player) => player.isReady))
 		) {
-			this.startBtn.enable(true);
-		} else this.startBtn.enable(false);
+			this.startBtn.setEnabled(true);
+		} else this.startBtn.setEnabled(false);
 	}
 
 	private registerListeners(): void {

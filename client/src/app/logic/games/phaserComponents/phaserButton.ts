@@ -19,7 +19,7 @@ export class PhaserButton {
 			});
 	}
 
-	enable(enable: boolean): PhaserButton {
+	setEnabled(enable: boolean): PhaserButton {
 		if (enable) this.button.setStyle({ backgroundColor: HEX_COLORS_STRING.GREEN }).setInteractive();
 		else this.button.disableInteractive().setStyle({ backgroundColor: HEX_COLORS_STRING.GRAY });
 

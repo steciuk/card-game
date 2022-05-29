@@ -16,7 +16,8 @@ export abstract class BaseScene extends Phaser.Scene {
 		this.key = config.key as SCENE_KEYS;
 	}
 
-	abstract init(): void;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	abstract init(arg?: any): void;
 	abstract preload(): void;
 	abstract create(): void;
 	abstract override update(): void;
@@ -30,13 +31,15 @@ export abstract class BaseScene extends Phaser.Scene {
 		this.socketService.registerSocketListener(event, callback);
 	}
 
-	protected changeScene(sceneKey: SCENE_KEYS): void {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	protected changeScene(sceneKey: SCENE_KEYS, argForNextScene?: any): void {
 		this.unregisterSocketListenersForThisScene();
-		this.scene.start(sceneKey);
+		this.scene.start(sceneKey, argForNextScene);
 	}
 
-	protected nextScene(): void {
-		if (this.nextSceneKey) this.changeScene(this.nextSceneKey);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	protected nextScene(argForNextScene?: any): void {
+		if (this.nextSceneKey) this.changeScene(this.nextSceneKey, argForNextScene);
 		else {
 			console.log(this);
 			console.error('Next scene key not set');

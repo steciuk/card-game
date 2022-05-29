@@ -7,7 +7,7 @@ export class PhaserClickableDeck extends PhaserDeck {
 
 	constructor(scene: BaseScene, x: number, y: number, rotation: number, height: number, deckWidth: number) {
 		super(scene, x, y, rotation, height, deckWidth);
-		this.clickZone = scene.add.zone(0, 0, 130, 200); //TODO: cards size - magic numbers!
+		this.clickZone = scene.add.zone(0, 0, height * (130 / 200), height); //TODO: cards size - magic numbers!
 		this.clickZone.setInteractive();
 		this.addToAdditionalContainer(this.clickZone);
 		this.cardsContainer.setDepth(1);
@@ -24,12 +24,12 @@ export class PhaserClickableDeck extends PhaserDeck {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	addEvent(eventName: string, callback: (...args: any[]) => void): PhaserClickableDeck {
-		this.clickZone.on(eventName, callback);
+	onPointerUp(callback: (...args: any[]) => void): PhaserClickableDeck {
+		this.clickZone.on('pointerup', callback);
 		return this;
 	}
 
-	enable(enable: boolean): PhaserClickableDeck {
+	setEnable(enable: boolean): PhaserClickableDeck {
 		if (enable) this.clickZone.setInteractive();
 		else this.clickZone.disableInteractive();
 
