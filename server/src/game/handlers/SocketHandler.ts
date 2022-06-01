@@ -18,11 +18,8 @@ import { GamesStore } from '../gameStore/GamesStore';
 import { Player, PlayerDTO } from '../gameStore/Player';
 import { PlayerFactory } from '../gameStore/PlayerFactory';
 import { GAME_TYPE } from '../GameTypes';
-import {
-	BUILD_IN_SOCKET_GAME_EVENTS,
-	SOCKET_EVENT,
-	SOCKET_GAME_EVENTS
-} from './SocketEvents';
+import { GameFinishedDTO } from './MakaoHandler';
+import { BUILD_IN_SOCKET_GAME_EVENTS, SOCKET_EVENT, SOCKET_GAME_EVENTS } from './SocketEvents';
 
 export abstract class SocketHandler {
 	protected static connectedUsers = new Set<string>();
@@ -81,9 +78,10 @@ export abstract class SocketHandler {
 			SocketHandler.connectedUsers.delete(userId);
 			game.disconnectPlayer(player);
 
-			if (game.gameState === GAME_STATE.FINISHED)
-				this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.GAME_FINISHED, gameId);
-			else
+			if (game.gameState === GAME_STATE.FINISHED) {
+				const gameFinishedDTO: GameFinishedDTO = { winnerUsername: (game.winner as Player).username };
+				this.emitToRoomAndSender(socket, SOCKET_GAME_EVENTS.GAME_FINISHED, gameId, gameFinishedDTO);
+			} else
 				this.emitToRoomAndSender(
 					socket,
 					SOCKET_GAME_EVENTS.PLAYER_DISCONNECTED,

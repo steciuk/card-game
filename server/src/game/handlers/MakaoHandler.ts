@@ -5,7 +5,7 @@ import {
 	ActionsDTO,
 	AttacksStateDTO,
 	InitialMakaoGameStateForPlayerDTO,
-	MakaoGame
+	MakaoGame,
 } from '../gameStore/makao/MakaoGame';
 import { MakaoPlayer } from '../gameStore/makao/MakaoPlayer';
 import { GAME_TYPE } from '../GameTypes';
@@ -43,7 +43,9 @@ export class MakaoHandler extends SocketHandler {
 
 				player.deck.remove(cardId);
 				if (player.deck.getNumOfCardsInDeck() <= 0) {
-					const gameFinishedDTO: GameFinishedDTO = { winnerUsername: player.username };
+					game.winner = player;
+					game.finish();
+					const gameFinishedDTO: GameFinishedDTO = { winnerUsername: game.winner.username };
 					return this.emitToRoomAndSender(
 						socket,
 						SOCKET_GAME_EVENTS.GAME_FINISHED,
@@ -88,7 +90,9 @@ export class MakaoHandler extends SocketHandler {
 
 				player.deck.remove(playedCardId);
 				if (player.deck.getNumOfCardsInDeck() <= 0) {
-					const gameFinishedDTO: GameFinishedDTO = { winnerUsername: player.username };
+					game.winner = player;
+					game.finish();
+					const gameFinishedDTO: GameFinishedDTO = { winnerUsername: game.winner.username };
 					return this.emitToRoomAndSender(
 						socket,
 						SOCKET_GAME_EVENTS.GAME_FINISHED,
@@ -222,6 +226,6 @@ type CardsTakenDTO = AttacksStateDTO & {
 	numCardsInRefilled: number;
 };
 
-type GameFinishedDTO = {
+export type GameFinishedDTO = {
 	winnerUsername: string;
 };

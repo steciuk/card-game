@@ -3,11 +3,7 @@ import { GAME_TYPE } from '../../GameTypes';
 import { Card, CardId, Colors } from '../deck/Card';
 import { Deck, DECK_TYPE } from '../deck/Deck';
 import { Game, GAME_STATE } from '../Game';
-import {
-	MakaoPlayer,
-	OtherMakaoPlayerDTO,
-	ThisMakaoPlayerDTO
-} from './MakaoPlayer';
+import { MakaoPlayer, OtherMakaoPlayerDTO, ThisMakaoPlayerDTO } from './MakaoPlayer';
 
 enum AttackType {
 	TWO_THREE,
@@ -24,6 +20,7 @@ export class MakaoGame extends Game {
 	static requestableCards: CardId[] = MakaoGame.nonFunctionalShapes.map((shape) => (shape + 'H') as CardId);
 
 	protected playersInGame = new Map<string, MakaoPlayer>();
+	winner?: MakaoPlayer;
 	private readonly deck = new Deck(DECK_TYPE.FULL);
 	private readonly discarded = new Deck(DECK_TYPE.FULL);
 	playersInOrder: MakaoPlayer[] = [];
@@ -75,7 +72,12 @@ export class MakaoGame extends Game {
 		super.disconnectPlayer(player);
 
 		if (this.gameState === GAME_STATE.STARTED) {
-			if (this.numConnectedPlayersInGame <= 1) return this.finish();
+			if (this.numConnectedPlayersInGame === 1) {
+				this.winner = Array.from(this.playersInGame.values()).find(
+					(player) => !player.isDisconnected
+				);
+				return this.finish();
+			}
 
 			this.deck.add(player.deck.getInDeck());
 			if (this.currentPlayer.id === player.id) this.finishTurn();

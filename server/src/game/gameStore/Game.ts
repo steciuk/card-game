@@ -3,7 +3,11 @@ import { GamesStore } from './GamesStore';
 import { Player, PlayerDTO } from './Player';
 
 export abstract class Game {
-	// CONSTANTS
+	gameState = GAME_STATE.NOT_STARTED;
+	protected abstract playersInGame: Map<string, Player>;
+	abstract winner?: Player;
+	private removeFromGameStoreTimeout?: NodeJS.Timeout;
+
 	constructor(
 		public readonly gameType: GAME_TYPE,
 		public readonly owner: { id: string; username: string },
@@ -16,10 +20,6 @@ export abstract class Game {
 	) {
 		this.startRemoveFromGameStoreTimeout();
 	}
-	// VARIABLES
-	gameState = GAME_STATE.NOT_STARTED;
-	protected abstract playersInGame: Map<string, Player>;
-	private removeFromGameStoreTimeout?: NodeJS.Timeout;
 
 	get numPlayersInGame(): number {
 		return this.playersInGame.size;
