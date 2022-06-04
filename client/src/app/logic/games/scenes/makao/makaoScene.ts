@@ -19,6 +19,7 @@ const SCENE_CONFIG = {
 	MIN_CARD_HEIGHT: 100,
 	DROP_ZONE_PERCENTAGE_OF_SCREEN: 0.3,
 	INFO_ZONE_PERCENTAGE_OF_SCREEN: 0.1,
+	THIS_PLAYER_DECK_WIDTH_PART_OF_GAME_SCREEN: 0.7,
 };
 
 export class MakaoScene extends BaseScene {
@@ -253,15 +254,7 @@ export class MakaoScene extends BaseScene {
 				this.players.set(otherPlayer.id, otherPlayer);
 			});
 
-		this.thisPlayer = new ThisMakaoPlayer(
-			makaoGameStateForPlayer.thisMakaoPlayer,
-			this,
-			this.xRelative(0.4),
-			this.yRelative(0.9),
-			0,
-			SCENE_CONFIG.BASE_CARD_HEIGHT,
-			this.width * 0.8
-		);
+		this.thisPlayer = new ThisMakaoPlayer(makaoGameStateForPlayer.thisMakaoPlayer, this);
 
 		this.updateTurnBasedInteractiveElements(makaoGameStateForPlayer.thisPlayerActions);
 		this.updateTurnArrow(makaoGameStateForPlayer.currentPlayerId);
@@ -418,19 +411,18 @@ class MakaoPlayer {
 class ThisMakaoPlayer extends MakaoPlayer {
 	deck: PhaserPlayableDeck;
 
-	constructor(
-		thisMakaoPlayerDTO: ThisMakaoPlayerDTO,
-		scene: MakaoScene,
-		x: number,
-		y: number,
-		rotation: number,
-		cardsScale: number,
-		deckWidth: number
-	) {
-		super(thisMakaoPlayerDTO.id, thisMakaoPlayerDTO.username, rotation);
+	constructor(thisMakaoPlayerDTO: ThisMakaoPlayerDTO, scene: MakaoScene) {
+		super(thisMakaoPlayerDTO.id, thisMakaoPlayerDTO.username, 0);
 		this.id = thisMakaoPlayerDTO.id;
 		this.username = thisMakaoPlayerDTO.username;
-		this.deck = new PhaserPlayableDeck(scene, x, y, rotation, cardsScale, deckWidth);
+		this.deck = new PhaserPlayableDeck(
+			scene,
+			scene.xRelative(0.4),
+			scene.yRelative(0.9),
+			this.rotation,
+			SCENE_CONFIG.BASE_CARD_HEIGHT,
+			scene.xRelative(SCENE_CONFIG.THIS_PLAYER_DECK_WIDTH_PART_OF_GAME_SCREEN)
+		);
 		this.deck
 			.registerCardEvent('drag', (card, _deck) => {
 				return (_pointer: unknown, dragX: number, dragY: number): void => {
