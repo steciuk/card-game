@@ -16,8 +16,8 @@ Install [Node.js](https://nodejs.org/en/).
 
 Check respective READMEs:
 
--   [Frontend](client%5CREADME.md)
--   [Backend](server%5CREADME.md)
+-   [Frontend](client/README.md)
+-   [Backend](server/README.md)
 
 ## Thesis abstract
 
