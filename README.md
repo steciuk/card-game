@@ -2,7 +2,7 @@
 
 This project was created as a bachelor's degree thesis in Computer Science (Computer Information System Engineering) at Warsaw University of Technology.
 
-Deployed application available at [CardGame](https://cardgame.adamsteciuk.com/).
+Deployed application available at [CardGame](https://cardgame.adam-steciuk.com/).
 
 ## Structure of the repository
 
