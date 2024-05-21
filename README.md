@@ -2,7 +2,9 @@
 
 This project was created as a bachelor's degree thesis in Computer Science (Computer Information System Engineering) at Warsaw University of Technology.
 
-Deployed application available at [CardGame](https://cardgame.adam-steciuk.com/).
+Deployed application available at [CardGame](https://cardgame.steciuk.dev/).
+
+⚠️ **The backend of this app is currently taking a well-deserved nap, courtesy of Heroku's new pricing. Maybe one day, when I find some time and a free hosting alternative, I will revive it. Until then, the app is not functional.** ⚠️
 
 ## Structure of the repository
 
